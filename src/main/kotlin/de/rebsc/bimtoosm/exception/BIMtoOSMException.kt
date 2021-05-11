@@ -1,4 +1,3 @@
 package de.rebsc.bimtoosm.exception
 
-class BIMtoOSMException(msg: String) : Exception(msg) {
-}
+class BIMtoOSMException(msg: String) : Exception(msg)

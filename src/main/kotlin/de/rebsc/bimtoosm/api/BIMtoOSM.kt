@@ -11,7 +11,7 @@ interface BIMtoOSM {
     fun configure(config: Configuration)
 
     /**
-     * Parse BIM file placed at filepath to OSM data
+     * Parse BIM file placed at [filepath] to OSM data
      */
     fun parse(filepath: String): OSMDataSet
 }
