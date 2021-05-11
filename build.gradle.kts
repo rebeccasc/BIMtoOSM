@@ -16,6 +16,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("junit:junit:4.13.1")
     implementation("org.junit.jupiter:junit-jupiter:5.7.0")
+    implementation ("org.opensourcebim:BuildingSMARTLibrary:1.0.9")
 }
 
 val compileKotlin: KotlinCompile by tasks

@@ -39,4 +39,12 @@ internal class BIMtoOSMParserTest {
         BIMtoOSMParser(validConfig)
     }
 
+    @Test
+    fun parseTest() {
+        // TODO fix - implementation for testing only
+        val dir = System.getProperty("user.dir")
+        val filepath = "$dir/src/test/resources/test1_IFC4.ifc"
+        BIMtoOSMParser(Configuration()).parse(filepath)
+    }
+
 }
