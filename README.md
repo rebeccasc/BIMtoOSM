@@ -9,16 +9,17 @@
 A parser to transform **B**uilding **I**nformation **M**odeling ([BIM](https://en.wikipedia.org/wiki/Building_information_modeling)) to **O**pen**S**treet**M**ap ([OSM](https://www.openstreetmap.org/#map=18/50.81353/12.92928&layers=N)) data
 
 ## How to use
-TODO
+:construction: **Currently, the source code is being rebuilt from scratch** :construction:
+
 
 ## Dependencies
-[BuildingSMARTLibrary](https://github.com/opensourceBIM/BuildingSMARTLibrary)
-
-## Development status
-Currently, the source code is being rebuilt from scratch. 
+* [BuildingSMARTLibrary](https://github.com/opensourceBIM/BuildingSMARTLibrary) to load ifc files into model
 
 ## Contributing
 TODO
 
-## Authors
+## Wiki
+For more information about how the parser works check the [wiki](https://github.com/rebeccasc/BIMtoOSM/wiki)!
 
+## Authors
+* Rebecca Schmidt (rebeccasmdt@gmail.com)
