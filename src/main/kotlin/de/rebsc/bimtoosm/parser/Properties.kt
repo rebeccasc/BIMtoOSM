@@ -17,6 +17,10 @@ package de.rebsc.bimtoosm.parser
  * along with this program. If not, see {@literal<http://www.gnu.org/licenses/>}.
  *****************************************************************************/
 
+enum class ParserStatus {
+    INACTIVE, PRE_PROCESSING, LOADING, PARSING, POST_PROCESSING
+}
+
 enum class IFCSchema(val value: String) {
     IFC2X3_TC1("IFC2X3_TC1"),
     IFC4("IFC4"),

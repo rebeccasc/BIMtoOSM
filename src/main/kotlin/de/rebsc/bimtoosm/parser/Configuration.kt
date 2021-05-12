@@ -24,10 +24,10 @@ import de.rebsc.bimtoosm.geometry.GeometrySolution
  * Configures the [BIMtoOSMParser]
  */
 class Configuration() {
-    private var solution: GeometrySolution = GeometrySolution.BOUNDING_BOX
-    private var optimizeInput: Boolean = false
-    private var optimizeOutput: Boolean = false
-    private var optimizeOutputMergeDist: Double = 0.1
+    var solution: GeometrySolution = GeometrySolution.BOUNDING_BOX
+    var optimizeInput: Boolean = false
+    var optimizeOutput: Boolean = false
+    var optimizeOutputMergeDist: Double = 0.1
 
     private val exceptionMsg = "Invalid configuration value for param <optimizeOutputMergeDist>"
 
@@ -44,6 +44,12 @@ class Configuration() {
         if (optimizeOutputMergeDist.isInfinite()) throw BIMtoOSMException(exceptionMsg)
         if (optimizeOutputMergeDist < 0.0) throw BIMtoOSMException(exceptionMsg)
         this.optimizeOutputMergeDist = optimizeOutputMergeDist
+    }
+
+    override fun toString(): String {
+        return "\t SolutionEngine set to $solution\n" +
+                "\t Optimize Input set $optimizeInput\n" +
+                "\t Optimize Output set $optimizeOutput; MergeDistance set to $optimizeOutputMergeDist"
     }
 
 }
