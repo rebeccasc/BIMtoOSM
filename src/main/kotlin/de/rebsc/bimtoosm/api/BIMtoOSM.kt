@@ -21,7 +21,6 @@ import de.rebsc.bimtoosm.data.OSMDataSet
 import de.rebsc.bimtoosm.parser.Configuration
 
 interface BIMtoOSM {
-
     /**
      * Configure the parser
      */

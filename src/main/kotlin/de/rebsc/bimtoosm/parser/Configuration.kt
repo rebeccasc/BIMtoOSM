@@ -29,7 +29,7 @@ class Configuration() {
     private var optimizeOutput: Boolean = false
     private var optimizeOutputMergeDist: Double = 0.1
 
-    private val exceptionMsg = "Invalid configuration value for param -optimizeOutputMergeDist-"
+    private val exceptionMsg = "Invalid configuration value for param <optimizeOutputMergeDist>"
 
     constructor(
         solution: GeometrySolution,
