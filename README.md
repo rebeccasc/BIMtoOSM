@@ -1,5 +1,6 @@
 # BIMtoOSM
 [![CI](https://github.com/rebeccasc/BIMtoOSM/actions/workflows/gradle.yml/badge.svg?branch=master&event=push)](https://github.com/rebeccasc/BIMtoOSM/actions/workflows/gradle.yml)
+[![license: AGPLv3](https://img.shields.io/badge/license-AGPLv3-blue.svg?style=flat-square&maxAge=7200)](https://github.com/rebeccasc/BIMtoOSM/blob/master/LICENSE)
 
 <p align="center">
   <img width="100%" src="docs/banner.svg">
