@@ -19,20 +19,58 @@ package de.rebsc.bimtoosm.parser
 
 import de.rebsc.bimtoosm.api.BIMtoOSM
 import de.rebsc.bimtoosm.data.OSMDataSet
+import de.rebsc.bimtoosm.logger.Logger
+import kotlin.properties.Delegates
 
-class BIMtoOSMParser(private var config: Configuration) : BIMtoOSM {
+class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
+
+    private val logger = Logger.get(this::class.java)
+    private var status: ParserStatus by Delegates.observable(ParserStatus.INACTIVE) { _, _, new ->
+        logger.info("Parser status set to $new")
+        if (new == ParserStatus.PRE_PROCESSING) logger.info("Pre-processing data; Optimize ifc file")
+        if (new == ParserStatus.LOADING) logger.info("Loading data into model")
+        if (new == ParserStatus.PARSING) logger.info("Parsing data to OSM")
+        if (new == ParserStatus.POST_PROCESSING) logger.info("Post-processing data; Optimize OSM data set")
+    }
+    private var config: Configuration by Delegates.observable(config) { _, _, new ->
+        logger.info("Active parser configuration:\n$new")
+    }
+
+    init {
+        logger.info("Active parser configuration:\n$config")
+    }
 
     override fun configure(config: Configuration) {
         this.config = config
     }
 
     override fun parse(filepath: String): OSMDataSet {
-        // TODO optimize file if configured
+        // pre-processing
+        if (config.optimizeInput) {
+            status = ParserStatus.PRE_PROCESSING
+            // TODO implement
+        }
+
+        // load into model and extract ifc environment vars
+        status = ParserStatus.LOADING
         val ifcModel = Loader.loadIntoModel(filepath)
-        // TODO extract ifc environment vars
-        // TODO ...
+        // TODO implement extraction
+
+        // transform ifc to osm
+        status = ParserStatus.PARSING
+        // TODO implement
+
+        // post-processing
+        if (config.optimizeOutput) {
+            status = ParserStatus.POST_PROCESSING
+            // TODO implement
+        }
 
         return OSMDataSet()
+    }
+
+    override fun status(): String {
+        return status.toString()
     }
 
 }
