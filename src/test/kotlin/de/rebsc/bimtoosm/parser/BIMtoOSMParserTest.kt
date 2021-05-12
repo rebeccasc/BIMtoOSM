@@ -26,6 +26,7 @@ internal class BIMtoOSMParserTest {
 
     @Test
     fun initTest() {
+        // test negative optimizer merge distance
         assertThrows(BIMtoOSMException::class.java) {
             val invalidConfig = Configuration(
                 GeometrySolution.BODY,
@@ -36,6 +37,7 @@ internal class BIMtoOSMParserTest {
             BIMtoOSMParser(invalidConfig)
         }
 
+        // test infinite optimizer merge distance
         assertThrows(BIMtoOSMException::class.java) {
             val invalidConfig = Configuration(
                 GeometrySolution.BODY,
@@ -46,6 +48,7 @@ internal class BIMtoOSMParserTest {
             BIMtoOSMParser(invalidConfig)
         }
 
+        // test positive optimizer merge distance
         val validConfig = Configuration(
             GeometrySolution.BOUNDING_BOX,
             true,
@@ -57,10 +60,7 @@ internal class BIMtoOSMParserTest {
 
     @Test
     fun parseTest() {
-        // TODO fix - implementation for testing only
-        val dir = System.getProperty("user.dir")
-        val filepath = "$dir/src/test/resources/test1_IFC4.ifc"
-        BIMtoOSMParser(Configuration()).parse(filepath)
+        // TODO implement
     }
 
 }
