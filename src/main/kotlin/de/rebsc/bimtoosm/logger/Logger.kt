@@ -1,5 +1,8 @@
 package de.rebsc.bimtoosm.logger
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 /******************************************************************************
  * Copyright (C) 2021  de.rebsc
  *
@@ -18,5 +21,9 @@ package de.rebsc.bimtoosm.logger
  *****************************************************************************/
 
 class Logger {
+
+    companion object {
+        fun <T> get(clazz: Class<T>): Logger = LoggerFactory.getLogger(clazz)
+    }
 
 }
