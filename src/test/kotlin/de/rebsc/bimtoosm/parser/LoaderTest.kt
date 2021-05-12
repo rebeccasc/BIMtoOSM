@@ -18,8 +18,8 @@ package de.rebsc.bimtoosm.parser
  *****************************************************************************/
 
 import de.rebsc.bimtoosm.exception.BIMtoOSMException
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
 internal class LoaderTest {
 
@@ -28,7 +28,7 @@ internal class LoaderTest {
         val dir = System.getProperty("user.dir")
 
         // test non-existent ifc file
-        Assert.assertThrows(BIMtoOSMException::class.java) {
+        Assertions.assertThrows(BIMtoOSMException::class.java) {
             val filepath = "$dir/src/test/resources/test1_IFC4_.ifc"
             Loader.loadIntoModel(filepath)
         }
@@ -36,8 +36,10 @@ internal class LoaderTest {
         // TODO test invalid ifc file
 
         // test valid ifc file
-        val filepath = "$dir/src/test/resources/test1_IFC4.ifc"
-        Loader.loadIntoModel(filepath)
+        Assertions.assertDoesNotThrow {
+            val filepath = "$dir/src/test/resources/test1_IFC4.ifc"
+            Loader.loadIntoModel(filepath)
+        }
     }
 
 }
