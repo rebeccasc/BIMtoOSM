@@ -28,9 +28,7 @@ class BIMtoOSMParser(private var config: Configuration) : BIMtoOSM {
 
     override fun parse(filepath: String): OSMDataSet {
         // TODO optimize file if configured
-        // TODO extract file schema
-        val ifcSchemaFilepath = "${System.getProperty("user.dir")}/src/main/resources/IFC4.exp"
-        val ifcModel = Loader.loadIntoModel(filepath, ifcSchemaFilepath)
+        val ifcModel = Loader.loadIntoModel(filepath)
         // TODO extract ifc environment vars
         // TODO ...
 

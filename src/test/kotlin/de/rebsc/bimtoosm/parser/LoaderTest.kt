@@ -30,21 +30,14 @@ internal class LoaderTest {
         // test non-existent ifc file
         Assert.assertThrows(BIMtoOSMException::class.java) {
             val filepath = "$dir/src/test/resources/test1_IFC4_.ifc"
-            val ifcSchemaFilePath = "$dir/src/main/resources/IFC2X3_TC1.exp"
-            Loader.loadIntoModel(filepath, ifcSchemaFilePath)
+            Loader.loadIntoModel(filepath)
         }
 
-        // test non-existent or invalid ifc schema file
-        Assert.assertThrows(BIMtoOSMException::class.java) {
-            val filepath = "$dir/src/test/resources/test1_IFC4.ifc"
-            val ifcSchemaFilePath = "$dir/src/main/resources/IFC2X3_TC1.exp"
-            Loader.loadIntoModel(filepath, ifcSchemaFilePath)
-        }
+        // TODO test invalid ifc file
 
-        // test valid ifc file and valid ifc schema file
+        // test valid ifc file
         val filepath = "$dir/src/test/resources/test1_IFC4.ifc"
-        val ifcSchemaFilePath = "$dir/src/main/resources/IFC4.exp"
-        Loader.loadIntoModel(filepath, ifcSchemaFilePath)
+        Loader.loadIntoModel(filepath)
     }
 
 }
