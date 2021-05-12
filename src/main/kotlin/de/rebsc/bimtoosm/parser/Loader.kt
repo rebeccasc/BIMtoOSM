@@ -30,7 +30,7 @@ class Loader {
         /**
          * Loads ifc file into model
          * @param filepath to ifc file
-         * @return ifc model population including ifc objects or
+         * @return ifc model population including ifc objects
          * @throws BIMtoOSMException
          */
         fun loadIntoModel(filepath: String): ModelPopulation {
@@ -54,6 +54,7 @@ class Loader {
         /**
          * Get ifc schema used in file
          * @param filepath to ifc file
+         * @return path to ifc file schema
          */
         private fun getIfcSchemaFilepath(filepath: String): String {
             File(filepath).useLines { lines ->
@@ -64,12 +65,10 @@ class Loader {
 
                     // check for IFC2X3 or IFC4
                     if (line.contains(IFCSchema.FLAG_IFC2X3_TC1.value) || line.contains(IFCSchema.FLAG_IFC2X3.value)) {
-                        return "${System.getProperty("user.dir")}/src/main/resources/" +
-                                "${IFCSchema.IFC2X3_TC1.value}.exp"
+                        return "${System.getProperty("user.dir")}/src/main/resources/${IFCSchema.IFC2X3_TC1.value}.exp"
                     }
                     if (line.contains(IFCSchema.FLAG_IFC4.value)) {
-                        return "${System.getProperty("user.dir")}/src/main/resources/" +
-                                "${IFCSchema.IFC4.value}.exp"
+                        return "${System.getProperty("user.dir")}/src/main/resources/${IFCSchema.IFC4.value}.exp"
                     }
                 }
             }

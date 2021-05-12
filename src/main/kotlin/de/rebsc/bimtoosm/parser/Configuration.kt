@@ -24,6 +24,7 @@ import de.rebsc.bimtoosm.geometry.GeometrySolution
  * Configures the [BIMtoOSMParser]
  */
 class Configuration() {
+
     var solution: GeometrySolution = GeometrySolution.BOUNDING_BOX
     var optimizeInput: Boolean = false
     var optimizeOutput: Boolean = false

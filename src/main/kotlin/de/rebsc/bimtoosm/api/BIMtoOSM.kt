@@ -19,9 +19,9 @@ package de.rebsc.bimtoosm.api
 
 import de.rebsc.bimtoosm.data.OSMDataSet
 import de.rebsc.bimtoosm.parser.Configuration
-import de.rebsc.bimtoosm.parser.ParserStatus
 
 interface BIMtoOSM {
+
     /**
      * Configure the parser
      */
@@ -33,7 +33,8 @@ interface BIMtoOSM {
     fun parse(filepath: String): OSMDataSet
 
     /**
-     * Gives information about current [ParserStatus]
+     * Gives information about current ParserStatus
      */
     fun status(): String
+
 }
