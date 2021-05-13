@@ -6,7 +6,7 @@
   <img width="100%" src="docs/banner.svg">
 </p>
 
-A parser to transform **B**uilding **I**nformation **M**odeling ([BIM](https://en.wikipedia.org/wiki/Building_information_modeling)) to **O**pen**S**treet**M**ap ([OSM](https://www.openstreetmap.org/#map=18/50.81353/12.92928&layers=N)) data
+A parser to transform **B**uilding **I**nformation **M**odeling ([BIM](https://en.wikipedia.org/wiki/Building_information_modeling)) to **O**pen**S**treet**M**ap ([OSM](https://www.openstreetmap.org/#map=18/50.81353/12.92928&layers=N)) data. This open source project wants to make Building Information Model data available for OpenStreetMap.
 
 ## How to use
 :construction: **Currently, the source code is being rebuilt from scratch** :construction:
@@ -16,7 +16,7 @@ A parser to transform **B**uilding **I**nformation **M**odeling ([BIM](https://e
 * [BuildingSMARTLibrary](https://github.com/opensourceBIM/BuildingSMARTLibrary) to load ifc files into model
 
 ## Contributing
-TODO
+Want to contribute? Check the [Contribution guidelines](https://github.com/rebeccasc/BIMtoOSM/blob/master/CONTRIBUTING.md)
 
 ## Wiki
 For more information about how the parser works check the [wiki](https://github.com/rebeccasc/BIMtoOSM/wiki)!
