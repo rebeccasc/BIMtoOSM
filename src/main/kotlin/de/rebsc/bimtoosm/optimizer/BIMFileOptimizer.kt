@@ -47,6 +47,10 @@ class BIMFileOptimizer {
                 throw BIMtoOSMException("File not found: $filepath")
             }
 
+            if (optimizedContent.toString().isEmpty()) {
+                throw BIMtoOSMException("Optimized file empty")
+            }
+
             tempFile.writeText(optimizedContent.toString())
             return tempFile
         }
