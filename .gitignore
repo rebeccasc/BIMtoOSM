@@ -1,4 +1,10 @@
-﻿.idea
-build
+﻿build
 .gradle
 docs/templates
+
+#IntelliJ Idea
+/.idea/*
+!/.idea/codeStyles/
+/.idea/codeStyles/*
+!/.idea/codeStyles/codeStyleConfig.xml
+!/.idea/codeStyles/Project.xml
