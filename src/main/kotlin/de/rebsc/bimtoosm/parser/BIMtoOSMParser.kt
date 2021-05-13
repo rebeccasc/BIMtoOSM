@@ -20,18 +20,27 @@ package de.rebsc.bimtoosm.parser
 import de.rebsc.bimtoosm.api.BIMtoOSM
 import de.rebsc.bimtoosm.data.OSMDataSet
 import de.rebsc.bimtoosm.logger.Logger
+import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
+import java.io.File
 import kotlin.properties.Delegates
 
 class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
 
+    /**
+     * [BIMtoOSMParser] class logger
+     */
     private val logger = Logger.get(this::class.java)
+
+    /**
+     * Current [ParserStatus]
+     */
     private var status: ParserStatus by Delegates.observable(ParserStatus.INACTIVE) { _, _, new ->
         logger.info("Parser status set to $new")
-        if (new == ParserStatus.PRE_PROCESSING) logger.info("Pre-processing data; Optimize ifc file")
-        if (new == ParserStatus.LOADING) logger.info("Loading data into model")
-        if (new == ParserStatus.PARSING) logger.info("Parsing data to OSM")
-        if (new == ParserStatus.POST_PROCESSING) logger.info("Post-processing data; Optimize OSM data set")
     }
+
+    /**
+     * Parser configuration
+     */
     private var config: Configuration by Delegates.observable(config) { _, _, new ->
         logger.info("Active parser configuration:\n$new")
     }
@@ -45,15 +54,17 @@ class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
     }
 
     override fun parse(filepath: String): OSMDataSet {
+        var ifcFilepath = filepath
+
         // pre-processing
         if (config.optimizeInput_RBC) {
             status = ParserStatus.PRE_PROCESSING
-            // TODO implement
+            ifcFilepath = BIMFileOptimizer.removeBlockComments(filepath).absolutePath
         }
 
         // load into model and extract ifc environment vars
         status = ParserStatus.LOADING
-        val ifcModel = Loader.loadIntoModel(filepath)
+        val ifcModel = Loader.loadIntoModel(ifcFilepath)
         // TODO implement extraction
 
         // transform ifc to osm
