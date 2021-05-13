@@ -19,7 +19,7 @@ A parser to transform **B**uilding **I**nformation **M**odeling ([BIM](https://e
 Want to contribute? Check the [Contribution guidelines](https://github.com/rebeccasc/BIMtoOSM/blob/master/CONTRIBUTING.md)
 
 ## Wiki
-For more information about how the parser works check the [wiki](https://github.com/rebeccasc/BIMtoOSM/wiki)!
+For more information about how the parser works or how to handle indoor data in OSM check the [wiki](https://github.com/rebeccasc/BIMtoOSM/wiki)!
 
 ## Authors
 * Rebecca Schmidt (rebeccasmdt@gmail.com)
