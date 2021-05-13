@@ -21,7 +21,6 @@ import de.rebsc.bimtoosm.api.BIMtoOSM
 import de.rebsc.bimtoosm.data.OSMDataSet
 import de.rebsc.bimtoosm.logger.Logger
 import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
-import java.io.File
 import kotlin.properties.Delegates
 
 class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
@@ -65,7 +64,7 @@ class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
         // load into model and extract ifc environment vars
         status = ParserStatus.LOADING
         val ifcModel = Loader.loadIntoModel(ifcFilepath)
-        // TODO implement extraction
+        val ifcUnitPrefix = PropertiesExtractor.extractIfcUnits(ifcModel)
 
         // transform ifc to osm
         status = ParserStatus.PARSING

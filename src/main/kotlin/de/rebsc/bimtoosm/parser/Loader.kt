@@ -27,6 +27,7 @@ import java.nio.file.Paths
 class Loader {
 
     companion object {
+
         /**
          * Loads ifc file into model
          * @param filepath to ifc file
@@ -41,6 +42,9 @@ class Loader {
                 ifcModel.schemaFile = Paths.get(getIfcSchemaFilepath(filepath))
                 ifcModel.load()
                 inputFs.close()
+                if (ifcModel.instances == null) {
+                    throw BIMtoOSMException("Empty ModelPopulation")
+                }
                 return ifcModel
             } catch (e: Exception) {
                 when (e) {
@@ -64,11 +68,11 @@ class Loader {
                         throw BIMtoOSMException("No IFC schema defined in $filepath")
 
                     // check for IFC2X3 or IFC4
-                    if (line.contains(IFCSchema.FLAG_IFC2X3_TC1.value) || line.contains(IFCSchema.FLAG_IFC2X3.value)) {
-                        return "${System.getProperty("user.dir")}/src/main/resources/${IFCSchema.IFC2X3_TC1.value}.exp"
+                    if (line.contains(IfcSchema.FLAG_IFC2X3_TC1.value) || line.contains(IfcSchema.FLAG_IFC2X3.value)) {
+                        return "${System.getProperty("user.dir")}/src/main/resources/${IfcSchema.IFC2X3_TC1.value}.exp"
                     }
-                    if (line.contains(IFCSchema.FLAG_IFC4.value)) {
-                        return "${System.getProperty("user.dir")}/src/main/resources/${IFCSchema.IFC4.value}.exp"
+                    if (line.contains(IfcSchema.FLAG_IFC4.value)) {
+                        return "${System.getProperty("user.dir")}/src/main/resources/${IfcSchema.IFC4.value}.exp"
                     }
                 }
             }
