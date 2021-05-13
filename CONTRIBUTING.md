@@ -20,7 +20,7 @@ You're welcome to do some refactoring, bug fixing or to improve the parser funct
 * One item per pull request
 * Write meaningful commit messages
 
-## Code Style
+### Code Style
 Please use the xml code style defined in [.idea/codeStyles](https://github.com/rebeccasc/BIMtoOSM/tree/master/.idea/codeStyles)
 
 ## License
