@@ -46,7 +46,7 @@ class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
 
     override fun parse(filepath: String): OSMDataSet {
         // pre-processing
-        if (config.optimizeInput) {
+        if (config.optimizeInput_RBC) {
             status = ParserStatus.PRE_PROCESSING
             // TODO implement
         }
@@ -61,7 +61,7 @@ class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
         // TODO implement
 
         // post-processing
-        if (config.optimizeOutput) {
+        if (config.optimizeOutput_DS) {
             status = ParserStatus.POST_PROCESSING
             // TODO implement
         }

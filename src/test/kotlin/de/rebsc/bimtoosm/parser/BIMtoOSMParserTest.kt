@@ -31,9 +31,9 @@ internal class BIMtoOSMParserTest {
         Assertions.assertThrows(BIMtoOSMException::class.java) {
             val invalidConfig = Configuration(
                 solution = GeometrySolution.BODY,
-                optimizeInput = true,
-                optimizeOutput = false,
-                optimizeOutputMergeDist = -0.1
+                optimizeInput_RBC = true,
+                optimizeOutput_DS = false,
+                optimizeOutput_DSMD = -0.1
             )
             BIMtoOSMParser(invalidConfig)
         }
@@ -42,9 +42,9 @@ internal class BIMtoOSMParserTest {
         Assertions.assertThrows(BIMtoOSMException::class.java) {
             val invalidConfig = Configuration(
                 solution = GeometrySolution.BODY,
-                optimizeInput = false,
-                optimizeOutput = false,
-                optimizeOutputMergeDist = Double.POSITIVE_INFINITY
+                optimizeInput_RBC = false,
+                optimizeOutput_DS = false,
+                optimizeOutput_DSMD = Double.POSITIVE_INFINITY
             )
             BIMtoOSMParser(invalidConfig)
         }
@@ -53,9 +53,9 @@ internal class BIMtoOSMParserTest {
         Assertions.assertDoesNotThrow {
             val validConfig = Configuration(
                 solution = GeometrySolution.BOUNDING_BOX,
-                optimizeInput = true,
-                optimizeOutput = true,
-                optimizeOutputMergeDist = 0.05
+                optimizeInput_RBC = true,
+                optimizeOutput_DS = true,
+                optimizeOutput_DSMD = 0.05
             )
             BIMtoOSMParser(validConfig)
         }

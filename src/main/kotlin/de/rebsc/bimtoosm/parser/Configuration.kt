@@ -25,32 +25,51 @@ import de.rebsc.bimtoosm.geometry.GeometrySolution
  */
 class Configuration() {
 
+    /**
+     * Solution engine
+     */
     var solution: GeometrySolution = GeometrySolution.BOUNDING_BOX
-    var optimizeInput: Boolean = false
-    var optimizeOutput: Boolean = false
-    var optimizeOutputMergeDist: Double = 0.1
 
-    private val exceptionMsg = "Invalid configuration value for param <optimizeOutputMergeDist>"
+    /**
+     * Remove block comments from ifc input file
+     */
+    var optimizeInput_RBC: Boolean = false
+
+    /**
+     * Reduce data size of OSM output
+     */
+    var optimizeOutput_DS: Boolean = false
+
+    /**
+     * Set merge distance for OSM output optimization,
+     * only used if [optimizeOutput_DS] set true
+     */
+    var optimizeOutput_DSMD: Double = 0.1
+
+    /**
+     * Exception message thrown at invalid [optimizeOutput_DSMD] values
+     */
+    private val exceptionMsg = "Invalid configuration value for param [optimizeOutput_DSMD]"
 
     constructor(
         solution: GeometrySolution,
-        optimizeInput: Boolean,
-        optimizeOutput: Boolean,
-        optimizeOutputMergeDist: Double
+        optimizeInput_RBC: Boolean,
+        optimizeOutput_DS: Boolean,
+        optimizeOutput_DSMD: Double
     ) : this() {
         this.solution = solution
-        this.optimizeInput = optimizeInput
-        this.optimizeOutput = optimizeOutput
-        if (optimizeOutputMergeDist.isNaN()) throw BIMtoOSMException(exceptionMsg)
-        if (optimizeOutputMergeDist.isInfinite()) throw BIMtoOSMException(exceptionMsg)
-        if (optimizeOutputMergeDist < 0.0) throw BIMtoOSMException(exceptionMsg)
-        this.optimizeOutputMergeDist = optimizeOutputMergeDist
+        this.optimizeInput_RBC = optimizeInput_RBC
+        this.optimizeOutput_DS = optimizeOutput_DS
+        if (optimizeOutput_DSMD.isNaN()) throw BIMtoOSMException(exceptionMsg)
+        if (optimizeOutput_DSMD.isInfinite()) throw BIMtoOSMException(exceptionMsg)
+        if (optimizeOutput_DSMD < 0.0) throw BIMtoOSMException(exceptionMsg)
+        this.optimizeOutput_DSMD = optimizeOutput_DSMD
     }
 
     override fun toString(): String {
         return "\t SolutionEngine set to $solution\n" +
-                "\t Optimize Input set $optimizeInput\n" +
-                "\t Optimize Output set $optimizeOutput; MergeDistance set to $optimizeOutputMergeDist"
+                "\t Optimize Input set $optimizeInput_RBC\n" +
+                "\t Optimize Output set $optimizeOutput_DS; MergeDistance set to $optimizeOutput_DSMD"
     }
 
 }
