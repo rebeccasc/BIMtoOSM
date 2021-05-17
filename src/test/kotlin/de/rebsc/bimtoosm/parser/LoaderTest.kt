@@ -17,6 +17,7 @@ package de.rebsc.bimtoosm.parser
  * along with this program. If not, see {@literal<http://www.gnu.org/licenses/>}.
  *****************************************************************************/
 
+import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.exception.BIMtoOSMException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
