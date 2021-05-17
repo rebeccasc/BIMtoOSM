@@ -58,11 +58,12 @@ class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
         var ifcFilepath = filepath
 
         // pre-processing
-        if (config.optimizeInput_RBC) {
-            status = ParserStatus.PRE_PROCESSING
-            ifcFilepath = BIMFileOptimizer.removeBlockComments(filepath).absolutePath
-            //TODO remove double linebreaks
-        }
+        status = ParserStatus.PRE_PROCESSING
+        ifcFilepath = BIMFileOptimizer.optimizeIfcFile(
+            filepath,
+            config.optimizeInput_RBC,
+            config.optimizeInput_RBL
+        ).absolutePath
 
         // load into model and extract ifc environment vars
         status = ParserStatus.LOADING
