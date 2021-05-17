@@ -20,6 +20,7 @@ package de.rebsc.bimtoosm.parser
 import de.rebsc.bimtoosm.exception.BIMtoOSMException
 import de.rebsc.bimtoosm.geometry.GeometrySolution
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -66,6 +67,7 @@ internal class BIMtoOSMParserTest {
     }
 
     @Test
+    @Disabled
     fun parseTest() {
         // TODO implement
         val validConfig = Configuration(
