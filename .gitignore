@@ -8,3 +8,4 @@ docs/templates
 /.idea/codeStyles/*
 !/.idea/codeStyles/codeStyleConfig.xml
 !/.idea/codeStyles/Project.xml
+tmp

@@ -19,9 +19,11 @@ package de.rebsc.bimtoosm.parser
 
 import de.rebsc.bimtoosm.api.BIMtoOSM
 import de.rebsc.bimtoosm.data.OSMDataSet
+import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.logger.Logger
 import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
 import kotlin.properties.Delegates
+
 
 class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
 
@@ -59,6 +61,7 @@ class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
         if (config.optimizeInput_RBC) {
             status = ParserStatus.PRE_PROCESSING
             ifcFilepath = BIMFileOptimizer.removeBlockComments(filepath).absolutePath
+            //TODO remove double linebreaks
         }
 
         // load into model and extract ifc environment vars
