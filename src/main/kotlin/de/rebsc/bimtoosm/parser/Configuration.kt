@@ -36,6 +36,11 @@ class Configuration() {
     var optimizeInput_RBC: Boolean = false
 
     /**
+     * Remove blank lines from ifc input file
+     */
+    var optimizeInput_RBL: Boolean = false
+
+    /**
      * Reduce data size of OSM output
      */
     var optimizeOutput_DS: Boolean = false
@@ -54,11 +59,13 @@ class Configuration() {
     constructor(
         solution: GeometrySolution,
         optimizeInput_RBC: Boolean,
+        optimizeInput_RBL: Boolean,
         optimizeOutput_DS: Boolean,
         optimizeOutput_DSMD: Double
     ) : this() {
         this.solution = solution
         this.optimizeInput_RBC = optimizeInput_RBC
+        this.optimizeInput_RBL = optimizeInput_RBL
         this.optimizeOutput_DS = optimizeOutput_DS
         if (optimizeOutput_DSMD.isNaN()) throw BIMtoOSMException(exceptionMsg)
         if (optimizeOutput_DSMD.isInfinite()) throw BIMtoOSMException(exceptionMsg)
@@ -67,9 +74,10 @@ class Configuration() {
     }
 
     override fun toString(): String {
-        return "\t SolutionEngine set to $solution\n" +
-                "\t Optimize Input set $optimizeInput_RBC\n" +
-                "\t Optimize Output set $optimizeOutput_DS; MergeDistance set to $optimizeOutput_DSMD"
+        return "\t <SolutionEngine> set to $solution\n" +
+                "\t Optimize Input <RemoveBlockComments> set to $optimizeInput_RBC\n" +
+                "\t Optimize Input <RemoveBlankLines> set to $optimizeInput_RBL\n" +
+                "\t Optimize Output <DataSize> set $optimizeOutput_DS; <MergeDistance> set to $optimizeOutput_DSMD m"
     }
 
 }
