@@ -47,7 +47,7 @@ internal class LoaderTest {
         //------------ test valid file ------------ //
         // test valid IFC4 file
         Assertions.assertDoesNotThrow {
-            val filepath = "$dir/src/test/resources/test1_IFC4.ifc"
+            val filepath = "$dir/src/test/resources/test1_IFC4_WBL.ifc"
             Loader.loadIntoModel(filepath)
         }
 
