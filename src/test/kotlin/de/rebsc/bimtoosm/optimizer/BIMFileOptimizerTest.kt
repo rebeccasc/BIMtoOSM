@@ -26,30 +26,52 @@ import java.io.File
 internal class BIMFileOptimizerTest {
 
     @Test
-    fun removeBlockCommentsTest() {
+    fun optimizeIfcFile() {
         val dir = System.getProperty("user.dir")
 
+        //------------ test invalid file ------------ //
         // test invalid filepath
         Assertions.assertThrows(BIMtoOSMException::class.java) {
             val filepath = "$dir/src/test/resources/test1_IFC4_.ifc"
-            BIMFileOptimizer.removeBlockComments(filepath)
+            BIMFileOptimizer.optimizeIfcFile(filepath, optimizeInput_RBC = false, optimizeInput_RBL = false)
         }
 
+        //------------ test valid file ------------ //
         // test valid filepath
         Assertions.assertDoesNotThrow {
             val filepath = "$dir/src/test/resources/test1_IFC4.ifc"
-            BIMFileOptimizer.removeBlockComments(filepath)
+            BIMFileOptimizer.optimizeIfcFile(filepath, optimizeInput_RBC = false, optimizeInput_RBL = false)
         }
 
         // test remove block comments
-        val fileOriginal = File("$dir/src/test/resources/test2_IFC2X3_TC1.ifc")
-        val fileWithoutBC = BIMFileOptimizer.removeBlockComments("$dir/src/test/resources/test2_IFC2X3_TC1_BC.ifc")
-        val original = fileOriginal.useLines { it.toList() }
-        val withoutBC = fileWithoutBC.useLines { it.toList() }
+        val fileReferenceBC = File("$dir/src/test/resources/test2_IFC2X3_TC1.ifc")
+        val fileOptimizedBC =
+            BIMFileOptimizer.optimizeIfcFile(
+                "$dir/src/test/resources/test2_IFC2X3_TC1_BC.ifc",
+                optimizeInput_RBC = true,
+                optimizeInput_RBL = false
+            )
+        val referenceBC = fileReferenceBC.useLines { it.toList() }
+        val optimizedBC = fileOptimizedBC.useLines { it.toList() }
         // check if same size
-        Assertions.assertTrue(original.size == withoutBC.size)
+        Assertions.assertTrue(referenceBC.size == optimizedBC.size)
         // check if entries equal
-        Assertions.assertTrue(original.zip(withoutBC).all { (x, y) -> x == y })
+        Assertions.assertTrue(referenceBC.zip(optimizedBC).all { (x, y) -> x == y })
+
+
+        // test remove block comments and blank lines
+        val fileReferenceBL = File("$dir/src/test/resources/test1_IFC4_WBL.ifc")
+        val fileOptimizedBL =
+            BIMFileOptimizer.optimizeIfcFile(
+                "$dir/src/test/resources/test1_IFC4.ifc",
+                optimizeInput_RBC = true,
+                optimizeInput_RBL = true
+            )
+        val referenceBL = fileReferenceBL.useLines { it.toList() }
+        val optimizedBL = fileOptimizedBL.useLines { it.toList() }
+        // check if entries equal
+        Assertions.assertTrue(referenceBL.zip(optimizedBL).all { (x, y) -> x == y })
+
     }
 
 }

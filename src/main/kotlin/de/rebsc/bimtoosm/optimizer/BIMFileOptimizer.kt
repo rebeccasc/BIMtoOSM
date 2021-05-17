@@ -27,21 +27,40 @@ class BIMFileOptimizer {
     companion object {
 
         /**
-         * Removes block comments from ifc file
+         * Optimizes ifc file following the configuration
          * @param filepath to ifc file
+         * @param optimizeInput_RBC true to remove block comments from file
+         * @param optimizeInput_RBL true to remove blank lines from file
          * @return temporary file without block comments
          * @throws BIMtoOSMException if error occurred while reading the file
          */
-        fun removeBlockComments(filepath: String): File {
+        fun optimizeIfcFile(filepath: String, optimizeInput_RBC: Boolean, optimizeInput_RBL: Boolean): File {
+            if (!optimizeInput_RBC && !optimizeInput_RBL) {
+                val original = File(filepath)
+                if (!original.exists()) throw BIMtoOSMException("File not found: $filepath")
+                return File(filepath)
+            }
+
             val tempFile = File.createTempFile("BIMtoOSM_temp", ".ifc")
             tempFile.deleteOnExit()
 
             val optimizedContent = StringBuilder()
             try {
                 File(filepath).forEachLine {
-                    val repLine = it.replace(Regex("/\\*.*?\\*/"), "")
-                        .replace(Regex("\\*/.*?\\*/"), "")
-                    optimizedContent.append(repLine).append("\n")
+                    var optimizedLine = it
+
+                    // remove block comments
+                    if (optimizeInput_RBC) {
+                        optimizedLine = it.replace(Regex("/\\*.*?\\*/"), "")
+                            .replace(Regex("\\*/.*?\\*/"), "")
+                    }
+
+                    // remove blank lines
+                    if (optimizeInput_RBL) {
+                        if (optimizedLine.isEmpty()) return@forEachLine
+                    }
+
+                    optimizedContent.append(optimizedLine).append("\n")
                 }
             } catch (e: FileNotFoundException) {
                 throw BIMtoOSMException("File not found: $filepath")

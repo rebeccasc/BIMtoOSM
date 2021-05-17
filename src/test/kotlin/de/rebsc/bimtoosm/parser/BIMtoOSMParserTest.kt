@@ -21,6 +21,7 @@ import de.rebsc.bimtoosm.exception.BIMtoOSMException
 import de.rebsc.bimtoosm.geometry.GeometrySolution
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.io.File
 
 
 internal class BIMtoOSMParserTest {
@@ -32,6 +33,7 @@ internal class BIMtoOSMParserTest {
             val invalidConfig = Configuration(
                 solution = GeometrySolution.BODY,
                 optimizeInput_RBC = true,
+                optimizeInput_RBL = true,
                 optimizeOutput_DS = false,
                 optimizeOutput_DSMD = -0.1
             )
@@ -43,6 +45,7 @@ internal class BIMtoOSMParserTest {
             val invalidConfig = Configuration(
                 solution = GeometrySolution.BODY,
                 optimizeInput_RBC = false,
+                optimizeInput_RBL = false,
                 optimizeOutput_DS = false,
                 optimizeOutput_DSMD = Double.POSITIVE_INFINITY
             )
@@ -54,6 +57,7 @@ internal class BIMtoOSMParserTest {
             val validConfig = Configuration(
                 solution = GeometrySolution.BOUNDING_BOX,
                 optimizeInput_RBC = true,
+                optimizeInput_RBL = true,
                 optimizeOutput_DS = true,
                 optimizeOutput_DSMD = 0.05
             )
@@ -64,6 +68,15 @@ internal class BIMtoOSMParserTest {
     @Test
     fun parseTest() {
         // TODO implement
+        val validConfig = Configuration(
+            solution = GeometrySolution.BOUNDING_BOX,
+            optimizeInput_RBC = true,
+            optimizeInput_RBL = true,
+            optimizeOutput_DS = true,
+            optimizeOutput_DSMD = 0.05
+        )
+        val dir = System.getProperty("user.dir")
+        BIMtoOSMParser(validConfig).parse("$dir\\src\\test\\resources\\test2_IFC2X3_TC1.ifc")
     }
 
 }
