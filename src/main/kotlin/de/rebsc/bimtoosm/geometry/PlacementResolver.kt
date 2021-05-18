@@ -32,7 +32,14 @@ import org.bimserver.models.ifc2x3tc1.IfcCartesianPoint as Ifc2x3tc1_IfcCartesia
 
 class PlacementResolver {
 
+    /**
+     * Placement cache for ifc4 objects
+     */
     private var placementCacheIfc4: MutableMap<Ifc4_IfcObjectPlacement, Transformation> = HashMap()
+
+    /**
+     * Placement cache for ifc2x3tc1 objects
+     */
     private var placementCacheIfc2x3tc1: MutableMap<Ifc2x3tc1_IfcObjectPlacement, Transformation> = HashMap()
 
     /**
