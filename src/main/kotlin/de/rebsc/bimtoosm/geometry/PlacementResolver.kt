@@ -14,7 +14,6 @@ package de.rebsc.bimtoosm.geometry
  *  - uses de.rebsc.bimtoosm.utils.math instead of javax.vecmath
  *****************************************************************************/
 
-
 import de.rebsc.bimtoosm.utils.math.Matrix3D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import de.rebsc.bimtoosm.utils.math.Vector3D
@@ -28,7 +27,6 @@ import org.bimserver.models.ifc2x3tc1.IfcObjectPlacement as Ifc2x3tc1_IfcObjectP
 import org.bimserver.models.ifc2x3tc1.IfcAxis2Placement2D as Ifc2x3tc1_IfcAxis2Placement2D
 import org.bimserver.models.ifc2x3tc1.IfcAxis2Placement3D as Ifc2x3tc1_IfcAxis2Placement3D
 import org.bimserver.models.ifc2x3tc1.IfcCartesianPoint as Ifc2x3tc1_IfcCartesianPoint
-
 
 class PlacementResolver {
 

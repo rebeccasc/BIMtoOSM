@@ -1,20 +1,5 @@
 package de.rebsc.bimtoosm.geometry
 
-import de.rebsc.bimtoosm.data.OSMDataSet
-import de.rebsc.bimtoosm.parser.IfcUnitPrefix
-import org.bimserver.emf.IfcModelInterface
-import org.bimserver.emf.Schema
-import org.bimserver.models.ifc4.IfcWall as Ifc4_IfcWall
-import org.bimserver.models.ifc4.IfcSlab as Ifc4_IfcSlab
-import org.bimserver.models.ifc4.IfcColumn as Ifc4_IfcColumn
-import org.bimserver.models.ifc4.IfcDoor as Ifc4_IfcDoor
-import org.bimserver.models.ifc4.IfcStair as Ifc4_IfcStair
-import org.bimserver.models.ifc2x3tc1.IfcWall as Ifc2x3tc1_IfcWall
-import org.bimserver.models.ifc2x3tc1.IfcSlab as Ifc2x3tc1_IfcSlab
-import org.bimserver.models.ifc2x3tc1.IfcColumn as Ifc2x3tc1_IfcColumn
-import org.bimserver.models.ifc2x3tc1.IfcDoor as Ifc2x3tc1_IfcDoor
-import org.bimserver.models.ifc2x3tc1.IfcStair as Ifc2x3tc1_IfcStair
-
 /******************************************************************************
  * Copyright (C) 2021  de.rebsc
  *
@@ -31,6 +16,22 @@ import org.bimserver.models.ifc2x3tc1.IfcStair as Ifc2x3tc1_IfcStair
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see {@literal<http://www.gnu.org/licenses/>}.
  *****************************************************************************/
+
+import de.rebsc.bimtoosm.data.OSMDataSet
+import de.rebsc.bimtoosm.parser.IfcUnitPrefix
+import org.bimserver.emf.IfcModelInterface
+import org.bimserver.emf.Schema
+import org.bimserver.models.ifc4.IfcWall as Ifc4_IfcWall
+import org.bimserver.models.ifc4.IfcSlab as Ifc4_IfcSlab
+import org.bimserver.models.ifc4.IfcColumn as Ifc4_IfcColumn
+import org.bimserver.models.ifc4.IfcDoor as Ifc4_IfcDoor
+import org.bimserver.models.ifc4.IfcStair as Ifc4_IfcStair
+import org.bimserver.models.ifc2x3tc1.IfcWall as Ifc2x3tc1_IfcWall
+import org.bimserver.models.ifc2x3tc1.IfcSlab as Ifc2x3tc1_IfcSlab
+import org.bimserver.models.ifc2x3tc1.IfcColumn as Ifc2x3tc1_IfcColumn
+import org.bimserver.models.ifc2x3tc1.IfcDoor as Ifc2x3tc1_IfcDoor
+import org.bimserver.models.ifc2x3tc1.IfcStair as Ifc2x3tc1_IfcStair
+
 
 class GeometryEngine(val solution: GeometrySolution) {
 
