@@ -18,7 +18,7 @@ package de.rebsc.bimtoosm.parser
  *****************************************************************************/
 
 import de.rebsc.bimtoosm.api.BIMtoOSM
-import de.rebsc.bimtoosm.data.OSMDataSet
+import de.rebsc.bimtoosm.data.osm.OSMDataSet
 import de.rebsc.bimtoosm.geometry.GeometryEngine
 import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.logger.Logger

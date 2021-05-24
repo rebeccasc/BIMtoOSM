@@ -17,7 +17,7 @@ package de.rebsc.bimtoosm.api
  * along with this program. If not, see {@literal<http://www.gnu.org/licenses/>}.
  *****************************************************************************/
 
-import de.rebsc.bimtoosm.data.OSMDataSet
+import de.rebsc.bimtoosm.data.osm.OSMDataSet
 import de.rebsc.bimtoosm.parser.Configuration
 
 interface BIMtoOSM {

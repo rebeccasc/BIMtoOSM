@@ -1,4 +1,4 @@
-package de.rebsc.bimtoosm.data
+package de.rebsc.bimtoosm.utils.math
 
 /******************************************************************************
  * Copyright (C) 2021  de.rebsc
@@ -14,9 +14,7 @@ package de.rebsc.bimtoosm.data
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see {@literal<http://www.gnu.org/licenses/>}.
- *****************************************************************************/
+ * along with this program. If not, see {@literal<http:></http:>//www.gnu.org/licenses/>}.
+ */
 
-class BIMDataSet {
-    // this might be a data class
-}
+data class Point2D(val x: Double, val y: Double)
