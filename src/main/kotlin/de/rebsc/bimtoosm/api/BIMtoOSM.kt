@@ -24,17 +24,26 @@ interface BIMtoOSM {
 
     /**
      * Configure the parser
+     * @param config Parser configuration
      */
     fun configure(config: Configuration)
 
     /**
      * Parse BIM file placed at [filepath] to OSM data
+     * @param filepath BIM file
      */
     fun parse(filepath: String): OSMDataSet
 
     /**
-     * Gives information about current ParserStatus
+     * Gives information about current parser status
      */
     fun status(): String
+
+    /**
+     * Export data to .osm file located at [filepath]
+     * @param filepath to export location
+     * @param data [OSMDataSet] to export
+     */
+    fun export(filepath: String, data: OSMDataSet)
 
 }

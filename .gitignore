@@ -9,3 +9,4 @@ docs/templates
 !/.idea/codeStyles/codeStyleConfig.xml
 !/.idea/codeStyles/Project.xml
 tmp
+src/test/output

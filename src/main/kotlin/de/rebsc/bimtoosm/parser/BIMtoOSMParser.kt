@@ -19,6 +19,7 @@ package de.rebsc.bimtoosm.parser
 
 import de.rebsc.bimtoosm.api.BIMtoOSM
 import de.rebsc.bimtoosm.data.osm.OSMDataSet
+import de.rebsc.bimtoosm.export.Exporter
 import de.rebsc.bimtoosm.geometry.GeometryEngine
 import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.logger.Logger
@@ -87,5 +88,8 @@ class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
         return status.toString()
     }
 
+    override fun export(filepath: String, data: OSMDataSet) {
+        Exporter.exportOSM(filepath, data)
+    }
 
 }
