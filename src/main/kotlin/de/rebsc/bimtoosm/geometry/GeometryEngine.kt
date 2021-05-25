@@ -33,7 +33,15 @@ import org.bimserver.models.ifc2x3tc1.IfcDoor as Ifc2x3tc1_IfcDoor
 import org.bimserver.models.ifc2x3tc1.IfcStair as Ifc2x3tc1_IfcStair
 
 
-class GeometryEngine(val solution: GeometrySolution) {
+/**
+ * Geometry engine solutions
+ */
+enum class GeometrySolution {
+
+    BODY, BOUNDING_BOX
+}
+
+class GeometryEngine(private val solution: GeometrySolution) {
 
     /**
      * Transform each object in [model] into OSM object and put it into [OSMDataSet]
