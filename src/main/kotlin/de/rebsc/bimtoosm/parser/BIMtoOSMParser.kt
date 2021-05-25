@@ -89,7 +89,7 @@ class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
     }
 
     override fun export(filepath: String, data: OSMDataSet) {
-        Exporter.exportOSM(filepath, data)
+        Exporter.exportOSM(filepath, data, addTimestamp = true)
     }
 
 }
