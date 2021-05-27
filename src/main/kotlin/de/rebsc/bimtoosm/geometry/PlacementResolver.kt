@@ -33,12 +33,12 @@ class PlacementResolver {
     /**
      * Placement cache for ifc4 objects
      */
-    private var placementCacheIfc4: MutableMap<Ifc4_IfcObjectPlacement, Transformation> = HashMap()
+    var placementCacheIfc4: MutableMap<Ifc4_IfcObjectPlacement, Transformation> = HashMap()
 
     /**
      * Placement cache for ifc2x3tc1 objects
      */
-    private var placementCacheIfc2x3tc1: MutableMap<Ifc2x3tc1_IfcObjectPlacement, Transformation> = HashMap()
+    var placementCacheIfc2x3tc1: MutableMap<Ifc2x3tc1_IfcObjectPlacement, Transformation> = HashMap()
 
     /**
      * Resolve placement for ifc4 IfcObjectPlacement
@@ -128,7 +128,7 @@ class PlacementResolver {
         return getTransformation(location, xAxis, zAxis)
     }
 
-    private fun getTransform(placement: Ifc4_IfcAxis2Placement3D?): Transformation {
+    fun getTransform(placement: Ifc4_IfcAxis2Placement3D?): Transformation {
         if (placement == null) return getIdentityTransform()
         val location =
             if (placement.location != null) vectorFor(placement.location.coordinates) else Vector3D(
@@ -156,9 +156,12 @@ class PlacementResolver {
                 0.0,
                 0.0
             ) // should never be null
-        val refDirection = if (placement.refDirection != null) vectorFor(
-            placement.refDirection.directionRatios
-        ) else Vector3D(1.0, 0.0, 0.0)
+        val refDirection =
+            if (placement.refDirection != null) vectorFor(placement.refDirection.directionRatios) else Vector3D(
+                1.0,
+                0.0,
+                0.0
+            )
         val zAxis = if (placement.axis != null) vectorFor(placement.axis.directionRatios) else Vector3D(
             0.0,
             0.0,
@@ -219,13 +222,13 @@ class PlacementResolver {
         )
     }
 
-    private fun getAbsolutePoint(placement: Transformation, x: Double, y: Double, z: Double): Point3D {
+    fun getAbsolutePoint(placement: Transformation, x: Double, y: Double, z: Double): Point3D {
         val absolutePt = Point3D(x, y, z)
         getAbsolutePoint(placement, absolutePt)
         return absolutePt
     }
 
-    private fun getAbsolutePoint(placement: Transformation, absolutePt: Point3D): Point3D {
+    fun getAbsolutePoint(placement: Transformation, absolutePt: Point3D): Point3D {
         val inverse = Matrix3D(placement.rotation) // TODO: do this once for placement only?
         inverse.invert()
         inverse.transform(absolutePt) // changes absolutePt [sic]
