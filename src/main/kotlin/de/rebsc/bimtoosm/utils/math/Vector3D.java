@@ -112,10 +112,10 @@ public class Vector3D {
      * @param vector to normalize and use as source for this vector
      */
     public void normalize(Vector3D vector) {
-        double n = 1.0 / Math.sqrt(Math.pow(vector.x, 2.0) + Math.pow(vector.y, 2.0) + Math.pow(vector.z, 2.0));
-        this.x *= n;
-        this.y *= n;
-        this.z *= n;
+        double norm = 1.0 / Math.sqrt(Math.pow(vector.x, 2.0) + Math.pow(vector.y, 2.0) + Math.pow(vector.z, 2.0));
+        this.x = vector.x * norm;
+        this.y = vector.y * norm;
+        this.z = vector.z * norm;
     }
 
     /**
@@ -125,9 +125,12 @@ public class Vector3D {
      * @param vector2 second vector
      */
     public void cross(Vector3D vector1, Vector3D vector2) {
-        this.x = vector1.y * vector2.z - vector1.z * vector2.y;
-        this.y = vector2.x * vector1.z - vector2.z * vector1.x;
+        double x = vector1.y * vector2.z - vector1.z * vector2.y;
+        double y = vector2.x * vector1.z - vector2.z * vector1.x;
+
         this.z = vector1.x * vector2.y - vector1.y * vector2.x;
+        this.x = x;
+        this.y = y;
     }
 
     /**
