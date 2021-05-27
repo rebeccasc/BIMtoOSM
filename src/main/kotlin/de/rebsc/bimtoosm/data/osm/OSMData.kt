@@ -22,9 +22,21 @@ import de.rebsc.bimtoosm.utils.math.Point2D
 /**
  * Data set holding nodes and ways
  */
-data class OSMDataSet(val nodes: List<OSMNode>, val ways: List<OSMWay>) {
+class OSMDataSet(val nodes: ArrayList<OSMNode>, val ways: ArrayList<OSMWay>) {
 
     constructor() : this(ArrayList<OSMNode>(), ArrayList<OSMWay>())
+
+    fun addNodes(nodes: List<OSMNode>) {
+        this.nodes.addAll(nodes)
+    }
+
+    fun addWays(ways: List<OSMWay>) {
+        this.ways.addAll(ways)
+    }
+
+    fun addWay(way: OSMWay) {
+        ways.add(way)
+    }
 }
 
 /**
@@ -39,8 +51,9 @@ data class OSMNode(val id: Int, val x: Double, val y: Double, val tags: List<OSM
 /**
  * Way holding nodes and tags
  */
-data class OSMWay(val id: Int, val points: List<OSMNode>, val tags: List<OSMTag>) {
+data class OSMWay(val id: Int, val points: ArrayList<OSMNode>, val tags: ArrayList<OSMTag>) {
 
+    constructor(id: Int, nodes: ArrayList<OSMNode>) : this(id, nodes, ArrayList<OSMTag>())
     constructor(id: Int) : this(id, ArrayList<OSMNode>(), ArrayList<OSMTag>())
 }
 
