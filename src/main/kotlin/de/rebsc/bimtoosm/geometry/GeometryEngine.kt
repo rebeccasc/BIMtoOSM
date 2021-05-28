@@ -21,6 +21,7 @@ import de.rebsc.bimtoosm.data.osm.OSMDataSet
 import de.rebsc.bimtoosm.data.osm.OSMNode
 import de.rebsc.bimtoosm.data.osm.OSMWay
 import de.rebsc.bimtoosm.parser.IfcUnitPrefix
+import de.rebsc.bimtoosm.utils.IdGenerator
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import org.bimserver.emf.IfcModelInterface
@@ -121,8 +122,6 @@ class GeometryEngine(private val solution: GeometrySolution) {
         val osmDataSet = OSMDataSet()
 
         // transform geometry
-        // TODO get proper UUID
-        var id = -1
         geometryResolver.geometryCacheIfc4.forEach { representation ->
             // find placement connected to representation
             val connectorPlacements =
@@ -136,12 +135,12 @@ class GeometryEngine(private val solution: GeometrySolution) {
             representation.value.forEach { point ->
                 val absolutePoint =
                     placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
+                val id = IdGenerator.createUUID(allowNegative = true)
                 osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y)))
-                --id
             }
             osmDataSet.addNodes(osmNodeList)
+            val id = IdGenerator.createUUID(allowNegative = true)
             osmDataSet.addWay(OSMWay(id, osmNodeList))
-            --id
         }
 
         // TODO same for Ifc2x3tc1

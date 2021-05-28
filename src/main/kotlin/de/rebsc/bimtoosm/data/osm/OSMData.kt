@@ -42,19 +42,19 @@ class OSMDataSet(val nodes: ArrayList<OSMNode>, val ways: ArrayList<OSMWay>) {
 /**
  * Node holding coordinates and tags
  */
-data class OSMNode(val id: Int, val x: Double, val y: Double, val tags: List<OSMTag>) {
+data class OSMNode(val id: Long, val x: Double, val y: Double, val tags: List<OSMTag>) {
 
-    constructor(id: Int, point: Point2D, tags: List<OSMTag>) : this(id, point.x, point.y, tags)
-    constructor(id: Int, point: Point2D) : this(id, point.x, point.y, ArrayList<OSMTag>())
+    constructor(id: Long, point: Point2D, tags: List<OSMTag>) : this(id, point.x, point.y, tags)
+    constructor(id: Long, point: Point2D) : this(id, point.x, point.y, ArrayList<OSMTag>())
 }
 
 /**
  * Way holding nodes and tags
  */
-data class OSMWay(val id: Int, val points: ArrayList<OSMNode>, val tags: ArrayList<OSMTag>) {
+data class OSMWay(val id: Long, val points: ArrayList<OSMNode>, val tags: ArrayList<OSMTag>) {
 
-    constructor(id: Int, nodes: ArrayList<OSMNode>) : this(id, nodes, ArrayList<OSMTag>())
-    constructor(id: Int) : this(id, ArrayList<OSMNode>(), ArrayList<OSMTag>())
+    constructor(id: Long, nodes: ArrayList<OSMNode>) : this(id, nodes, ArrayList<OSMTag>())
+    constructor(id: Long) : this(id, ArrayList<OSMNode>(), ArrayList<OSMTag>())
 }
 
 /**
