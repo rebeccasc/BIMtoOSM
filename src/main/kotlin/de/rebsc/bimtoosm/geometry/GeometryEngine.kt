@@ -31,11 +31,15 @@ import org.bimserver.models.ifc2x3tc1.IfcDoor as Ifc2x3tc1_IfcDoor
 import org.bimserver.models.ifc2x3tc1.IfcSlab as Ifc2x3tc1_IfcSlab
 import org.bimserver.models.ifc2x3tc1.IfcStair as Ifc2x3tc1_IfcStair
 import org.bimserver.models.ifc2x3tc1.IfcWall as Ifc2x3tc1_IfcWall
+import org.bimserver.models.ifc2x3tc1.IfcWindow as Ifc2x3tc1_IfcWindow
+import org.bimserver.models.ifc2x3tc1.IfcSlabTypeEnum as Ifc2x3tc1_IfcSlabTypeEnum
 import org.bimserver.models.ifc4.IfcColumn as Ifc4_IfcColumn
 import org.bimserver.models.ifc4.IfcDoor as Ifc4_IfcDoor
 import org.bimserver.models.ifc4.IfcSlab as Ifc4_IfcSlab
 import org.bimserver.models.ifc4.IfcStair as Ifc4_IfcStair
 import org.bimserver.models.ifc4.IfcWall as Ifc4_IfcWall
+import org.bimserver.models.ifc4.IfcWindow as Ifc4_IfcWindow
+import org.bimserver.models.ifc4.IfcSlabTypeEnum as Ifc4_IfcSlabTypeEnum
 
 
 /**
@@ -87,6 +91,11 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 placementResolver.resolvePlacement(door.objectPlacement)
                 geometryResolver.resolveDoor(door.representation)
             }
+            model.getAllWithSubTypes(Ifc4_IfcWindow::class.java).forEach { window ->
+                connector[window.objectPlacement.expressId] = window.representation.expressId
+                placementResolver.resolvePlacement(window.objectPlacement)
+                geometryResolver.resolveWindow(window.representation)
+            }
             model.getAllWithSubTypes(Ifc4_IfcStair::class.java).forEach { stair ->
                 connector[stair.objectPlacement.expressId] = stair.representation.expressId
                 placementResolver.resolvePlacement(stair.objectPlacement)
@@ -116,6 +125,11 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 connector[door.objectPlacement.expressId] = door.representation.expressId
                 placementResolver.resolvePlacement(door.objectPlacement)
                 geometryResolver.resolveDoor(door.representation)
+            }
+            model.getAllWithSubTypes(Ifc2x3tc1_IfcWindow::class.java).forEach { window ->
+                connector[window.objectPlacement.expressId] = window.representation.expressId
+                placementResolver.resolvePlacement(window.objectPlacement)
+                geometryResolver.resolveWindow(window.representation)
             }
             model.getAllWithSubTypes(Ifc2x3tc1_IfcStair::class.java).forEach { stair ->
                 connector[stair.objectPlacement.expressId] = stair.representation.expressId
