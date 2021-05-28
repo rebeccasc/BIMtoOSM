@@ -70,8 +70,10 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 geometryResolver.resolveWall(wall.representation)
             }
             model.getAllWithSubTypes(Ifc4_IfcSlab::class.java).forEach { slab ->
-                connector[slab.objectPlacement.expressId] = slab.representation.expressId
+                // skip roofs
+                if (slab.predefinedType == Ifc4_IfcSlabTypeEnum.ROOF) return@forEach
 
+                connector[slab.objectPlacement.expressId] = slab.representation.expressId
                 placementResolver.resolvePlacement(slab.objectPlacement)
                 geometryResolver.resolveSlab(slab.representation)
             }
@@ -98,6 +100,9 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 geometryResolver.resolveWall(wall.representation)
             }
             model.getAllWithSubTypes(Ifc2x3tc1_IfcSlab::class.java).forEach { slab ->
+                // skip roofs
+                if (slab.predefinedType == Ifc2x3tc1_IfcSlabTypeEnum.ROOF) return@forEach
+
                 connector[slab.objectPlacement.expressId] = slab.representation.expressId
                 placementResolver.resolvePlacement(slab.objectPlacement)
                 geometryResolver.resolveSlab(slab.representation)
