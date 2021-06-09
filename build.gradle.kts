@@ -38,6 +38,7 @@ dependencies {
     api(group = "org.slf4j", name = "slf4j-api", version = "1.7.25")
     api(group = "org.slf4j", name = "slf4j-simple", version = "1.7.25")
     implementation(group = "org.opensourcebim", name = "ifcplugins", version = "0.0.99")
+    implementation(group="org.locationtech.jts", name="jts-core", version="1.18.1")
 
     // tests
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.2.0")
