@@ -37,6 +37,21 @@ class OSMDataSet(val nodes: ArrayList<OSMNode>, val ways: ArrayList<OSMWay>) {
     fun addWay(way: OSMWay) {
         ways.add(way)
     }
+
+    fun copy(): OSMDataSet {
+        val copy = OSMDataSet()
+        val nodesCopy = ArrayList<OSMNode>()
+        val waysCopy = ArrayList<OSMWay>()
+        this.nodes.forEach { node -> nodesCopy.add(OSMNode(node.id, node.x, node.y, node.tags)) }
+        this.ways.forEach { way ->
+            val nodesOfWayCopy = ArrayList<OSMNode>()
+            way.points.forEach { point -> nodesOfWayCopy.add(OSMNode(point.id, point.x, point.y, point.tags)) }
+            waysCopy.add(OSMWay(way.id, nodesOfWayCopy, way.tags))
+        }
+        copy.addNodes(nodesCopy)
+        copy.addWays(waysCopy)
+        return copy
+    }
 }
 
 /**
