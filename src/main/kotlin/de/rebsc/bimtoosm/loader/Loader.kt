@@ -23,14 +23,18 @@ import org.bimserver.emf.IfcModelInterface
 import org.bimserver.emf.PackageMetaData
 import org.bimserver.emf.Schema
 import org.bimserver.ifc.step.deserializer.DetectIfcVersion
+import org.bimserver.ifc.step.deserializer.Ifc2x3tc1StepDeserializer
 import org.bimserver.ifc.step.deserializer.Ifc4StepDeserializer
+import org.bimserver.ifc.step.deserializer.IfcStepDeserializer
 import org.bimserver.models.ifc2x3tc1.Ifc2x3tc1Package
 import org.bimserver.models.ifc4.Ifc4Package
+import org.bimserver.utils.DeserializerUtils
 import org.eclipse.emf.ecore.EPackage
-import java.io.*
+import java.io.FileNotFoundException
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import java.nio.file.Paths
+
 
 class Loader {
 
@@ -53,26 +57,28 @@ class Loader {
 
                 var schema = Schema.IFC2X3TC1   // default
                 var ePackage: EPackage = Ifc2x3tc1Package.eINSTANCE // default
+                var deserializer: IfcStepDeserializer? = null
                 when (schemaString) {
                     Schema.IFC4.headerName -> {
                         schema = Schema.IFC4
                         ePackage = Ifc4Package.eINSTANCE
+                        deserializer = Ifc4StepDeserializer(schema)
                     }
                     Schema.IFC2X3TC1.headerName -> {
                         schema = Schema.IFC2X3TC1
                         ePackage = Ifc2x3tc1Package.eINSTANCE
+                        deserializer = Ifc2x3tc1StepDeserializer()
                     }
                 }
 
+                if (deserializer == null) throw BIMtoOSMException("Empty deserializer object")
+
                 // deserialize
                 // for now use more stable deprecated IFc4StepDeserializer instead of Ifc4StepStreamingDeserializer
-                val deserializer = Ifc4StepDeserializer(schema)
                 val packageMetaData = PackageMetaData(ePackage, schema, Paths.get("tmp"))
                 deserializer.init(packageMetaData)
-                val openStream = File(filepath).inputStream()
-                val baos = ByteArrayOutputStream()
-                IOUtils.copy(openStream, baos)
-                val model = deserializer.read(ByteArrayInputStream(baos.toByteArray()), "", baos.size().toLong(), null)
+
+                val model = DeserializerUtils.readFromFile(deserializer, Paths.get(filepath))
 
                 if (!model.isValid) {
                     throw BIMtoOSMException("Ifc model invalid")
@@ -81,7 +87,6 @@ class Loader {
                     throw BIMtoOSMException("Ifc model empty")
                 }
 
-                openStream.close()
                 return model
             } catch (e: Exception) {
                 when (e) {
