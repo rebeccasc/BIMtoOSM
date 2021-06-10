@@ -30,14 +30,13 @@ val parser = BIMtoOSMParser(config)
 // Parse BIM file
 val osmData: OSMDataSet = parser.parse("path\\to\\file.ifc")
 
-// Access the data
+// Access the data (full description see wiki -> Usage)
 // example: get all Ways
-val allWays: List<OSMWay> = osmData.ways
+val ways: ArrayList<OSMWay> = osmData.ways
 // example: get id, nodes and tags from first way in data set
-val id: Long = osmData.ways[0].id
-val nodes: ArrayList<OSMNode> = osmData.ways[0].nodes
-val tags: ArrayList<OSMTag> = osmData.ways[0].tags
-// for full description see wiki -> Usage
+val id: Long = ways[0].id
+val nodes: ArrayList<OSMNode> = ways[0].nodes
+val tags: ArrayList<OSMTag> = ways[0].tags
 
 // Export OSM data
 Exporter.exportOSM("path\\to\output.osm", osmData, true)
