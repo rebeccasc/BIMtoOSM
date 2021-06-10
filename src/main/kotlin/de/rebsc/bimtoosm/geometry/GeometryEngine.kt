@@ -74,9 +74,7 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 geometryResolver.resolveWall(wall.representation)
             }
             model.getAllWithSubTypes(Ifc4_IfcSlab::class.java).forEach { slab ->
-                // skip roofs
-                if (slab.predefinedType == Ifc4_IfcSlabTypeEnum.ROOF) return@forEach
-
+                if (slab.predefinedType == Ifc4_IfcSlabTypeEnum.ROOF) return@forEach           // skip roofs
                 connector[slab.objectPlacement.expressId] = slab.representation.expressId
                 placementResolver.resolvePlacement(slab.objectPlacement)
                 geometryResolver.resolveSlab(slab.representation)
@@ -109,9 +107,7 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 geometryResolver.resolveWall(wall.representation)
             }
             model.getAllWithSubTypes(Ifc2x3tc1_IfcSlab::class.java).forEach { slab ->
-                // skip roofs
-                if (slab.predefinedType == Ifc2x3tc1_IfcSlabTypeEnum.ROOF) return@forEach
-
+                if (slab.predefinedType == Ifc2x3tc1_IfcSlabTypeEnum.ROOF) return@forEach      // skip roofs
                 connector[slab.objectPlacement.expressId] = slab.representation.expressId
                 placementResolver.resolvePlacement(slab.objectPlacement)
                 geometryResolver.resolveSlab(slab.representation)
@@ -140,7 +136,7 @@ class GeometryEngine(private val solution: GeometrySolution) {
 
         val osmDataSet = OSMDataSet()
 
-        // transform geometry
+        // transform geometry ifc4
         geometryResolver.geometryCacheIfc4.forEach { representation ->
             // find placement connected to representation
             val connectorPlacements =
@@ -162,8 +158,27 @@ class GeometryEngine(private val solution: GeometrySolution) {
             osmDataSet.addWay(OSMWay(id, osmNodeList))
         }
 
-        // TODO same for Ifc2x3tc1
+        // transform geometry ifc2x3tc1
+        geometryResolver.geometryCacheIfc2x3tc1.forEach { representation ->
+            // find placement connected to representation
+            val connectorPlacements =
+                connector.filterValues { it == representation.key.productRepresentation.expressId }
+            val connectorPlacementKey = connectorPlacements.entries.first().key
+            val placements = placementResolver.placementCacheIfc4.filterKeys { it.expressId == connectorPlacementKey }
+            val placement = placements.entries.first()
 
+            // transform representation using placement
+            val osmNodeList = ArrayList<OSMNode>()
+            representation.value.forEach { point ->
+                val absolutePoint =
+                    placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
+                val id = IdGenerator.createUUID(allowNegative = true)
+                osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y)))
+            }
+            osmDataSet.addNodes(osmNodeList)
+            val id = IdGenerator.createUUID(allowNegative = true)
+            osmDataSet.addWay(OSMWay(id, osmNodeList))
+        }
 
         return osmDataSet
     }

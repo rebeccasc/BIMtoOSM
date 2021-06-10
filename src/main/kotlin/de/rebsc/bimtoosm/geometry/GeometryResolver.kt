@@ -28,8 +28,15 @@ import org.bimserver.models.ifc4.IfcMaterialDefinitionRepresentation as Ifc4_Ifc
 import org.bimserver.models.ifc4.IfcProductDefinitionShape as Ifc4_IfcProductDefinitionShape
 import org.bimserver.models.ifc4.IfcProductRepresentation as Ifc4_IfcProductRepresentation
 import org.bimserver.models.ifc4.IfcRepresentation as Ifc4_IfcRepresentation
+import org.bimserver.models.ifc2x3tc1.IfcBoundingBox as Ifc2x3tc1_IfcBoundingBox
+import org.bimserver.models.ifc2x3tc1.IfcMappedItem as Ifc2x3tc1_IfcMappedItem
+import org.bimserver.models.ifc2x3tc1.IfcStyledItem as Ifc2x3tc1_IfcStyledItem
+import org.bimserver.models.ifc2x3tc1.IfcGeometricRepresentationItem as Ifc2x3tc1_IfcGeometricRepresentationItem
 import org.bimserver.models.ifc2x3tc1.IfcRepresentation as Ifc2x3tc1_IfcRepresentation
+import org.bimserver.models.ifc2x3tc1.IfcProductDefinitionShape as Ifc2x3tc1_IfcProductDefinitionShape
 import org.bimserver.models.ifc2x3tc1.IfcProductRepresentation as Ifc2x3tc1_IfcProductRepresentation
+import org.bimserver.models.ifc2x3tc1.IfcMaterialDefinitionRepresentation as Ifc2x3tc1_IfcMaterialDefinitionRepresentation
+
 
 class GeometryResolver(private val solution: GeometrySolution) {
 
@@ -80,10 +87,46 @@ class GeometryResolver(private val solution: GeometrySolution) {
         }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc2x3tc1]
+     * @param productRepresentation of wall object
+     */
     fun resolveWall(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
-        // TODO implement
+        // shape representation
+        if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
+            var itemProcessed = false
+            productRepresentation.representations.forEach { rep ->
+                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
+                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                        resolveBoundingBox(rep)
+                    itemProcessed = true
+                    return@forEach
+                }
+                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
+                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
+                    // TODO implement
+                    itemProcessed = true
+                }
+            }
+
+            // TODO if applied solution not available use default: Bounding Box
+            if (!itemProcessed) {
+                throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
+            }
+            return
+        }
+
+        // material representation
+        if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
+            logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
+            // TODO implement
+        }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc4]
+     * @param productRepresentation of slab object
+     */
     fun resolveSlab(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
@@ -115,10 +158,46 @@ class GeometryResolver(private val solution: GeometrySolution) {
         }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc2x3tc1]
+     * @param productRepresentation of slab object
+     */
     fun resolveSlab(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
-        // TODO implement
+        // shape representation
+        if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
+            var itemProcessed = false
+            productRepresentation.representations.forEach { rep ->
+                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
+                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                        resolveBoundingBox(rep)
+                    itemProcessed = true
+                    return@forEach
+                }
+                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
+                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
+                    // TODO implement
+                    itemProcessed = true
+                }
+            }
+
+            // TODO if applied solution not available use default: Bounding Box
+            if (!itemProcessed) {
+                throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
+            }
+            return
+        }
+
+        // material representation
+        if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
+            logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
+            // TODO implement
+        }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc4]
+     * @param productRepresentation of column object
+     */
     fun resolveColumn(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
@@ -150,10 +229,46 @@ class GeometryResolver(private val solution: GeometrySolution) {
         }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc2x3tc1]
+     * @param productRepresentation of column object
+     */
     fun resolveColumn(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
-        // TODO implement
+        // shape representation
+        if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
+            var itemProcessed = false
+            productRepresentation.representations.forEach { rep ->
+                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
+                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                        resolveBoundingBox(rep)
+                    itemProcessed = true
+                    return@forEach
+                }
+                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
+                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
+                    // TODO implement
+                    itemProcessed = true
+                }
+            }
+
+            // TODO if applied solution not available use default: Bounding Box
+            if (!itemProcessed) {
+                throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
+            }
+            return
+        }
+
+        // material representation
+        if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
+            logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
+            // TODO implement
+        }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc4]
+     * @param productRepresentation of door object
+     */
     fun resolveDoor(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
@@ -185,10 +300,46 @@ class GeometryResolver(private val solution: GeometrySolution) {
         }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc2x3tc1]
+     * @param productRepresentation of door object
+     */
     fun resolveDoor(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
-        // TODO implement
+        // shape representation
+        if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
+            var itemProcessed = false
+            productRepresentation.representations.forEach { rep ->
+                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
+                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                        resolveBoundingBox(rep)
+                    itemProcessed = true
+                    return@forEach
+                }
+                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
+                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
+                    // TODO implement
+                    itemProcessed = true
+                }
+            }
+
+            // TODO if applied solution not available use default: Bounding Box
+            if (!itemProcessed) {
+                throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
+            }
+            return
+        }
+
+        // material representation
+        if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
+            logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
+            // TODO implement
+        }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc4]
+     * @param productRepresentation of window object
+     */
     fun resolveWindow(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
@@ -220,10 +371,46 @@ class GeometryResolver(private val solution: GeometrySolution) {
         }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc2x3tc1]
+     * @param productRepresentation of window object
+     */
     fun resolveWindow(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
-        // TODO implement
+        // shape representation
+        if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
+            var itemProcessed = false
+            productRepresentation.representations.forEach { rep ->
+                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
+                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                        resolveBoundingBox(rep)
+                    itemProcessed = true
+                    return@forEach
+                }
+                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
+                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
+                    // TODO implement
+                    itemProcessed = true
+                }
+            }
+
+            // TODO if applied solution not available use default: Bounding Box
+            if (!itemProcessed) {
+                throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
+            }
+            return
+        }
+
+        // material representation
+        if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
+            logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
+            // TODO implement
+        }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc4]
+     * @param productRepresentation of stair object
+     */
     fun resolveStair(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
@@ -255,8 +442,40 @@ class GeometryResolver(private val solution: GeometrySolution) {
         }
     }
 
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc2x3tc1]
+     * @param productRepresentation of stair object
+     */
     fun resolveStair(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
-        // TODO implement
+        // shape representation
+        if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
+            var itemProcessed = false
+            productRepresentation.representations.forEach { rep ->
+                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
+                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                        resolveBoundingBox(rep)
+                    itemProcessed = true
+                    return@forEach
+                }
+                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
+                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
+                    // TODO implement
+                    itemProcessed = true
+                }
+            }
+
+            // TODO if applied solution not available use default: Bounding Box
+            if (!itemProcessed) {
+                throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
+            }
+            return
+        }
+
+        // material representation
+        if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
+            logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
+            // TODO implement
+        }
     }
 
     /**
@@ -285,6 +504,40 @@ class GeometryResolver(private val solution: GeometrySolution) {
                 // TODO implement
             }
             if (item is Ifc4_IfcStyledItem) {
+                logger.info("${Ifc4_IfcStyledItem::class.java.name} not supported right now")
+                // TODO implement
+            }
+        }
+
+        return geometry
+    }
+
+    /**
+     * Resolve coordinates from IfcShapeRepresentation type of IfcBoundingBox
+     * @param shapeRepresentation parent of bounding box entity
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveBoundingBox(shapeRepresentation: Ifc2x3tc1_IfcRepresentation): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+
+        shapeRepresentation.items.forEach { item ->
+            if (item is Ifc2x3tc1_IfcGeometricRepresentationItem) {
+                if (item is Ifc2x3tc1_IfcBoundingBox) {
+                    val cartesianPoint = item.corner.coordinates
+                    // disable z-dimension
+                    geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1], 0.0))
+                    geometry.add(Vector3D(cartesianPoint[0] + item.xDim, cartesianPoint[1], 0.0))
+                    geometry.add(Vector3D(cartesianPoint[0] + item.xDim, cartesianPoint[1] + item.yDim, 0.0))
+                    geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1] + item.yDim, 0.0))
+                    geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1], 0.0))
+                }
+                // INFO: ignore other IfcGeometricRepresentationItems for now
+            }
+            if (item is Ifc2x3tc1_IfcMappedItem) {
+                logger.info("${Ifc4_IfcMappedItem::class.java.name} not supported right now")
+                // TODO implement
+            }
+            if (item is Ifc2x3tc1_IfcStyledItem) {
                 logger.info("${Ifc4_IfcStyledItem::class.java.name} not supported right now")
                 // TODO implement
             }
