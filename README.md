@@ -10,7 +10,38 @@ A parser to transform **B**uilding **I**nformation **M**odeling ([BIM](https://e
 
 ## Quick start
 ### Use the API
-:construction: **Currently, the source code is being rebuilt from scratch** :construction:
+:construction: **Currently, the source code is being rebuilt from scratch and the API might change** :construction:
+```kotlin
+// Setup configuration (description see wiki -> Usage):
+// customized
+val config = Configuration(
+    solution = GeometrySolution.BOUNDING_BOX,
+    optimizeInput_RBC = true,
+    optimizeInput_RBL = true,
+    optimizeOutput_DS = true,
+    optimizeOutput_DSMD = 0.05
+)
+// or default
+val defaultConfig = Configuration()
+
+// Init parser
+val parser = BIMtoOSMParser(config)
+
+// Parse BIM file
+val osmData: OSMDataSet = parser.parse("path\\to\\file.ifc")
+
+// Access the data
+// example: get all Ways
+val allWays: List<OSMWay> = osmData.ways
+// example: get id, nodes and tags from first way in data set
+val id: Long = osmData.ways[0].id
+val nodes: ArrayList<OSMNode> = osmData.ways[0].nodes
+val tags: ArrayList<OSMTag> = osmData.ways[0].tags
+// for full description see wiki -> Usage
+
+// Export OSM data
+Exporter.exportOSM("path\\to\output.osm", osmData, true)
+```
 
 ### Use JOSM GUI
 The parser is integrated into [JOSM](https://josm.openstreetmap.de/)s [IndoorHelper plugin](https://wiki.openstreetmap.org/wiki/JOSM/Plugins/indoorhelper). To use the GUI you need to install JOSM and download the IndoorHelper plugin via `Edit` &#8594; `Preferences` &#8594; `Plugins`. Import example:
@@ -21,10 +52,11 @@ The parser is integrated into [JOSM](https://josm.openstreetmap.de/)s [IndoorHel
 
 <br>
 
-See also [wiki &#8594; Usage](https://github.com/rebeccasc/BIMtoOSM/wiki/Usage)
+For more information see [wiki &#8594; Usage](https://github.com/rebeccasc/BIMtoOSM/wiki/Usage)
 
 ## Dependencies
 * [opensourceBIM/IfcPlugins](https://github.com/opensourceBIM/IfcPlugins)
+* [JTS Topology Suite](https://github.com/locationtech/jts)
 
 ## Contributing
 Want to contribute? Check the [contribution guidelines](https://github.com/rebeccasc/BIMtoOSM/blob/master/CONTRIBUTING.md)
