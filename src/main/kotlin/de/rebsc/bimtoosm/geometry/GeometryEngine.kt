@@ -164,7 +164,7 @@ class GeometryEngine(private val solution: GeometrySolution) {
             val connectorPlacements =
                 connector.filterValues { it == representation.key.productRepresentation.expressId }
             val connectorPlacementKey = connectorPlacements.entries.first().key
-            val placements = placementResolver.placementCacheIfc4.filterKeys { it.expressId == connectorPlacementKey }
+            val placements = placementResolver.placementCacheIfc2x3tc1.filterKeys { it.expressId == connectorPlacementKey }
             val placement = placements.entries.first()
 
             // transform representation using placement
