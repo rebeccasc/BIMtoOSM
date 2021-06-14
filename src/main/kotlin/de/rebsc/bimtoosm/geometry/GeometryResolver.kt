@@ -52,6 +52,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
      */
     var geometryCacheIfc2x3tc1: MutableMap<Ifc2x3tc1RepresentationPair, List<Vector3D>> = HashMap()
 
+
     /**
      * Resolves object geometry and adds it to [geometryCacheIfc4]
      * @param productRepresentation of wall object
@@ -60,20 +61,26 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -95,21 +102,27 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                        resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                    resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -131,20 +144,26 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -166,21 +185,27 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                        resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                    resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -202,20 +227,26 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -237,21 +268,27 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                        resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                    resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -273,20 +310,26 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -308,21 +351,27 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                        resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                    resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -344,20 +393,26 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -379,21 +434,27 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                        resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                    resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -415,20 +476,26 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -450,21 +517,27 @@ class GeometryResolver(private val solution: GeometrySolution) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
             var itemProcessed = false
-            productRepresentation.representations.forEach { rep ->
-                if (solution == GeometrySolution.BOUNDING_BOX && rep.representationIdentifier.equals("Box", true)) {
-                    geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                        resolveBoundingBox(rep)
-                    itemProcessed = true
-                    return@forEach
-                }
-                if (solution == GeometrySolution.BODY && rep.representationIdentifier.equals("Body", true)) {
-                    logger.info("${GeometrySolution.BODY::class.java.name} not supported right now")
-                    // TODO implement
-                    itemProcessed = true
-                }
+            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+
+            // get geometry
+            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+                // body
+                val rep = productRepresentation.representations[repIndices.second]
+                // TODO implement
+                itemProcessed = true
+            } else if (repIndices.first != -1) {
+                // box
+                val rep = productRepresentation.representations[repIndices.first]
+                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
+                    resolveBoundingBox(rep)
+                itemProcessed = true
+            } else if (repIndices.third != -1) {
+                // axis
+                val rep = productRepresentation.representations[repIndices.third]
+                // TODO implement
+                itemProcessed = true
             }
 
-            // TODO if applied solution not available use default: Bounding Box
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -476,6 +549,54 @@ class GeometryResolver(private val solution: GeometrySolution) {
             logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
             // TODO implement
         }
+    }
+
+    /**
+     * Gets indices of representation types of [entity] in following order: boy, body, axis.
+     * If not available set to default value (-1)
+     * @param entity to get representation type indices of
+     * @return triple with indices for box, body, axis representation
+     */
+    private fun getRepresentationsIndices(entity: Ifc4_IfcProductDefinitionShape): Triple<Int, Int, Int> {
+        var box = -1
+        var body = -1
+        var axis = -1
+        entity.representations.forEach { rep ->
+            if (rep.representationIdentifier.equals("Box", true)) {
+                box = entity.representations.indexOf(rep)
+            }
+            if (rep.representationIdentifier.equals("Body", true)) {
+                body = entity.representations.indexOf(rep)
+            }
+            if (rep.representationIdentifier.equals("Axis", true)) {
+                axis = entity.representations.indexOf(rep)
+            }
+        }
+        return Triple(box, body, axis)
+    }
+
+    /**
+     * Gets indices of representation types of [entity] in following order: boy, body, axis.
+     * If not available set to default value (-1)
+     * @param entity to get representation type indices of
+     * @return triple with indices for box, body, axis representation
+     */
+    private fun getRepresentationsIndices(entity: Ifc2x3tc1_IfcProductRepresentation): Triple<Int, Int, Int> {
+        var box = -1
+        var body = -1
+        var axis = -1
+        entity.representations.forEach { rep ->
+            if (rep.representationIdentifier.equals("Box", true)) {
+                box = entity.representations.indexOf(rep)
+            }
+            if (rep.representationIdentifier.equals("Body", true)) {
+                body = entity.representations.indexOf(rep)
+            }
+            if (rep.representationIdentifier.equals("Axis", true)) {
+                axis = entity.representations.indexOf(rep)
+            }
+        }
+        return Triple(box, body, axis)
     }
 
     /**
