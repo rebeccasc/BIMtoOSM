@@ -28,6 +28,12 @@ import org.bimserver.models.ifc4.IfcMaterialDefinitionRepresentation as Ifc4_Ifc
 import org.bimserver.models.ifc4.IfcProductDefinitionShape as Ifc4_IfcProductDefinitionShape
 import org.bimserver.models.ifc4.IfcProductRepresentation as Ifc4_IfcProductRepresentation
 import org.bimserver.models.ifc4.IfcRepresentation as Ifc4_IfcRepresentation
+import org.bimserver.models.ifc4.IfcExtrudedAreaSolid as Ifc4_IfcExtrudedAreaSolid
+import org.bimserver.models.ifc4.IfcFacetedBrep as Ifc4_IfcFacetedBrep
+import org.bimserver.models.ifc4.IfcCurve as Ifc4_IfcCurve
+import org.bimserver.models.ifc4.IfcPolyline as Ifc4_IfcPolyline
+import org.bimserver.models.ifc4.IfcCompositeCurve as Ifc4_IfcCompositeCurve
+import org.bimserver.models.ifc4.IfcTrimmedCurve as Ifc4_IfcTrimmedCurve
 import org.bimserver.models.ifc2x3tc1.IfcBoundingBox as Ifc2x3tc1_IfcBoundingBox
 import org.bimserver.models.ifc2x3tc1.IfcMappedItem as Ifc2x3tc1_IfcMappedItem
 import org.bimserver.models.ifc2x3tc1.IfcStyledItem as Ifc2x3tc1_IfcStyledItem
@@ -36,6 +42,37 @@ import org.bimserver.models.ifc2x3tc1.IfcRepresentation as Ifc2x3tc1_IfcRepresen
 import org.bimserver.models.ifc2x3tc1.IfcProductDefinitionShape as Ifc2x3tc1_IfcProductDefinitionShape
 import org.bimserver.models.ifc2x3tc1.IfcProductRepresentation as Ifc2x3tc1_IfcProductRepresentation
 import org.bimserver.models.ifc2x3tc1.IfcMaterialDefinitionRepresentation as Ifc2x3tc1_IfcMaterialDefinitionRepresentation
+import org.bimserver.models.ifc2x3tc1.IfcExtrudedAreaSolid as Ifc2x3tc1_IfcExtrudedAreaSolid
+import org.bimserver.models.ifc2x3tc1.IfcFacetedBrep as Ifc2x3tc1_IfcFacetedBrep
+import org.bimserver.models.ifc2x3tc1.IfcRectangleProfileDef as Ifc2x3tc1_IfcRectangleProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcIShapeProfileDef as Ifc2x3tc1_IfcIShapeProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcLShapeProfileDef as Ifc2x3tc1_IfcLShapeProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcUShapeProfileDef as Ifc2x3tc1_IfcUShapeProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcCShapeProfileDef as Ifc2x3tc1_IfcCShapeProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcZShapeProfileDef as Ifc2x3tc1_IfcZShapeProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcTShapeProfileDef as Ifc2x3tc1_IfcTShapeProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcCraneRailFShapeProfileDef as Ifc2x3tc1_IfcCraneRailFShapeProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcCraneRailAShapeProfileDef as Ifc2x3tc1_IfcCraneRailAShapeProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcCircleProfileDef as Ifc2x3tc1_IfcCircleProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcEllipseProfileDef as Ifc2x3tc1_IfcEllipseProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcTrapeziumProfileDef as Ifc2x3tc1_IfcTrapeziumProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcCenterLineProfileDef as Ifc2x3tc1_IfcCenterLineProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcArbitraryClosedProfileDef as Ifc2x3tc1_IfcArbitraryClosedProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcArbitraryProfileDefWithVoids as Ifc2x3tc1_IfcArbitraryProfileDefWithVoids
+import org.bimserver.models.ifc2x3tc1.IfcCompositeProfileDef as Ifc2x3tc1_IfcCompositeProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcDerivedProfileDef as Ifc2x3tc1_IfcDerivedProfileDef
+import org.bimserver.models.ifc2x3tc1.IfcCurve as Ifc2x3tc1_IfcCurve
+import org.bimserver.models.ifc2x3tc1.IfcBoundedCurve as Ifc2x3tc1_IfcBoundedCurve
+import org.bimserver.models.ifc2x3tc1.IfcConic as Ifc2x3tc1_IfcConic
+import org.bimserver.models.ifc2x3tc1.IfcLine as Ifc2x3tc1_IfcLine
+import org.bimserver.models.ifc2x3tc1.IfcOffsetCurve2D as Ifc2x3tc1_IfcOffsetCurve2D
+import org.bimserver.models.ifc2x3tc1.IfcOffsetCurve2D as Ifc2x3tc1_IfcOffsetCurve3D
+import org.bimserver.models.ifc2x3tc1.IfcPolyline as Ifc2x3tc1_IfcPolyline
+import org.bimserver.models.ifc2x3tc1.IfcCompositeCurve as Ifc2x3tc1_IfcCompositeCurve
+import org.bimserver.models.ifc2x3tc1.IfcTrimmedCurve as Ifc2x3tc1_IfcTrimmedCurve
+import org.bimserver.models.ifc2x3tc1.IfcBSplineCurve as Ifc2x3tc1_IfcBSplineCurve
+import org.bimserver.models.ifc2x3tc1.IfcCircle as Ifc2x3tc1_IfcCircle
+import org.bimserver.models.ifc2x3tc1.IfcEllipse as Ifc2x3tc1_IfcEllipse
 
 
 class GeometryResolver(private val solution: GeometrySolution) {
@@ -60,33 +97,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveWall(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc4_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc4_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -101,34 +116,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveWall(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                    resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -143,33 +135,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveSlab(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc4_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc4_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -184,34 +154,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveSlab(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                    resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -226,33 +173,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveColumn(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc4_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc4_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -267,34 +192,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveColumn(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                    resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -309,33 +211,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveDoor(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc4_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc4_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -350,34 +230,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveDoor(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                    resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -392,33 +249,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveWindow(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc4_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc4_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -433,34 +268,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveWindow(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                    resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -475,33 +287,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveStair(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc4_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc4_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
@@ -516,39 +306,64 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveStair(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            var itemProcessed = false
-            val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
-
-            // get geometry
-            if (solution == GeometrySolution.BODY && repIndices.second != -1) {
-                // body
-                val rep = productRepresentation.representations[repIndices.second]
-                // TODO implement
-                itemProcessed = true
-            } else if (repIndices.first != -1) {
-                // box
-                val rep = productRepresentation.representations[repIndices.first]
-                geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] =
-                    resolveBoundingBox(rep)
-                itemProcessed = true
-            } else if (repIndices.third != -1) {
-                // axis
-                val rep = productRepresentation.representations[repIndices.third]
-                // TODO implement
-                itemProcessed = true
-            }
-
+            val itemProcessed = resolveGeometry(productRepresentation)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
-            return
         }
-
         // material representation
         if (productRepresentation is Ifc2x3tc1_IfcMaterialDefinitionRepresentation) {
             logger.info("${Ifc2x3tc1_IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
             // TODO implement
         }
+    }
+
+    // Utils
+
+    private fun resolveGeometry(productRepresentation: Ifc4_IfcProductDefinitionShape): Boolean {
+        val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+        if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+            // body
+            val rep = productRepresentation.representations[repIndices.second]
+            geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBody(rep)
+            return true
+        }
+        if (repIndices.first != -1) {
+            // box
+            val rep = productRepresentation.representations[repIndices.first]
+            geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
+            return true
+        }
+        if (repIndices.third != -1) {
+            // axis
+            val rep = productRepresentation.representations[repIndices.third]
+            // TODO implement
+            return true
+        }
+        return false
+    }
+
+    private fun resolveGeometry(productRepresentation: Ifc2x3tc1_IfcProductDefinitionShape): Boolean {
+        val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
+        if (solution == GeometrySolution.BODY && repIndices.second != -1) {
+            // body
+            val rep = productRepresentation.representations[repIndices.second]
+            geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] = resolveBody(rep)
+            return true
+        }
+        if (repIndices.first != -1) {
+            // box
+            val rep = productRepresentation.representations[repIndices.first]
+            geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
+            return true
+        }
+        if (repIndices.third != -1) {
+            // axis
+            val rep = productRepresentation.representations[repIndices.third]
+            // TODO implement
+            return true
+        }
+        return false
     }
 
     /**
@@ -600,18 +415,56 @@ class GeometryResolver(private val solution: GeometrySolution) {
     }
 
     /**
+     * Resolve coordinates from IfcShapeRepresentation subtype of body
+     * @param shapeRepresentation parent of body entity
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveBody(shapeRepresentation: Ifc4_IfcRepresentation): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // TODO implement
+        if (geometry.isEmpty()) {
+            logger.warn("resolveBody-> Resolved geometry of ${shapeRepresentation.expressId} is empty")
+        }
+        return geometry
+    }
+
+    /**
+     * Resolve coordinates from IfcShapeRepresentation subtype of body
+     * @param shapeRepresentation parent of body entity
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveBody(shapeRepresentation: Ifc2x3tc1_IfcRepresentation): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        shapeRepresentation.items.forEach { item ->
+            if (item is Ifc2x3tc1_IfcExtrudedAreaSolid) {
+                geometry.addAll(resolveIfcExtrudedAreaSolid(item))
+                return@forEach
+            }
+            if (item is Ifc2x3tc1_IfcFacetedBrep) {
+                geometry.addAll(resolveIfcFacetedBrep(item))
+                return@forEach
+            }
+            // TODO handle more body representation items
+            logger.warn("resolveBody -> Unknown RepresentationType of ${shapeRepresentation.expressId}")
+        }
+
+        if (geometry.isEmpty()) {
+            logger.warn("resolveBody-> Resolved geometry of ${shapeRepresentation.expressId} is empty")
+        }
+        return geometry
+    }
+
+    /**
      * Resolve coordinates from IfcShapeRepresentation type of IfcBoundingBox
      * @param shapeRepresentation parent of bounding box entity
      * @return List holding resolved local coordinates
      */
     private fun resolveBoundingBox(shapeRepresentation: Ifc4_IfcRepresentation): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-
         shapeRepresentation.items.forEach { item ->
             if (item is Ifc4_IfcGeometricRepresentationItem) {
                 if (item is Ifc4_IfcBoundingBox) {
                     val cartesianPoint = item.corner.coordinates
-                    // disable z-dimension
                     geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1], 0.0))
                     geometry.add(Vector3D(cartesianPoint[0] + item.xDim, cartesianPoint[1], 0.0))
                     geometry.add(Vector3D(cartesianPoint[0] + item.xDim, cartesianPoint[1] + item.yDim, 0.0))
@@ -630,6 +483,9 @@ class GeometryResolver(private val solution: GeometrySolution) {
             }
         }
 
+        if (geometry.isEmpty()) {
+            logger.warn("resolveBoundingBox-> Resolved geometry of ${shapeRepresentation.expressId} is empty")
+        }
         return geometry
     }
 
@@ -640,12 +496,10 @@ class GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveBoundingBox(shapeRepresentation: Ifc2x3tc1_IfcRepresentation): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-
         shapeRepresentation.items.forEach { item ->
             if (item is Ifc2x3tc1_IfcGeometricRepresentationItem) {
                 if (item is Ifc2x3tc1_IfcBoundingBox) {
                     val cartesianPoint = item.corner.coordinates
-                    // disable z-dimension
                     geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1], 0.0))
                     geometry.add(Vector3D(cartesianPoint[0] + item.xDim, cartesianPoint[1], 0.0))
                     geometry.add(Vector3D(cartesianPoint[0] + item.xDim, cartesianPoint[1] + item.yDim, 0.0))
@@ -664,7 +518,262 @@ class GeometryResolver(private val solution: GeometrySolution) {
             }
         }
 
+        if (geometry.isEmpty()) {
+            logger.warn("resolveBoundingBox-> Resolved geometry of ${shapeRepresentation.expressId} is empty")
+        }
         return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc4_IfcExtrudedAreaSolid] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcExtrudedAreaSolid(entity: Ifc4_IfcExtrudedAreaSolid): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // TODO implement
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcExtrudedAreaSolid] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcExtrudedAreaSolid(entity: Ifc2x3tc1_IfcExtrudedAreaSolid): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        val locationX = entity.position.location.coordinates[0]
+        val locationY = entity.position.location.coordinates[1]
+
+        when (entity.sweptArea) {
+            // handle IfcParameterizedProfileDef
+            is Ifc2x3tc1_IfcIShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc2x3tc1_IfcLShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc2x3tc1_IfcUShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc2x3tc1_IfcCShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc2x3tc1_IfcZShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc2x3tc1_IfcTShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc2x3tc1_IfcCraneRailFShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc2x3tc1_IfcCraneRailAShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc2x3tc1_IfcCircleProfileDef -> {/*TODO implement */
+            }
+            is Ifc2x3tc1_IfcEllipseProfileDef -> {/*TODO implement */
+            }
+            is Ifc2x3tc1_IfcRectangleProfileDef -> {
+                // extract dimensions
+                val halfxDim = (entity.sweptArea as Ifc2x3tc1_IfcRectangleProfileDef).xDim / 2.0
+                val halfyDim = (entity.sweptArea as Ifc2x3tc1_IfcRectangleProfileDef).yDim / 2.0
+                // get points of shape
+                geometry.add(Vector3D(locationX - halfxDim, locationY - halfyDim, 0.0))
+                geometry.add(Vector3D(locationX + halfxDim, locationY - halfyDim, 0.0))
+                geometry.add(Vector3D(locationX + halfxDim, locationY + halfyDim, 0.0))
+                geometry.add(Vector3D(locationX - halfxDim, locationY + halfyDim, 0.0))
+                geometry.add(Vector3D(locationX - halfxDim, locationY - halfyDim, 0.0))
+                return geometry
+            }
+            is Ifc2x3tc1_IfcTrapeziumProfileDef -> {/*TODO implement */
+            }
+            // handle IfcArbitraryOpenProfileDef
+            is Ifc2x3tc1_IfcCenterLineProfileDef -> {/*TODO implement */
+            }
+            // handle IfcArbitraryClosedProfileDef
+            is Ifc2x3tc1_IfcArbitraryClosedProfileDef -> {
+                val outerCurve = (entity.sweptArea as Ifc2x3tc1_IfcArbitraryClosedProfileDef).outerCurve
+                val curveShape = resolveIfcCurve(outerCurve)
+                curveShape.forEach { point ->
+                    point.x += locationX
+                    point.y += locationY
+                }
+                geometry.addAll(curveShape)
+                return geometry
+            }
+            is Ifc2x3tc1_IfcArbitraryProfileDefWithVoids -> {/*TODO implement */
+            }
+            // handle IfcCompositeProfileDef
+            is Ifc2x3tc1_IfcCompositeProfileDef -> {/*TODO implement */
+            }
+            // handle IfcDerivedProfileDef
+            is Ifc2x3tc1_IfcDerivedProfileDef -> {/*TODO implement */
+            }
+        }
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc4_IfcFacetedBrep] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcFacetedBrep(entity: Ifc4_IfcFacetedBrep): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // TODO implement
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcFacetedBrep] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcFacetedBrep(entity: Ifc2x3tc1_IfcFacetedBrep): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // TODO implement
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc4_IfcCurve] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcCurve(entity: Ifc4_IfcCurve): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        when (entity.eClass().name) {
+            "IfcBoundedCurve" -> {/*TODO implement*/
+            }
+            "IfcPolyline" -> {
+                geometry.addAll(resolveIfcPolyline(entity as Ifc4_IfcPolyline))
+            }
+            "IfcCompositeCurve" -> {
+                geometry.addAll(resolveIfcCompositeCurve(entity as Ifc4_IfcCompositeCurve))
+            }
+            "IfcTrimmedCurve" -> {
+                geometry.addAll(resolveIfcTrimmedCurve(entity as Ifc4_IfcTrimmedCurve))
+            }
+            "IfcBSplineCurve" -> {/*TODO implement*/
+            }
+            "IfcConic" -> {/*TODO implement*/
+            }
+            "IfcCircle" -> {/*TODO implement*/
+            }
+            "IfcEllipse" -> {/*TODO implement*/
+            }
+            "IfcLine" -> {/*TODO implement*/
+            }
+            "IfcOffsetCurve2D" -> {/*TODO implement*/
+            }
+            "IfcOffsetCurve3D" -> {/*TODO implement*/
+            }
+        }
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcCurve] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcCurve(entity: Ifc2x3tc1_IfcCurve): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        when (entity.eClass().name) {
+            "IfcBoundedCurve" -> {/*TODO implement*/
+            }
+            "IfcPolyline" -> {
+                geometry.addAll(resolveIfcPolyline(entity as Ifc2x3tc1_IfcPolyline))
+            }
+            "IfcCompositeCurve" -> {
+                geometry.addAll(resolveIfcCompositeCurve(entity as Ifc2x3tc1_IfcCompositeCurve))
+            }
+            "IfcTrimmedCurve" -> {
+                geometry.addAll(resolveIfcTrimmedCurve(entity as Ifc2x3tc1_IfcTrimmedCurve))
+            }
+            "IfcBSplineCurve" -> {/*TODO implement*/
+            }
+            "IfcConic" -> {/*TODO implement*/
+            }
+            "IfcCircle" -> {/*TODO implement*/
+            }
+            "IfcEllipse" -> {/*TODO implement*/
+            }
+            "IfcLine" -> {/*TODO implement*/
+            }
+            "IfcOffsetCurve2D" -> {/*TODO implement*/
+            }
+            "IfcOffsetCurve3D" -> {/*TODO implement*/
+            }
+        }
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc4_IfcPolyline] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcPolyline(entity: Ifc4_IfcPolyline): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // TODO implement
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcPolyline] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcPolyline(entity: Ifc2x3tc1_IfcPolyline): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        entity.points.forEach { point ->
+            geometry.add(Vector3D(point.coordinates[0], point.coordinates[1], 0.0))
+        }
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc4_IfcCompositeCurve] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcCompositeCurve(entity: Ifc4_IfcCompositeCurve): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // TODO implement
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcCompositeCurve] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcCompositeCurve(entity: Ifc2x3tc1_IfcCompositeCurve): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        entity.segments.forEach { segment ->
+            val parentCurve = segment.parentCurve
+            val parentCurveShape = resolveIfcCurve(parentCurve)
+            if (parentCurveShape.isEmpty()) {
+                return ArrayList()    // return empty array once one segment cannot be resolved
+            }
+            geometry.addAll(parentCurveShape)
+        }
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc4_IfcTrimmedCurve] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcTrimmedCurve(entity: Ifc4_IfcTrimmedCurve): List<Vector3D> {
+        // TODO implement
+        return ArrayList()
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcTrimmedCurve] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcTrimmedCurve(entity: Ifc2x3tc1_IfcTrimmedCurve): List<Vector3D> {
+        // TODO implement properly - handle trim of basis curve
+        return resolveIfcCurve(entity.basisCurve)
     }
 
 }
