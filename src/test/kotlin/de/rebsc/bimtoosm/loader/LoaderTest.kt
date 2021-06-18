@@ -1,4 +1,4 @@
-package de.rebsc.bimtoosm.parser
+package de.rebsc.bimtoosm.loader
 
 /******************************************************************************
  * Copyright (C) 2021  de.rebsc
@@ -17,7 +17,6 @@ package de.rebsc.bimtoosm.parser
  * along with this program. If not, see {@literal<http://www.gnu.org/licenses/>}.
  *****************************************************************************/
 
-import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.exception.BIMtoOSMException
 import org.bimserver.plugins.deserializers.DeserializeException
 import org.junit.jupiter.api.Assertions
