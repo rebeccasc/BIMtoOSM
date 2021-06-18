@@ -20,6 +20,7 @@ package de.rebsc.bimtoosm.geometry
 import de.rebsc.bimtoosm.data.osm.OSMDataSet
 import de.rebsc.bimtoosm.data.osm.OSMNode
 import de.rebsc.bimtoosm.data.osm.OSMWay
+import de.rebsc.bimtoosm.logger.Logger
 import de.rebsc.bimtoosm.parser.IfcUnitPrefix
 import de.rebsc.bimtoosm.utils.IdGenerator
 import de.rebsc.bimtoosm.utils.math.Point2D
@@ -51,6 +52,8 @@ enum class GeometrySolution {
 }
 
 class GeometryEngine(private val solution: GeometrySolution) {
+
+    private val logger = Logger.get(this::class.java)
 
     /**
      * Transform each object in [model] into OSM object and put it into [OSMDataSet]
@@ -153,6 +156,12 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 val id = IdGenerator.createUUID(allowNegative = true)
                 osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y)))
             }
+
+            if (osmNodeList.isEmpty()) {
+                logger.warn("Empty nodes list, skip representation")
+                return@forEach
+            }
+
             osmDataSet.addNodes(osmNodeList)
             val id = IdGenerator.createUUID(allowNegative = true)
             osmDataSet.addWay(OSMWay(id, osmNodeList))
@@ -164,7 +173,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
             val connectorPlacements =
                 connector.filterValues { it == representation.key.productRepresentation.expressId }
             val connectorPlacementKey = connectorPlacements.entries.first().key
-            val placements = placementResolver.placementCacheIfc2x3tc1.filterKeys { it.expressId == connectorPlacementKey }
+            val placements =
+                placementResolver.placementCacheIfc2x3tc1.filterKeys { it.expressId == connectorPlacementKey }
             val placement = placements.entries.first()
 
             // transform representation using placement
@@ -175,6 +185,12 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 val id = IdGenerator.createUUID(allowNegative = true)
                 osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y)))
             }
+
+            if (osmNodeList.isEmpty()) {
+                logger.warn("Empty nodes list, skip representation")
+                return@forEach
+            }
+
             osmDataSet.addNodes(osmNodeList)
             val id = IdGenerator.createUUID(allowNegative = true)
             osmDataSet.addWay(OSMWay(id, osmNodeList))
