@@ -53,5 +53,7 @@ Get more information about OSM and indoor data at [wiki &#8594; Home](https://gi
 
 Get to know about the development [wiki &#8594; Development](https://github.com/rebeccasc/BIMtoOSM/wiki/Development)
 
+Or check https://rebeccasc.github.io/BIMtoOSM/
+
 ## Authors
 Rebecca Schmidt (rebeccasmdt@gmail.com)
