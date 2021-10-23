@@ -1,0 +1,34 @@
+:root {
+    --main-bg-color: #fffdfd;
+    --topnav-text-color: #2b2c2cb9;
+    --topnav-height: 140px;
+    --font-family-header: "IBM Plex Mono", monospace;
+    --font-family-body: "Lato", sans-serif;
+}
+
+@media screen and (max-height: 450px) {
+    .sidebar {padding-top: 15px;}
+    .sidebar a {font-size: 18px;}
+  }
+
+body {
+    overflow-y: auto;
+    font-family: var(--font-family-body);
+}
+
+.topnav {
+    width: auto;
+    height: var(--topnav-height);
+}
+
+.topnav h2 {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+    font-size: 250%;
+    font-family: var(--font-family-header);
+    font-weight: bold;
+    color: var(--topnav-text-color);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    text-shadow: 2px 2px 3px rgba(149, 157, 165, 0.75);
+}
