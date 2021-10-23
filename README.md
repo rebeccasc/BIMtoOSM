@@ -12,16 +12,7 @@ A parser to transform **B**uilding **I**nformation **M**odeling ([BIM](https://e
 ### Use the API
 :construction: **Currently, the source code is being rebuilt from scratch and the API might change** :construction:
 ```kotlin
-// Setup configuration (description see wiki -> Usage):
-// customized
-val config = Configuration(
-    solution = GeometrySolution.BOUNDING_BOX,
-    optimizeInput_RBC = true,
-    optimizeInput_RBL = true,
-    optimizeOutput_DS = true,
-    optimizeOutput_DSMD = 0.05
-)
-// or default
+// Setup configuration (for full description see wiki -> Usage):
 val defaultConfig = Configuration()
 
 // Init parser
@@ -33,7 +24,7 @@ val osmData: OSMDataSet = parser.parse("path\\to\\file.ifc")
 // Access the data (for full description see wiki -> Usage)
 
 // Export OSM data
-Exporter.exportOSM("path\\to\output.osm", osmData, true)
+Exporter.exportOSM("path\\to\\output.osm", osmData, true)
 ```
 
 ### Use JOSM GUI
