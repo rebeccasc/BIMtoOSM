@@ -1,9 +1,11 @@
 :root {
     --main-bg-color: #fffdfd;
     --topnav-text-color: #2b2c2cb9;
+    --topnav-text-shadow-color: rgba(149, 157, 165, 0.75); 
     --topnav-height: 140px;
     --font-family-header: "IBM Plex Mono", monospace;
     --font-family-body: "Lato", sans-serif;
+    --box-shadow-color: rgba(149, 157, 165, 0.2);
 }
 
 @media screen and (max-height: 450px) {
@@ -29,6 +31,6 @@ body {
     font-family: var(--font-family-header);
     font-weight: bold;
     color: var(--topnav-text-color);
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    text-shadow: 2px 2px 3px rgba(149, 157, 165, 0.75);
+    box-shadow: var(--box-shadow-color) 0px 8px 24px;
+    text-shadow: 2px 2px 3px var(--topnav-text-shadow-color);
 }
