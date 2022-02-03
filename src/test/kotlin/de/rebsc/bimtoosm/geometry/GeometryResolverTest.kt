@@ -25,50 +25,39 @@ import org.junit.jupiter.api.Assertions.*
 internal class GeometryResolverTest {
 
     @Test
-    fun resolveWall() {
+    fun resolveWallTest() {
+        // TODO check Ifc4 resolveWall()
+        // TODO check Ifc2x3tc1 resolveWall()
     }
 
     @Test
-    fun testResolveWall() {
+    fun resolveSlabTest() {
+        // TODO check Ifc4 resolveSlab()
+        // TODO check Ifc2x3tc1 resolveSlab()
+    }
+
+
+    @Test
+    fun resolveColumnTest() {
+        // TODO check Ifc4 resolveColumn()
+        // TODO check Ifc2x3tc1 resolveColumn()
     }
 
     @Test
-    fun resolveSlab() {
+    fun resolveDoorTest() {
+        // TODO check Ifc4 resolveDoor()
+        // TODO check Ifc2x3tc1 resolveDoor()
     }
 
     @Test
-    fun testResolveSlab() {
+    fun resolveWindowTest() {
+        // TODO check Ifc4 resolveWindow()
+        // TODO check Ifc2x3tc1 resolveWindow()
     }
 
     @Test
-    fun resolveColumn() {
-    }
-
-    @Test
-    fun testResolveColumn() {
-    }
-
-    @Test
-    fun resolveDoor() {
-    }
-
-    @Test
-    fun testResolveDoor() {
-    }
-
-    @Test
-    fun resolveWindow() {
-    }
-
-    @Test
-    fun testResolveWindow() {
-    }
-
-    @Test
-    fun resolveStair() {
-    }
-
-    @Test
-    fun testResolveStair() {
+    fun resolveStairTest() {
+        // TODO check Ifc4 resolveStair()
+        // TODO check Ifc2x3tc1 resolveStair()
     }
 }

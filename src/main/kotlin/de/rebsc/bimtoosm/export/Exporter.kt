@@ -43,7 +43,11 @@ class Exporter {
          * @param addTimestamp true to add timestamp, else false
          */
         fun exportOSM(filepath: String, data: OSMDataSet, addTimestamp: Boolean) {
+            // TODO rather use nio.file.Path as filepath type
+            // TODO check if path exists
+
             val file = File(filepath)
+
             file.printWriter().use { out ->
                 out.println(xml_header)
                 out.println(osm_opener)

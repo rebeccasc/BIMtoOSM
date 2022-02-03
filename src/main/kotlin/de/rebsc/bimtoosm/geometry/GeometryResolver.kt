@@ -343,6 +343,9 @@ class GeometryResolver(private val solution: GeometrySolution) {
         return false
     }
 
+    /**
+     * TODO add description
+     */
     private fun resolveGeometry(productRepresentation: Ifc2x3tc1_IfcProductDefinitionShape): Boolean {
         val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
         if (solution == GeometrySolution.BODY && repIndices.second != -1) {
@@ -367,7 +370,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     }
 
     /**
-     * Gets indices of representation types of [entity] in following order: boy, body, axis.
+     * Gets indices of representation types of [entity] in following order: box, body, axis.
      * If not available set to default value (-1)
      * @param entity to get representation type indices of
      * @return triple with indices for box, body, axis representation
