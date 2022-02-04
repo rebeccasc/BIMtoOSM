@@ -34,6 +34,21 @@ import org.bimserver.models.ifc4.IfcCurve as Ifc4_IfcCurve
 import org.bimserver.models.ifc4.IfcPolyline as Ifc4_IfcPolyline
 import org.bimserver.models.ifc4.IfcCompositeCurve as Ifc4_IfcCompositeCurve
 import org.bimserver.models.ifc4.IfcTrimmedCurve as Ifc4_IfcTrimmedCurve
+import org.bimserver.models.ifc4.IfcRectangleProfileDef as Ifc4_IfcRectangleProfileDef
+import org.bimserver.models.ifc4.IfcIShapeProfileDef as Ifc4_IfcIShapeProfileDef
+import org.bimserver.models.ifc4.IfcLShapeProfileDef as Ifc4_IfcLShapeProfileDef
+import org.bimserver.models.ifc4.IfcUShapeProfileDef as Ifc4_IfcUShapeProfileDef
+import org.bimserver.models.ifc4.IfcCShapeProfileDef as Ifc4_IfcCShapeProfileDef
+import org.bimserver.models.ifc4.IfcZShapeProfileDef as Ifc4_IfcZShapeProfileDef
+import org.bimserver.models.ifc4.IfcTShapeProfileDef as Ifc4_IfcTShapeProfileDef
+import org.bimserver.models.ifc4.IfcCircleProfileDef as Ifc4_IfcCircleProfileDef
+import org.bimserver.models.ifc4.IfcEllipseProfileDef as Ifc4_IfcEllipseProfileDef
+import org.bimserver.models.ifc4.IfcTrapeziumProfileDef as Ifc4_IfcTrapeziumProfileDef
+import org.bimserver.models.ifc4.IfcCenterLineProfileDef as Ifc4_IfcCenterLineProfileDef
+import org.bimserver.models.ifc4.IfcArbitraryClosedProfileDef as Ifc4_IfcArbitraryClosedProfileDef
+import org.bimserver.models.ifc4.IfcArbitraryProfileDefWithVoids as Ifc4_IfcArbitraryProfileDefWithVoids
+import org.bimserver.models.ifc4.IfcCompositeProfileDef as Ifc4_IfcCompositeProfileDef
+import org.bimserver.models.ifc4.IfcDerivedProfileDef as Ifc4_IfcDerivedProfileDef
 import org.bimserver.models.ifc2x3tc1.IfcBoundingBox as Ifc2x3tc1_IfcBoundingBox
 import org.bimserver.models.ifc2x3tc1.IfcMappedItem as Ifc2x3tc1_IfcMappedItem
 import org.bimserver.models.ifc2x3tc1.IfcStyledItem as Ifc2x3tc1_IfcStyledItem
@@ -424,7 +439,19 @@ class GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveBody(shapeRepresentation: Ifc4_IfcRepresentation): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        // TODO implement
+        shapeRepresentation.items.forEach { item ->
+            if (item is Ifc4_IfcExtrudedAreaSolid) {
+                geometry.addAll(resolveIfcExtrudedAreaSolid(item))
+                return@forEach
+            }
+            if (item is Ifc4_IfcFacetedBrep) {
+                geometry.addAll(resolveIfcFacetedBrep(item))
+                return@forEach
+            }
+            // TODO handle more body representation items
+            logger.warn("resolveBody -> Unknown RepresentationType of ${shapeRepresentation.expressId}")
+        }
+
         if (geometry.isEmpty()) {
             logger.warn("resolveBody-> Resolved geometry of ${shapeRepresentation.expressId} is empty")
         }
@@ -534,7 +561,66 @@ class GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcExtrudedAreaSolid(entity: Ifc4_IfcExtrudedAreaSolid): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        // TODO implement
+        val locationX = entity.position.location.coordinates[0]
+        val locationY = entity.position.location.coordinates[1]
+
+        when (entity.sweptArea) {
+            // handle IfcParameterizedProfileDef
+            is Ifc4_IfcIShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc4_IfcLShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc4_IfcUShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc4_IfcCShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc4_IfcZShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc4_IfcTShapeProfileDef -> {/*TODO implement */
+            }
+            is Ifc4_IfcCircleProfileDef -> {/*TODO implement */
+            }
+            is Ifc4_IfcEllipseProfileDef -> {/*TODO implement */
+            }
+            is Ifc4_IfcRectangleProfileDef -> {
+                // extract dimensions
+                val halfxDim = (entity.sweptArea as Ifc4_IfcRectangleProfileDef).xDim / 2.0
+                val halfyDim = (entity.sweptArea as Ifc4_IfcRectangleProfileDef).yDim / 2.0
+                // get points of shape
+                geometry.add(Vector3D(locationX - halfxDim, locationY - halfyDim, 0.0))
+                geometry.add(Vector3D(locationX + halfxDim, locationY - halfyDim, 0.0))
+                geometry.add(Vector3D(locationX + halfxDim, locationY + halfyDim, 0.0))
+                geometry.add(Vector3D(locationX - halfxDim, locationY + halfyDim, 0.0))
+                geometry.add(Vector3D(locationX - halfxDim, locationY - halfyDim, 0.0))
+                return geometry
+            }
+            is Ifc4_IfcTrapeziumProfileDef -> {/*TODO implement */
+            }
+            // handle IfcArbitraryOpenProfileDef
+            is Ifc4_IfcCenterLineProfileDef -> {/*TODO implement */
+            }
+            // handle IfcArbitraryClosedProfileDef
+            is Ifc4_IfcArbitraryClosedProfileDef -> {
+                // TODO test properly
+                val outerCurve = (entity.sweptArea as Ifc4_IfcArbitraryClosedProfileDef).outerCurve
+                val curveShape = resolveIfcCurve(outerCurve)
+                curveShape.forEach { point ->
+                    point.x += locationX
+                    point.y += locationY
+                }
+                geometry.addAll(curveShape)
+                return geometry
+            }
+            is Ifc4_IfcArbitraryProfileDefWithVoids -> {/*TODO implement */
+            }
+            // handle IfcCompositeProfileDef
+            is Ifc4_IfcCompositeProfileDef -> {/*TODO implement */
+            }
+            // handle IfcDerivedProfileDef
+            is Ifc4_IfcDerivedProfileDef -> {/*TODO implement */
+            }
+            // TODO check for more possible types
+        }
         return geometry
     }
 
@@ -589,6 +675,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
             }
             // handle IfcArbitraryClosedProfileDef
             is Ifc2x3tc1_IfcArbitraryClosedProfileDef -> {
+                // TODO test properly
                 val outerCurve = (entity.sweptArea as Ifc2x3tc1_IfcArbitraryClosedProfileDef).outerCurve
                 val curveShape = resolveIfcCurve(outerCurve)
                 curveShape.forEach { point ->
@@ -640,7 +727,11 @@ class GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveIfcCurve(entity: Ifc4_IfcCurve): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         when (entity.eClass().name) {
-            "IfcBoundedCurve" -> {/*TODO implement*/
+            // handle subtypes of IfcBoundedCurve
+            "IfcBSplineCurve" -> {/*TODO implement*/
+            }
+            "IfcIndexedPolyCurve" -> {
+                geometry.addAll(resolveIfcCompositeCurve(entity as Ifc4_IfcCompositeCurve))
             }
             "IfcPolyline" -> {
                 geometry.addAll(resolveIfcPolyline(entity as Ifc4_IfcPolyline))
@@ -651,20 +742,23 @@ class GeometryResolver(private val solution: GeometrySolution) {
             "IfcTrimmedCurve" -> {
                 geometry.addAll(resolveIfcTrimmedCurve(entity as Ifc4_IfcTrimmedCurve))
             }
-            "IfcBSplineCurve" -> {/*TODO implement*/
-            }
-            "IfcConic" -> {/*TODO implement*/
-            }
+            // handle subtypes of IfcConic
             "IfcCircle" -> {/*TODO implement*/
             }
             "IfcEllipse" -> {/*TODO implement*/
             }
+            // handle IfcLine
             "IfcLine" -> {/*TODO implement*/
             }
+            // handle IfcOffsetCurve2D/3D
             "IfcOffsetCurve2D" -> {/*TODO implement*/
             }
             "IfcOffsetCurve3D" -> {/*TODO implement*/
             }
+            // handle IfcPcurve
+            "IfcPcurve" -> {/*TODO implement*/
+            }
+
         }
         return geometry
     }
@@ -677,27 +771,27 @@ class GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveIfcCurve(entity: Ifc2x3tc1_IfcCurve): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         when (entity.eClass().name) {
-            "IfcBoundedCurve" -> {/*TODO implement*/
+            // handle subtypes of IfcBoundedCurve
+            "IfcCompositeCurve" -> {
+                geometry.addAll(resolveIfcCompositeCurve(entity as Ifc2x3tc1_IfcCompositeCurve))
             }
             "IfcPolyline" -> {
                 geometry.addAll(resolveIfcPolyline(entity as Ifc2x3tc1_IfcPolyline))
-            }
-            "IfcCompositeCurve" -> {
-                geometry.addAll(resolveIfcCompositeCurve(entity as Ifc2x3tc1_IfcCompositeCurve))
             }
             "IfcTrimmedCurve" -> {
                 geometry.addAll(resolveIfcTrimmedCurve(entity as Ifc2x3tc1_IfcTrimmedCurve))
             }
             "IfcBSplineCurve" -> {/*TODO implement*/
             }
-            "IfcConic" -> {/*TODO implement*/
-            }
+            // handle subtypes of IfcConic
             "IfcCircle" -> {/*TODO implement*/
             }
             "IfcEllipse" -> {/*TODO implement*/
             }
+            // handle IfcLine
             "IfcLine" -> {/*TODO implement*/
             }
+            // handle IfcOffsetCurve2D/3D
             "IfcOffsetCurve2D" -> {/*TODO implement*/
             }
             "IfcOffsetCurve3D" -> {/*TODO implement*/
@@ -713,7 +807,10 @@ class GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcPolyline(entity: Ifc4_IfcPolyline): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        // TODO implement
+        // TODO FIX
+        entity.points.forEach { point ->
+            geometry.add(Vector3D(point.coordinates[0], point.coordinates[1], 0.0))
+        }
         return geometry
     }
 
@@ -724,6 +821,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcPolyline(entity: Ifc2x3tc1_IfcPolyline): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
+        // TODO FIX
         entity.points.forEach { point ->
             geometry.add(Vector3D(point.coordinates[0], point.coordinates[1], 0.0))
         }
