@@ -561,8 +561,8 @@ class GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcExtrudedAreaSolid(entity: Ifc4_IfcExtrudedAreaSolid): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        val locationX = entity.position.location.coordinates[0]
-        val locationY = entity.position.location.coordinates[1]
+        var locationX = entity.position.location.coordinates[0]
+        var locationY = entity.position.location.coordinates[1]
 
         when (entity.sweptArea) {
             // handle IfcParameterizedProfileDef
@@ -583,6 +583,9 @@ class GeometryResolver(private val solution: GeometrySolution) {
             is Ifc4_IfcEllipseProfileDef -> {/*TODO implement */
             }
             is Ifc4_IfcRectangleProfileDef -> {
+                locationX = (entity.sweptArea as Ifc4_IfcRectangleProfileDef).position.location.coordinates[0]
+                locationY = (entity.sweptArea as Ifc4_IfcRectangleProfileDef).position.location.coordinates[1]
+
                 // extract dimensions
                 val halfxDim = (entity.sweptArea as Ifc4_IfcRectangleProfileDef).xDim / 2.0
                 val halfyDim = (entity.sweptArea as Ifc4_IfcRectangleProfileDef).yDim / 2.0
@@ -601,7 +604,6 @@ class GeometryResolver(private val solution: GeometrySolution) {
             }
             // handle IfcArbitraryClosedProfileDef
             is Ifc4_IfcArbitraryClosedProfileDef -> {
-                // TODO test properly
                 val outerCurve = (entity.sweptArea as Ifc4_IfcArbitraryClosedProfileDef).outerCurve
                 val curveShape = resolveIfcCurve(outerCurve)
                 curveShape.forEach { point ->
@@ -631,8 +633,8 @@ class GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcExtrudedAreaSolid(entity: Ifc2x3tc1_IfcExtrudedAreaSolid): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        val locationX = entity.position.location.coordinates[0]
-        val locationY = entity.position.location.coordinates[1]
+        var locationX = entity.position.location.coordinates[0]
+        var locationY = entity.position.location.coordinates[1]
 
         when (entity.sweptArea) {
             // handle IfcParameterizedProfileDef
@@ -657,6 +659,10 @@ class GeometryResolver(private val solution: GeometrySolution) {
             is Ifc2x3tc1_IfcEllipseProfileDef -> {/*TODO implement */
             }
             is Ifc2x3tc1_IfcRectangleProfileDef -> {
+                // TODO test new placement
+                locationX = (entity.sweptArea as Ifc4_IfcRectangleProfileDef).position.location.coordinates[0]
+                locationY = (entity.sweptArea as Ifc4_IfcRectangleProfileDef).position.location.coordinates[1]
+
                 // extract dimensions
                 val halfxDim = (entity.sweptArea as Ifc2x3tc1_IfcRectangleProfileDef).xDim / 2.0
                 val halfyDim = (entity.sweptArea as Ifc2x3tc1_IfcRectangleProfileDef).yDim / 2.0
@@ -675,7 +681,6 @@ class GeometryResolver(private val solution: GeometrySolution) {
             }
             // handle IfcArbitraryClosedProfileDef
             is Ifc2x3tc1_IfcArbitraryClosedProfileDef -> {
-                // TODO test properly
                 val outerCurve = (entity.sweptArea as Ifc2x3tc1_IfcArbitraryClosedProfileDef).outerCurve
                 val curveShape = resolveIfcCurve(outerCurve)
                 curveShape.forEach { point ->
@@ -807,7 +812,6 @@ class GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcPolyline(entity: Ifc4_IfcPolyline): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        // TODO FIX
         entity.points.forEach { point ->
             geometry.add(Vector3D(point.coordinates[0], point.coordinates[1], 0.0))
         }
@@ -821,7 +825,6 @@ class GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcPolyline(entity: Ifc2x3tc1_IfcPolyline): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        // TODO FIX
         entity.points.forEach { point ->
             geometry.add(Vector3D(point.coordinates[0], point.coordinates[1], 0.0))
         }
