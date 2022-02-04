@@ -81,6 +81,7 @@ class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
             // TODO implement
         }
 
+        status = ParserStatus.INACTIVE
         return osmData
     }
 

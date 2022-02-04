@@ -38,7 +38,7 @@ class BIMFileOptimizer {
             if (!optimizeInput_RBC && !optimizeInput_RBL) {
                 val original = File(filepath)
                 if (!original.exists()) throw BIMtoOSMException("File not found: $filepath")
-                return File(filepath)
+                return original
             }
 
             val tempFile = File.createTempFile("BIMtoOSM_temp", ".ifc")
