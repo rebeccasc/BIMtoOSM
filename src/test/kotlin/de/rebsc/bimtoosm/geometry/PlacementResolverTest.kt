@@ -39,6 +39,8 @@ internal class PlacementResolverTest {
         assertEquals(0.0, absolutePoint.z)
     }
 
+    // helper
+
     private fun createAxisPlacement(
         locationCoords: List<Double>,
         axisCoords: List<Double>,

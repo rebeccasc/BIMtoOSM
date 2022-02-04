@@ -153,6 +153,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
             representation.value.forEach { point ->
                 val absolutePoint =
                     placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
+                // TODO check points for unit (transform into meter)
+
                 val id = IdGenerator.createUUID(allowNegative = true)
                 osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y)))
             }
@@ -182,6 +184,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
             representation.value.forEach { point ->
                 val absolutePoint =
                     placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
+                // TODO check points for unit (transform into meter)
+
                 val id = IdGenerator.createUUID(allowNegative = true)
                 osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y)))
             }

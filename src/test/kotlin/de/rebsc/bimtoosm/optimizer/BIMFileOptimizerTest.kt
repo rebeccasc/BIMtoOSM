@@ -58,7 +58,6 @@ internal class BIMFileOptimizerTest {
         // check if entries equal
         Assertions.assertTrue(referenceBC.zip(optimizedBC).all { (x, y) -> x == y })
 
-
         // test remove block comments and blank lines
         val fileReferenceBL = File("$dir/src/test/resources/test1_IFC4_WBL.ifc")
         val fileOptimizedBL =
