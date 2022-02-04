@@ -17,9 +17,7 @@ package de.rebsc.bimtoosm.geometry
  * along with this program. If not, see {@literal<http://www.gnu.org/licenses/>}.
  *****************************************************************************/
 
-import de.rebsc.bimtoosm.data.osm.OSMDataSet
-import de.rebsc.bimtoosm.data.osm.OSMNode
-import de.rebsc.bimtoosm.data.osm.OSMWay
+import de.rebsc.bimtoosm.data.osm.*
 import de.rebsc.bimtoosm.logger.Logger
 import de.rebsc.bimtoosm.parser.IfcUnitPrefix
 import de.rebsc.bimtoosm.utils.IdGenerator
@@ -58,82 +56,139 @@ class GeometryEngine(private val solution: GeometrySolution) {
     fun transformToOSM(model: IfcModelInterface, units: IfcUnitPrefix): OSMDataSet {
         val schema = model.modelMetaData.ifcHeader.ifcSchemaVersion
 
-        // resolve placement and geometry
+        // resolve placement and geometry of object separately
         val placementResolver = PlacementResolver()
         val geometryResolver = GeometryResolver(solution)
         // connect placement object with geometry object
         val connector: MutableMap<Long, Long> = HashMap()
-
-        if (schema == Schema.IFC4.headerName) {
-            model.getAllWithSubTypes(Ifc4_IfcWall::class.java).forEach { wall ->
-                connector[wall.objectPlacement.expressId] = wall.representation.expressId
-                placementResolver.resolvePlacement(wall.objectPlacement)
-                geometryResolver.resolveWall(wall.representation)
-            }
-            model.getAllWithSubTypes(Ifc4_IfcSlab::class.java).forEach { slab ->
-                if (slab.predefinedType == Ifc4_IfcSlabTypeEnum.ROOF) return@forEach           // skip roofs
-                connector[slab.objectPlacement.expressId] = slab.representation.expressId
-                placementResolver.resolvePlacement(slab.objectPlacement)
-                geometryResolver.resolveSlab(slab.representation)
-            }
-            model.getAllWithSubTypes(Ifc4_IfcColumn::class.java).forEach { column ->
-                connector[column.objectPlacement.expressId] = column.representation.expressId
-                placementResolver.resolvePlacement(column.objectPlacement)
-                geometryResolver.resolveColumn(column.representation)
-            }
-            model.getAllWithSubTypes(Ifc4_IfcDoor::class.java).forEach { door ->
-                connector[door.objectPlacement.expressId] = door.representation.expressId
-                placementResolver.resolvePlacement(door.objectPlacement)
-                geometryResolver.resolveDoor(door.representation)
-            }
-            model.getAllWithSubTypes(Ifc4_IfcWindow::class.java).forEach { window ->
-                connector[window.objectPlacement.expressId] = window.representation.expressId
-                placementResolver.resolvePlacement(window.objectPlacement)
-                geometryResolver.resolveWindow(window.representation)
-            }
-            model.getAllWithSubTypes(Ifc4_IfcStair::class.java).forEach { stair ->
-                connector[stair.objectPlacement.expressId] = stair.representation.expressId
-                placementResolver.resolvePlacement(stair.objectPlacement)
-                geometryResolver.resolveStair(stair.representation)
-            }
-        }
-        if (schema == Schema.IFC2X3TC1.headerName) {
-            model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
-                connector[wall.objectPlacement.expressId] = wall.representation.expressId
-                placementResolver.resolvePlacement(wall.objectPlacement)
-                geometryResolver.resolveWall(wall.representation)
-            }
-            model.getAllWithSubTypes(Ifc2x3tc1_IfcSlab::class.java).forEach { slab ->
-                if (slab.predefinedType == Ifc2x3tc1_IfcSlabTypeEnum.ROOF) return@forEach      // skip roofs
-                connector[slab.objectPlacement.expressId] = slab.representation.expressId
-                placementResolver.resolvePlacement(slab.objectPlacement)
-                geometryResolver.resolveSlab(slab.representation)
-            }
-            model.getAllWithSubTypes(Ifc2x3tc1_IfcColumn::class.java).forEach { column ->
-                connector[column.objectPlacement.expressId] = column.representation.expressId
-                placementResolver.resolvePlacement(column.objectPlacement)
-                geometryResolver.resolveColumn(column.representation)
-            }
-            model.getAllWithSubTypes(Ifc2x3tc1_IfcDoor::class.java).forEach { door ->
-                connector[door.objectPlacement.expressId] = door.representation.expressId
-                placementResolver.resolvePlacement(door.objectPlacement)
-                geometryResolver.resolveDoor(door.representation)
-            }
-            model.getAllWithSubTypes(Ifc2x3tc1_IfcWindow::class.java).forEach { window ->
-                connector[window.objectPlacement.expressId] = window.representation.expressId
-                placementResolver.resolvePlacement(window.objectPlacement)
-                geometryResolver.resolveWindow(window.representation)
-            }
-            model.getAllWithSubTypes(Ifc2x3tc1_IfcStair::class.java).forEach { stair ->
-                connector[stair.objectPlacement.expressId] = stair.representation.expressId
-                placementResolver.resolvePlacement(stair.objectPlacement)
-                geometryResolver.resolveStair(stair.representation)
-            }
-        }
-
+        // osm data set
         val osmDataSet = OSMDataSet()
 
-        // transform geometry ifc4
+        if (schema == Schema.IFC4.headerName) {
+            // extract geometry ifc4 data into geometry cache
+            extractIfc4GeometryToCache(model, connector, placementResolver, geometryResolver)
+            // transform geometry cache ifc4 to osm
+            transformIfc4GeometryToOSM(connector, placementResolver, geometryResolver, osmDataSet)
+        }
+        if (schema == Schema.IFC2X3TC1.headerName) {
+            // extract geometry ifc2x3tc1 data into geometry cache
+            extractIfc2x3tc1GeometryToCache(model, connector, placementResolver, geometryResolver)
+            // transform geometry ifc2x3tc1 cache to osm
+            transformIfc2x3tc1GeometryToOSM(connector, placementResolver, geometryResolver, osmDataSet)
+        }
+
+        return osmDataSet
+    }
+
+    /**
+     * Extract Ifc4 elements placement into [PlacementResolver] cache
+     * and Ifc4 elements geometry into [GeometryResolver] cache
+     * @param model with ifc data
+     * @param connector connects placement object with geometry object
+     * @param placementResolver resolves and keeps objects placement
+     * @param geometryResolver resolves and keeps objects geometry
+     */
+    private fun extractIfc4GeometryToCache(
+        model: IfcModelInterface,
+        connector: MutableMap<Long, Long>,
+        placementResolver: PlacementResolver,
+        geometryResolver: GeometryResolver
+    ) {
+        model.getAllWithSubTypes(Ifc4_IfcWall::class.java).forEach { wall ->
+            connector[wall.objectPlacement.expressId] = wall.representation.expressId
+            placementResolver.resolvePlacement(wall.objectPlacement)
+            geometryResolver.resolveWall(wall.representation)
+        }
+        model.getAllWithSubTypes(Ifc4_IfcSlab::class.java).forEach { slab ->
+            if (slab.predefinedType == Ifc4_IfcSlabTypeEnum.ROOF) return@forEach           // skip roofs
+            connector[slab.objectPlacement.expressId] = slab.representation.expressId
+            placementResolver.resolvePlacement(slab.objectPlacement)
+            geometryResolver.resolveSlab(slab.representation)
+        }
+        model.getAllWithSubTypes(Ifc4_IfcColumn::class.java).forEach { column ->
+            connector[column.objectPlacement.expressId] = column.representation.expressId
+            placementResolver.resolvePlacement(column.objectPlacement)
+            geometryResolver.resolveColumn(column.representation)
+        }
+        model.getAllWithSubTypes(Ifc4_IfcDoor::class.java).forEach { door ->
+            connector[door.objectPlacement.expressId] = door.representation.expressId
+            placementResolver.resolvePlacement(door.objectPlacement)
+            geometryResolver.resolveDoor(door.representation)
+        }
+        model.getAllWithSubTypes(Ifc4_IfcWindow::class.java).forEach { window ->
+            connector[window.objectPlacement.expressId] = window.representation.expressId
+            placementResolver.resolvePlacement(window.objectPlacement)
+            geometryResolver.resolveWindow(window.representation)
+        }
+        model.getAllWithSubTypes(Ifc4_IfcStair::class.java).forEach { stair ->
+            connector[stair.objectPlacement.expressId] = stair.representation.expressId
+            placementResolver.resolvePlacement(stair.objectPlacement)
+            geometryResolver.resolveStair(stair.representation)
+        }
+    }
+
+    /**
+     * Extract Ifc2x3tc1 elements placement into [PlacementResolver] cache
+     * and Ifc2x3tc1 elements geometry into [GeometryResolver] cache
+     * @param model with ifc data
+     * @param connector connects placement object with geometry object
+     * @param placementResolver resolves and keeps objects placement
+     * @param geometryResolver resolves and keeps objects geometry
+     */
+    private fun extractIfc2x3tc1GeometryToCache(
+        model: IfcModelInterface,
+        connector: MutableMap<Long, Long>,
+        placementResolver: PlacementResolver,
+        geometryResolver: GeometryResolver
+    ) {
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
+            connector[wall.objectPlacement.expressId] = wall.representation.expressId
+            placementResolver.resolvePlacement(wall.objectPlacement)
+            geometryResolver.resolveWall(wall.representation)
+        }
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcSlab::class.java).forEach { slab ->
+            if (slab.predefinedType == Ifc2x3tc1_IfcSlabTypeEnum.ROOF) return@forEach      // skip roofs
+            connector[slab.objectPlacement.expressId] = slab.representation.expressId
+            placementResolver.resolvePlacement(slab.objectPlacement)
+            geometryResolver.resolveSlab(slab.representation)
+        }
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcColumn::class.java).forEach { column ->
+            connector[column.objectPlacement.expressId] = column.representation.expressId
+            placementResolver.resolvePlacement(column.objectPlacement)
+            geometryResolver.resolveColumn(column.representation)
+        }
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcDoor::class.java).forEach { door ->
+            connector[door.objectPlacement.expressId] = door.representation.expressId
+            placementResolver.resolvePlacement(door.objectPlacement)
+            geometryResolver.resolveDoor(door.representation)
+        }
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcWindow::class.java).forEach { window ->
+            connector[window.objectPlacement.expressId] = window.representation.expressId
+            placementResolver.resolvePlacement(window.objectPlacement)
+            geometryResolver.resolveWindow(window.representation)
+        }
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcStair::class.java).forEach { stair ->
+            connector[stair.objectPlacement.expressId] = stair.representation.expressId
+            placementResolver.resolvePlacement(stair.objectPlacement)
+            geometryResolver.resolveStair(stair.representation)
+        }
+    }
+
+    /**
+     * Transform extracted Ifc4 data into osm data.
+     * Connect data from placement cache Ifc4 at [placementResolver] to geometry cache Ifc4
+     * at [GeometryResolver] to transform into node list. Tag nodes and add to [OSMDataSet]
+     * @param connector connects placement object with geometry object
+     * @param placementResolver resolves and keeps objects placement
+     * @param geometryResolver resolves and keeps objects geometry
+     * @param osmDataSet to add the data to
+     */
+    private fun transformIfc4GeometryToOSM(
+        connector: MutableMap<Long, Long>,
+        placementResolver: PlacementResolver,
+        geometryResolver: GeometryResolver,
+        osmDataSet: OSMDataSet
+    ) {
         geometryResolver.geometryCacheIfc4.forEach { representation ->
             // find placement connected to representation
             val connectorPlacements =
@@ -158,14 +213,37 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 return@forEach
             }
 
-            // TODO add osm tags
-
+            // tag and add to osm dataset
             osmDataSet.addNodes(osmNodeList)
+            if (osmNodeList.size <= 1) {
+                // TODO check if nodes need to be tagged
+                // TODO add level tag
+                return@forEach
+            }
             val id = IdGenerator.createUUID(allowNegative = true)
-            osmDataSet.addWay(OSMWay(id, osmNodeList))
+            // TODO add level tag
+            val osmTagList = OSMTagCatalog.osmTagsFor(representation.key.type)
+            val osmWay = OSMWay(id, osmNodeList, osmTagList)
+            osmDataSet.addWay(osmWay)
         }
 
-        // transform geometry ifc2x3tc1
+    }
+
+    /**
+     * Transform extracted Ifc2x3tc1 data into osm data.
+     * Connect data from placement cache Ifc2x3tc1 at [placementResolver] to geometry cache Ifc2x3tc1
+     * at [GeometryResolver] to transform into node list. Tag nodes and add to [OSMDataSet]
+     * @param connector connects placement object with geometry object
+     * @param placementResolver resolves and keeps objects placement
+     * @param geometryResolver resolves and keeps objects geometry
+     * @param osmDataSet to add the data to
+     */
+    private fun transformIfc2x3tc1GeometryToOSM(
+        connector: MutableMap<Long, Long>,
+        placementResolver: PlacementResolver,
+        geometryResolver: GeometryResolver,
+        osmDataSet: OSMDataSet
+    ) {
         geometryResolver.geometryCacheIfc2x3tc1.forEach { representation ->
             // find placement connected to representation
             val connectorPlacements =
@@ -191,14 +269,19 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 return@forEach
             }
 
-            // TODO add osm tags
-
+            // tag and add to osm dataset
             osmDataSet.addNodes(osmNodeList)
+            if (osmNodeList.size <= 1) {
+                // TODO check if nodes need to be tagged
+                // TODO add level tag
+                return@forEach
+            }
             val id = IdGenerator.createUUID(allowNegative = true)
-            osmDataSet.addWay(OSMWay(id, osmNodeList))
+            val osmTagList = OSMTagCatalog.osmTagsFor(representation.key.type)
+            // TODO add level tag
+            val osmWay = OSMWay(id, osmNodeList, osmTagList)
+            osmDataSet.addWay(osmWay)
         }
-
-        return osmDataSet
     }
 
 }
