@@ -42,15 +42,9 @@ import org.bimserver.models.ifc4.IfcWall as Ifc4_IfcWall
 import org.bimserver.models.ifc4.IfcWindow as Ifc4_IfcWindow
 import org.bimserver.models.ifc4.IfcSlabTypeEnum as Ifc4_IfcSlabTypeEnum
 
-
 /**
- * Geometry engine solutions
+ * Engine to extract the object geometry
  */
-enum class GeometrySolution {
-
-    BODY, BOUNDING_BOX
-}
-
 class GeometryEngine(private val solution: GeometrySolution) {
 
     private val logger = Logger.get(this::class.java)
@@ -164,6 +158,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 return@forEach
             }
 
+            // TODO add osm tags
+
             osmDataSet.addNodes(osmNodeList)
             val id = IdGenerator.createUUID(allowNegative = true)
             osmDataSet.addWay(OSMWay(id, osmNodeList))
@@ -194,6 +190,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 logger.warn("Empty nodes list, skip representation")
                 return@forEach
             }
+
+            // TODO add osm tags
 
             osmDataSet.addNodes(osmNodeList)
             val id = IdGenerator.createUUID(allowNegative = true)

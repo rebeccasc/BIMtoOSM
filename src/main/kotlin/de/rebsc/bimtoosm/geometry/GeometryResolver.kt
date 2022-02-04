@@ -77,17 +77,9 @@ import org.bimserver.models.ifc2x3tc1.IfcArbitraryProfileDefWithVoids as Ifc2x3t
 import org.bimserver.models.ifc2x3tc1.IfcCompositeProfileDef as Ifc2x3tc1_IfcCompositeProfileDef
 import org.bimserver.models.ifc2x3tc1.IfcDerivedProfileDef as Ifc2x3tc1_IfcDerivedProfileDef
 import org.bimserver.models.ifc2x3tc1.IfcCurve as Ifc2x3tc1_IfcCurve
-import org.bimserver.models.ifc2x3tc1.IfcBoundedCurve as Ifc2x3tc1_IfcBoundedCurve
-import org.bimserver.models.ifc2x3tc1.IfcConic as Ifc2x3tc1_IfcConic
-import org.bimserver.models.ifc2x3tc1.IfcLine as Ifc2x3tc1_IfcLine
-import org.bimserver.models.ifc2x3tc1.IfcOffsetCurve2D as Ifc2x3tc1_IfcOffsetCurve2D
-import org.bimserver.models.ifc2x3tc1.IfcOffsetCurve2D as Ifc2x3tc1_IfcOffsetCurve3D
 import org.bimserver.models.ifc2x3tc1.IfcPolyline as Ifc2x3tc1_IfcPolyline
 import org.bimserver.models.ifc2x3tc1.IfcCompositeCurve as Ifc2x3tc1_IfcCompositeCurve
 import org.bimserver.models.ifc2x3tc1.IfcTrimmedCurve as Ifc2x3tc1_IfcTrimmedCurve
-import org.bimserver.models.ifc2x3tc1.IfcBSplineCurve as Ifc2x3tc1_IfcBSplineCurve
-import org.bimserver.models.ifc2x3tc1.IfcCircle as Ifc2x3tc1_IfcCircle
-import org.bimserver.models.ifc2x3tc1.IfcEllipse as Ifc2x3tc1_IfcEllipse
 
 
 class GeometryResolver(private val solution: GeometrySolution) {
@@ -97,12 +89,12 @@ class GeometryResolver(private val solution: GeometrySolution) {
     /**
      * Geometry cache for ifc4 objects
      */
-    var geometryCacheIfc4: MutableMap<Ifc4RepresentationPair, List<Vector3D>> = HashMap()
+    var geometryCacheIfc4: MutableMap<Ifc4RepresentationInfo, List<Vector3D>> = HashMap()
 
     /**
      * Geometry cache for ifc2x3tc1 objects
      */
-    var geometryCacheIfc2x3tc1: MutableMap<Ifc2x3tc1RepresentationPair, List<Vector3D>> = HashMap()
+    var geometryCacheIfc2x3tc1: MutableMap<Ifc2x3tc1RepresentationInfo, List<Vector3D>> = HashMap()
 
 
     /**
@@ -112,7 +104,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveWall(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_WALL)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -131,7 +123,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveWall(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_WALL)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -150,7 +142,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveSlab(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_SLAB)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -169,7 +161,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveSlab(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_SLAB)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -188,7 +180,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveColumn(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_COLUMN)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -207,7 +199,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveColumn(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_COLUMN)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -226,7 +218,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveDoor(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_DOOR)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -245,7 +237,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveDoor(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_DOOR)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -264,7 +256,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveWindow(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_WINDOW)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -283,7 +275,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveWindow(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_WINDOW)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -302,7 +294,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveStair(productRepresentation: Ifc4_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc4_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_STAIR)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -321,7 +313,7 @@ class GeometryResolver(private val solution: GeometrySolution) {
     fun resolveStair(productRepresentation: Ifc2x3tc1_IfcProductRepresentation) {
         // shape representation
         if (productRepresentation is Ifc2x3tc1_IfcProductDefinitionShape) {
-            val itemProcessed = resolveGeometry(productRepresentation)
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_STAIR)
             if (!itemProcessed) {
                 throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
             }
@@ -335,18 +327,18 @@ class GeometryResolver(private val solution: GeometrySolution) {
 
     // Utils
 
-    private fun resolveGeometry(productRepresentation: Ifc4_IfcProductDefinitionShape): Boolean {
+    private fun resolveGeometry(productRepresentation: Ifc4_IfcProductDefinitionShape, type: SupportedObjectType): Boolean {
         val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
         if (solution == GeometrySolution.BODY && repIndices.second != -1) {
             // body
             val rep = productRepresentation.representations[repIndices.second]
-            geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBody(rep)
+            geometryCacheIfc4[Ifc4RepresentationInfo(productRepresentation, rep, type)] = resolveBody(rep)
             return true
         }
         if (repIndices.first != -1) {
             // box
             val rep = productRepresentation.representations[repIndices.first]
-            geometryCacheIfc4[Ifc4RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
+            geometryCacheIfc4[Ifc4RepresentationInfo(productRepresentation, rep, type)] = resolveBoundingBox(rep)
             return true
         }
         if (repIndices.third != -1) {
@@ -361,18 +353,18 @@ class GeometryResolver(private val solution: GeometrySolution) {
     /**
      * TODO add description
      */
-    private fun resolveGeometry(productRepresentation: Ifc2x3tc1_IfcProductDefinitionShape): Boolean {
+    private fun resolveGeometry(productRepresentation: Ifc2x3tc1_IfcProductDefinitionShape, type: SupportedObjectType): Boolean {
         val repIndices = getRepresentationsIndices(productRepresentation) // box, body, axis
         if (solution == GeometrySolution.BODY && repIndices.second != -1) {
             // body
             val rep = productRepresentation.representations[repIndices.second]
-            geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] = resolveBody(rep)
+            geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationInfo(productRepresentation, rep, type)] = resolveBody(rep)
             return true
         }
         if (repIndices.first != -1) {
             // box
             val rep = productRepresentation.representations[repIndices.first]
-            geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationPair(productRepresentation, rep)] = resolveBoundingBox(rep)
+            geometryCacheIfc2x3tc1[Ifc2x3tc1RepresentationInfo(productRepresentation, rep, type)] = resolveBoundingBox(rep)
             return true
         }
         if (repIndices.third != -1) {
@@ -882,12 +874,26 @@ class GeometryResolver(private val solution: GeometrySolution) {
 
 }
 
-data class Ifc4RepresentationPair(
+/**
+ * Class keeps information about IfcProduct
+ * @param productRepresentation IfcProductionRepresentation of IfcProduct
+ * @param representation IfcRepresentation of [productRepresentation] (BoundingBox, Body, Axis)
+ * @param type of product
+ */
+data class Ifc4RepresentationInfo(
     val productRepresentation: Ifc4_IfcProductRepresentation,
-    val representation: Ifc4_IfcRepresentation
+    val representation: Ifc4_IfcRepresentation,
+    val type: SupportedObjectType
 )
 
-data class Ifc2x3tc1RepresentationPair(
+/**
+ * Class keeps information about IfcProduct
+ * @param productRepresentation IfcProductionRepresentation of IfcProduct
+ * @param representation IfcRepresentation of [productRepresentation] (BoundingBox, Body, Axis)
+ * @param type of product
+ */
+data class Ifc2x3tc1RepresentationInfo(
     val productRepresentation: Ifc2x3tc1_IfcProductRepresentation,
-    val representation: Ifc2x3tc1_IfcRepresentation
+    val representation: Ifc2x3tc1_IfcRepresentation,
+    val type: SupportedObjectType
 )
