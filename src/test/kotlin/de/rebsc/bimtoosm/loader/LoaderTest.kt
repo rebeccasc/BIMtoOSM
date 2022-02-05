@@ -35,7 +35,7 @@ internal class LoaderTest {
             Loader.loadIntoModel(filepath)
         }
 
-        // Test invalid file with block comments
+        // test invalid file with block comments
         Assertions.assertThrows(DeserializeException::class.java) {
             val filepath = "$dir/src/test/resources/test2_IFC2X3_TC1_BC.ifc"
             Loader.loadIntoModel(filepath)
