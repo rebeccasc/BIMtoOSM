@@ -60,7 +60,7 @@ internal class GeometryResolverTest {
 
         // load file and optimize
         val ifcFilepath_Ifc2x3tc1: String = BIMFileOptimizer.optimizeIfcFile(
-            "$dir\\src\\test\\resources\\geometry_engine\\wall_with_window_IFC2X3.ifc",
+            "$dir/src/test/resources/geometry_engine/wall_with_window_IFC2X3.ifc",
             optimizeInput_RBC = true,
             optimizeInput_RBL = true
         ).absolutePath
