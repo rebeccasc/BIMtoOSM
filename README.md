@@ -19,12 +19,12 @@ val defaultConfig = Configuration()
 val parser = BIMtoOSMParser(config)
 
 // Parse BIM file
-val osmData: OSMDataSet = parser.parse("path\\to\\file.ifc")
+val osmData: OSMDataSet = parser.parse("path-to-file.ifc")
 
 // Access the data (for full description see wiki -> Usage)
 
 // Export OSM data
-Exporter.exportOSM("path\\to\\output.osm", osmData, true)
+Exporter.exportOSM("path-to-file.ifc", osmData, true)
 ```
 
 ### Use JOSM GUI
@@ -36,8 +36,6 @@ The parser is integrated into [JOSM](https://josm.openstreetmap.de/)s [IndoorHel
 
 <br>
 
-For more information see [wiki &#8594; Usage](https://github.com/rebeccasc/BIMtoOSM/wiki/Usage)
-
 ## Dependencies
 * [opensourceBIM/IfcPlugins](https://github.com/opensourceBIM/IfcPlugins)
 * [JTS Topology Suite](https://github.com/locationtech/jts)
@@ -47,13 +45,7 @@ Want to contribute? Check the [contribution guidelines](https://github.com/rebec
 
 ## Wiki
 
-Find a detailed user guide at [wiki &#8594; Usage](https://github.com/rebeccasc/BIMtoOSM/wiki/Usage)
-
-Get more information about OSM and indoor data at [wiki &#8594; Home](https://github.com/rebeccasc/BIMtoOSM/wiki)
-
-Get to know about the development [wiki &#8594; Development](https://github.com/rebeccasc/BIMtoOSM/wiki/Development)
-
-Or check https://rebeccasc.github.io/BIMtoOSM/
+Find a detailed user guide at https://rebeccasc.github.io/BIMtoOSM/
 
 ## Authors
 Rebecca Schmidt (rebeccasmdt@gmail.com)
