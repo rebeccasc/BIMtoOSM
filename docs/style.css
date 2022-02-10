@@ -1,37 +1,194 @@
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+
 :root {
     --main-bg-color: #fffdfd;
-    --topnav-text-color: #000000c0;
-    --topnav-text-shadow-color: rgba(149, 157, 165, 0.651); 
+    --sidenav-text-color: #000000;
+    --sidenav-bg-color: #e6e6e667;
+
+    --font-family-sidebar: 'Poppins', sans-serif,
+    --font-family-header: 'Zen Kaku Gothic Antique', sans-serif;
+    --font-family-content: "Lato", sans-serif;
+    --font-family-code: "Consolas", monospace;
+
+    /* --topnav-text-shadow-color: rgba(149, 157, 165, 0.651); 
     --topnav-height: 140px;
     --font-family-header: 'Zen Kaku Gothic Antique', sans-serif;
     --font-family-body: "Lato", sans-serif;
-    --box-shadow-color: rgba(149, 157, 165, 0.144);
+    --box-shadow-color: rgba(149, 157, 165, 0.144); */
 }
-
-@media screen and (max-height: 450px) {
-    .sidebar {padding-top: 15px;}
-    .sidebar a {font-size: 18px;}
-  }
 
 body {
-    overflow-y: auto;
-    font-family: var(--font-family-body);
+    background: #fafafa;
 }
 
-.topnav {
-    width: auto;
-    height: var(--topnav-height);
+@media screen and (max-height: 500px) {
+    .sidebar {padding-top: 15px;}
+    .sidebar a {font-size: 18px;}
+    .github-corner:hover 
+    .octo-arm{animation:none}
+    .github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}
 }
 
-.topnav h2 {
-    padding-top: 40px;
-    padding-bottom: 15px;
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -250px;
+    }
+    #sidebar.active {
+        margin-left: 0;
+    }
+    #sidebarCollapse span {
+        display: none;
+    }
+}
+
+.github-corner:hover .octo-arm {
+    animation:octocat-wave 560ms ease-in-out;
+}
+
+@keyframes octocat-wave {
+    0%,
+    100%{transform:rotate(0)}
+    20%,
+    60%{transform:rotate(-25deg)}
+    40%,
+    80%{transform:rotate(10deg)}
+}
+
+h4{
+    font-size: large !important;
+}
+
+p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+    color: #999;
+}
+
+a,
+a:hover,
+a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px dashed #ddd;
+    margin: 40px 0;
+}
+
+/* sidebar */
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    padding-left: 20px;
+    background: var(--sidenav-bg-color);
+    color: var(--sidebar-text-color);
+    transition: all 0.3s;
+    font-family: var(--font-family-sidebar);
+}
+
+#sidebar.active {
+    margin-left: -250px;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: var(--sidenav-bg-color);
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+}
+
+#sidebar ul p {
     text-align: center;
-    font-size: 220%;
+    color: var(--sidebar-text-color);
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+    color: var(--sidenav-text-color) !important;
+}
+
+#sidebar ul li a:hover {
+    background: #fff;
+    text-decoration: none;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+}
+
+/* content */
+
+.content {
+    width: 100%;
+    padding: 20px;
+    margin-left: 80px;
+    min-height: 100vh;
+    transition: all 0.3s;
     font-family: var(--font-family-header);
-    color: var(--topnav-text-color);
 }
 
-.main {
-    text-align: center;
+.content #header {
+    padding-bottom: 20px;
+}
+
+.content #intro {
+    padding-bottom: 80px;
+}
+
+.content #intro img{
+    width: 90%;
+    margin-left: -10px;
+    padding-top: 70px;
+    padding-bottom: 40px;
+}
+
+.content #development img{
+    width: 90%;
+    margin-left: -10px;
+    padding-top: 30px;
+    padding-bottom: 40px;
+}
+
+/* code  */
+
+.language-kotlin{
+    border-radius: 8px !important;
+    max-width: 800px;
+}
+
+code-val{
+    color: #000000 !important;
+    font-family: var(--font-family-code);
+    font-size: 14px;
 }

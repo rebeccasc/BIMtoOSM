@@ -18,91 +18,268 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+  <!-- and it's easy to individually load additional languages -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/languages/kotlin.min.js"></script>
+
 </head>
 
 <body>
-    <div class="topnav">   
-        <h2>BIMtoOSM</h2>
-        <a href="https://github.com/rebeccasc/BIMtoOSM" class="github-corner" aria-label="View source on GitHub">
-          <svg width="90" height="90" viewBox="0 0 250 250" style="fill:#70B7FD; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
-            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
-            <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
-            <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
-          </svg>
-        </a>
-        <style>
-        .github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}
-        </style>
-        <!-- <div class="input-group mb-3"> 
-            <input type="text" class="form-control" placeholder="Search...">
-            <div class="input-group-append">
-                <button class="btn btn-primary"><i class="fa fa-search"></i></button>
-            </div>
-        </div> -->
-        <div class="card" style="width: 18rem;">
-          <div class="card-body">
-            <nav id="navbar-example3" class="navbar navbar-light bg-light flex-column align-items-stretch p-3">
-              <a class="navbar-brand" href="#">Navbar</a>
-              <nav class="nav nav-pills flex-column">
-                <a class="nav-link" href="#item-1">Home</a>
-                <a class="nav-link" href="#item-2">Development</a>
-                <nav class="nav nav-pills flex-column">
-                  <a class="nav-link ms-3 my-1" href="#item-2-1">IFC to OSM translation</a>
-                    <a class="nav-link ms-3 my-1" href="#item-2-1-1" div style="text-indent:20px;">Geometry information</a>
-                    <a class="nav-link ms-3 my-1" href="#item-2-1-2" div style="text-indent:20px;">Material information</a>
-                    <a class="nav-link ms-3 my-1" href="#item-2-1-3" div style="text-indent:20px;">More information</a>
-                  <a class="nav-link ms-3 my-1" href="#item-2-2">Workflow - parsing data</a>
-                    <a class="nav-link ms-3 my-1" href="#item-2-2-1" div style="text-indent:20px;">Pre-processing</a>
-                    <a class="nav-link ms-3 my-1" href="#item-2-2-2" div style="text-indent:20px;">Loading</a>
-                    <a class="nav-link ms-3 my-1" href="#item-2-2-3" div style="text-indent:20px;">Parsing</a>
-                    <a class="nav-link ms-3 my-1" href="#item-2-2-4" div style="text-indent:20px;">Post-processing</a>
-                </nav>
-                <a class="nav-link" href="#item-3">Usage</a>
-                    <a class="nav-link ms-3 my-1" href="#item-3-1">Supported IFC Schema</a>
-                    <a class="nav-link ms-3 my-1" href="#item-3-2">API</a>
-                    <a class="nav-link ms-3 my-1" href="#item-3-3">Usage</a>
-                        <a class="nav-link ms-3 my-1" href="#item-3-3-1" div style="text-indent:20px;">Setup</a>
-                            <a class="nav-link ms-3 my-1" href="#item-3-3-1-1" div style="text-indent:30px;">Configuration</a>
-                        <a class="nav-link ms-3 my-1" href="#item-3-3-2" div style="text-indent:20px;">How to access data</a>
-                </nav>
-              </nav>
-            </nav>             
-            </div>
-          </div>
-        </div>
-    </div>
+  
+  <!-- github logo -->
+  <a href="https://github.com/rebeccasc/BIMtoOSM" class="github-corner" aria-label="View source on GitHub">
+    <svg width="90" height="90" viewBox="0 0 250 250" style="fill:#70B7FD; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
+      <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+      <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+      <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+    </svg>
+  </a>
+  <style>
+  .github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}
+  </style>
 
-    <div class="main">
+
+  <div class="wrapper">
+
+    <!-- sidebar  -->
+    <nav id="sidebar">
+      <ul class="list-unstyled components">
+          <p>BIMtoOSM</p>
+          <li><a href="#">Home</a></li>
+          <li>
+            <a href="#pageUsage" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Usage</a>
+              <ul class="collapse list-unstyled" id="pageUsage">
+                <li><a href="#quickstart">Quickstart</a></li>
+                <li><a href="#api">API</a></li>
+                <li><a href="#setup">Setup</a></li>
+                <li><a href="#supported-ifc-schema">Supported IFC Schema</a></li>
+              </ul>
+          </li>
+          <li>
+            <a href="#pageDev" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Development</a>
+              <ul class="collapse list-unstyled" id="pageDev">
+                <li><a href="#ifc-to-osm-translation">IFC to OSM translation</a></li>
+                <li><a href="#workflow">Workflow - parsing data</a></li>
+              </ul>
+          </li>
+      </ul>
+    </nav>
+
+    <!-- page content  -->
+    <div class="content">
+      <div id="banner"></div>
+      <div id="header">
+        <h1>BIM to OSM</h1>
+      </div>
+      <div id="intro">
+        This open source project wants to make Building Information Model (<a href="https://en.wikipedia.org/wiki/Building_information_modeling">BIM</a>) data available for OpenStreetMap (<a href="https://www.openstreetmap.org/#map=18/50.81353/12.92928&layers=N">OSM</a>).
+  
+        <br><img src="./banner.svg"><br>
       
-      <!--<div class="card"> -->
+        Looking for information regarding the development? - Check the <a href="#development">Development Page</a>
+        <br><br>
+        Want to contribute? - Have a look at our <a href="https://github.com/rebeccasc/BIMtoOSM/blob/a46be758517885bd86bbc4ded7b5e47f8ee46fb4/CONTRIBUTING.md">Contribution guidelines</a>
+        <br><br>       
+        See also
+        <ul>
+          <li> OSM wiki: <a href="https://wiki.openstreetmap.org/wiki/Building_Information_Modeling">Building Information Modeling</li>
+          <li><a href="https://wiki.openstreetmap.org/wiki/Simple_Indoor_Tagging">Simple Indoor Tagging schema</a></li>
+          <li>JOSM indoor mapping tool <a href="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/indoorhelper">IndoorHelper Plugin</a></li>
+        </ul>  
+      </div>
 
-        <div class="col d-flex justify-content-center"><div class="card" style="width: 45rem;">
-          <div class="card-body">
-            <h5 class="card-title">Welcome to the BIMtoOSM wiki! <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-emoji-smile" viewBox="0 0 16 16">
-              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-              <path d="M4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5z"/>
-            </svg></i> <br></h5>
+      <div id="usage">
+        <h1>Usage</h1>
 
-            <p class="card-text">This open source project wants to make Building Information Model (<a href="#" class="pe-auto">BIM</a>) data available for OpenStreetMap (<a href="#" class="pe-auto">OSM</a>). <br>
-            
-              Looking for information regarding the development? - Check the <a href="#" class="pe-auto">Development Page</a><br>
-              
-              Want to contribute? - Have a look at our <a href="#" class="pe-auto">Contribution guidelines</a><br>
-              
-              
-              See also: <br>
-              <ul>
-              <div style="text-indent:10px;"><li>OSM wiki: <a href="#" class="pe-auto">Building Information Modeling</a></li></div>
-              <div style="text-indent:20px;"><li>OSM Indoor Mapping:</li></div>
-              <div style="text-indent:30px;"><li><a href="#" class="pe-auto">Simple Indoor Tagging</a> schema</li></div>
-              <div style="text-indent:120px;"><li>JOSM indoor mapping tool <a href="#" class="pe-auto">IndoorHelper Plugin</a></li></div>
-            </ul>
-            </div> 
-            <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
-          </div>
+        <hr>
+
+        <div id="quickstart">
+          <h3>Quickstart</h3>
+          <pre>
+            <code class="language-kotlin hljs">
+              <span class="hljs-comment">// Setup configuration (description see below):
+              // costumized</span>
+              <span class="hljs-keyword">val</span> config = <span class="hljs-type">Configuration</span>(
+                solution = <span class="hljs-type">GeometrySolution.BOUNDING_BODY</span>,
+                optimizeInput_RBC = <span class="hljs-built_in">true</span>,
+                optimizeInput_RBL = <span class="hljs-built_in">true</span>,
+                optimizeOutput_DS = <span class="hljs-built_in">true</span>,
+                optimizeOutput_DSMD  = <span class="hljs-number">0.05</span>
+              )
+
+              <span class="hljs-comment">// or default</span>
+              <span class="hljs-keyword">val</span> defaultConfig = <span class="hljs-type">Configuration</span>()
+
+              <span class="hljs-comment">// Init parser</span>
+              <span class="hljs-keyword">val</span> parser = <span class="hljs-type">BIMtoOSMParser</span>(config)
+
+              <span class="hljs-comment">// Parse BIM file</span>
+              <span class="hljs-keyword">val</span> osmData: <span class="hljs-type">BIMtoOSMParser</span> = parser.parse(<span class="hljs-string">"path-to-file.ifc"</span>)
+
+              <span class="hljs-comment">// Export OSM data</span>
+              <span class="hljs-type">Exporter</span>.exportOSM(<span class="hljs-string">"path-to-file.ifc"</span>, osmData, <span class="hljs-built_in">true</span>)
+            </code>
+          </pre> 
+        </div>
+
+        <div id="api">
+          <h3>API</h3>
+          <pre>
+            <code class="language-kotlin hljs">
+              <span class="hljs-comment">/**
+               * Configure the parser
+               * @param config parser configuration
+               */</span>
+              <span class="hljs-keyword">fun</span> <span class="hljs-title">configure</span>(<span class="hljs-title">config</span>: <span class="hljs-type">Configuration</span>)
+
+              <span class="hljs-comment">/**
+               * Parse BIM file placed at [filepath] to OSM data
+               * @param filepath BIM file
+               */</span>
+              <span class="hljs-keyword">fun</span> <span class="hljs-title">parse</span>(<span class="hljs-title">filepath</span>: <span class="hljs-type">String</span>): <span class="hljs-type">OSMDataSet</span>
+
+              <span class="hljs-comment">/**
+               * Gives information about current ParserStatus
+               */</span>
+              <span class="hljs-keyword">fun</span> <span class="hljs-title">status</span>(): <span class="hljs-type">String</span>
+
+              <span class="hljs-comment">/**
+               * Export data to .osm file located at [filepath]
+               * @param filepath to export location
+               * @param data [OSMDataSet] to export
+               */</span>
+              <span class="hljs-keyword">fun</span> <span class="hljs-title">export</span>(<span class="hljs-title">filepath</span>: <span class="hljs-type">String</span>, <span class="hljs-title">data</span>: <span class="hljs-type">OSMDataSet</span>)
+            </code>
+          </pre> 
+        </div>
+
+        <div id="setup">
+          <h3>Setup</h3>
+          <pre>
+            <code class="language-kotlin hljs">
+              <span class="hljs-comment">// Setup configuration (description see below):
+              // costumized</span>
+              <span class="hljs-keyword">val</span> config = <span class="hljs-type">Configuration</span>(
+                solution = <span class="hljs-type">GeometrySolution.BOUNDING_BODY</span>,
+                optimizeInput_RBC = <span class="hljs-built_in">true</span>,
+                optimizeInput_RBL = <span class="hljs-built_in">true</span>,
+                optimizeOutput_DS = <span class="hljs-built_in">true</span>,
+                optimizeOutput_DSMD  = <span class="hljs-number">0.05</span>
+              )
+
+              <span class="hljs-comment">// or default</span>
+              <span class="hljs-keyword">val</span> defaultConfig = <span class="hljs-type">Configuration</span>()
+
+              <span class="hljs-comment">// Init parser</span>
+              <span class="hljs-keyword">val</span> parser = <span class="hljs-type">BIMtoOSMParser</span>(config)
+
+              <span class="hljs-comment">// Parse BIM file</span>
+              <span class="hljs-keyword">val</span> osmData: <span class="hljs-type">BIMtoOSMParser</span> = parser.parse(<span class="hljs-string">"path-to-file.ifc"</span>)
+
+              <span class="hljs-comment">// Export OSM data</span>
+              <span class="hljs-type">Exporter</span>.exportOSM(<span class="hljs-string">"path-to-file.ifc"</span>, osmData, <span class="hljs-built_in">true</span>)
+            </code>
+          </pre> 
+
+          <h4>Configuration</h4>
+          <ul>
+            <li><code>solution</code>:</li>
+            Set to <code-val>GeometrySolution.BODY</code-val> for more detailed or to <code-val>GeometrySolution.BOUNDING_BOX</code-val> for less detailed transformation to OSM. If a solution type cannot be applied <code-val>GeometrySolution.BOUNDING_BOX</code-val> will always be the default
+            <li><code>optimizeInput_RBC</code></li>
+            Optimize the input by removing all block comments (RBC) from input file. Block comments might cause errors while deserializing. Set <code-val>true</code-val> or <code-val>false</code-val>. It's highly recommended to use this optimization
+            <li><code>optimizeInput_RBL</code></li>
+            Optimize the input by removing all blank lines (RBL) from input file. Blank lines might cause errors while deserializing. Set <code-val>true</code-val> or <code-val>false</code-val>. It's highly recommended to use this optimization
+            <li><code>optimizeOutput_DS</code></li>
+            Reduce the complexity of OSM output data by merging close nodes and overlapping areas. This will reduce the OSM data set size (DS). Set <code-val>true</code-val> or <code-val>false</code-val>
+            <li><code>optimizeOutput_DSMD</code></li>
+            Set merge distance (MD) for <code-val>[optimizeOutput_DS]</code-val> optimization - used only if <code-val>[optimizeOutput_DS]</code-val> set true. Set distance value in meter, greater than 0.0
+          </ul>  
+
+          Default configuration
+          <ul>
+            <li><code>solution</code>: <code-val>GeometrySolution.BOUNDING_BOX</code-val></li>
+            <li><code>optimizeInput_RBC</code>: <code-val>false</code-val></li>
+            <li><code>optimizeInput_RBL</code>: <code-val>false</code-val></li>
+            <li><code>optimizeOutput_DS</code>: <code-val>false</code-val></li>
+            <li><code>optimizeOutput_DSMD</code>: -</li>
+          </ul>  
+
+          <br>
+
+          <h4>How to access the data</h4>
+          <pre>
+            <code class="language-kotlin hljs">
+              <span class="hljs-comment">// Parse</span>
+              <span class="hljs-keyword">val</span> defaultConfig = <span class="hljs-type">Configuration</span>()
+              <span class="hljs-keyword">val</span> parser = <span class="hljs-type">BIMtoOSMParser</span>(defaultConfig)
+              <span class="hljs-keyword">val</span> osmData: <span class="hljs-type">OSMDataSet</span> = parser.parse(<span class="hljs-string">"path-to-file.ifc"</span>)
+
+              <span class="hljs-comment">// Access data</span>
+
+              <span class="hljs-comment">// Example: get all nodes of data set</span>
+              <span class="hljs-keyword">val</span> nodes: <span class="hljs-type">ArrayList&lt;OSMNode&gt;</OSMNode></span> = osmData.nodes
+
+              <span class="hljs-comment">// Example: get all nodes about OSMNode</span>
+              <span class="hljs-keyword">val</span> firstNode: <span class="hljs-type">OSMNode</span> = nodes[<span class="hljs-number">0</span>]
+              <span class="hljs-keyword">val</span> nodeId: <span class="hljs-built_in">Long</span> = firstNode.id
+              <span class="hljs-keyword">val</span> nodeX: <span class="hljs-built_in">Double</span> = firstNode.x   <span class="hljs-comment">// longitude</span>
+              <span class="hljs-keyword">val</span> nodeY: <span class="hljs-built_in">Double</span> = firstNode.y   <span class="hljs-comment">// latitude</span>
+              <span class="hljs-keyword">val</span> nodeTags: <span class="hljs-type">ArrayList&lt;OSMTag&gt;</OSMNode></span> = firstNode.tags
+
+              <span class="hljs-comment">// Example: get information about OSMTag</span>
+              <span class="hljs-keyword">val</span> firstTag: <span class="hljs-type">OSMTag</span> = nodesTags[<span class="hljs-number">0</span>]
+              <span class="hljs-keyword">val</span> key: <span class="hljs-built_in">String</span> = firstTag.k
+              <span class="hljs-keyword">val</span> value: <span class="hljs-built_in">String</span> = firstTag.v
+
+              <span class="hljs-comment">// Example: get all ways of data set</span>
+              <span class="hljs-keyword">val</span> ways: <span class="hljs-type">ArrayList&lt;OSMWay&gt;</OSMNode></span> = osmData.ways
+
+              <span class="hljs-comment">// Example: get information about OSMWay</span>
+              <span class="hljs-keyword">val</span> firstWay: <span class="hljs-type">OSMWay</span> = ways[<span class="hljs-number">0</span>]
+              <span class="hljs-keyword">val</span> wayId: <span class="hljs-built_in">Long</span> = firstWay.id
+              <span class="hljs-keyword">val</span> wayPoints: <span class="hljs-type">ArrayList&lt;OSMNode&gt;</OSMNode></span> = firstWay.points
+              <span class="hljs-keyword">val</span> wayTags: <span class="hljs-type">ArrayList&lt;OSMTag&gt;</OSMNode></span> = firstWay.tags
+            </code>
+          </pre> 
+
+        </div>
+   
+
+        <div id="supported-ifc-schema">
+          <h3>Supported IFC Schema</h3>
+          <br>
+          The parser currently supports the <b>IFC4</b> and <b>IFC2x3 TC1</b> schema
         </div>
       </div>
+
+
+      <br><br>
+
+      <div id="development">
+        <h1>Development</h1>
+        <hr>
+
+        <div id="ifc-to-osm-translation">
+          <h3>IFC to OSM translation</h3>
+          WIP
+        </div>
+
+        <div id="workflow">
+          <h3>Workflow - parsing data</h3>
+
+          <img src="./parser_workflow.svg"><br>
+
+        </div>
+      </div>
+
     </div>
+
+  </div>
+
 </body>
 
 </html>
+
+ 
