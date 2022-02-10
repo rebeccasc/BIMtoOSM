@@ -10,11 +10,7 @@
     --font-family-content: "Lato", sans-serif;
     --font-family-code: "Consolas", monospace;
 
-    /* --topnav-text-shadow-color: rgba(149, 157, 165, 0.651); 
-    --topnav-height: 140px;
-    --font-family-header: 'Zen Kaku Gothic Antique', sans-serif;
-    --font-family-body: "Lato", sans-serif;
-    --box-shadow-color: rgba(149, 157, 165, 0.144); */
+    --content-max-width: 800px;
 }
 
 body {
@@ -29,7 +25,7 @@ body {
     .github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}
 }
 
-@media (max-width: 768px) {
+@media (max-width: 800px) {
     #sidebar {
         margin-left: -250px;
     }
@@ -39,7 +35,10 @@ body {
     #sidebarCollapse span {
         display: none;
     }
-}
+    .content{
+        margin-left: 0px !important;
+    }
+} 
 
 .github-corner:hover .octo-arm {
     animation:octocat-wave 560ms ease-in-out;
@@ -54,8 +53,15 @@ body {
     80%{transform:rotate(10deg)}
 }
 
+h3{
+    margin-top: 30px !important;
+}
+
 h4{
+    margin-top: 30px !important;
+    margin-bottom: 15px !important;
     font-size: large !important;
+    font-weight: 550 !important;
 }
 
 p {
@@ -92,11 +98,13 @@ a:focus {
 #sidebar {
     min-width: 250px;
     max-width: 250px;
+    height: 100%;
     padding-left: 20px;
     background: var(--sidenav-bg-color);
     color: var(--sidebar-text-color);
     transition: all 0.3s;
     font-family: var(--font-family-sidebar);
+    position: fixed;
 }
 
 #sidebar.active {
@@ -149,10 +157,19 @@ ul ul a {
 
 /* content */
 
+#banner{
+    margin-bottom: 100px;
+}
+
+#banner a{
+    text-decoration: none;
+}
+
 .content {
     width: 100%;
+    max-width: var(--content-max-width);
     padding: 20px;
-    margin-left: 80px;
+    margin-left: 300px;
     min-height: 100vh;
     transition: all 0.3s;
     font-family: var(--font-family-header);
@@ -167,24 +184,38 @@ ul ul a {
 }
 
 .content #intro img{
-    width: 90%;
+    width: 100%;
+    max-width: var(--content-max-width);
+    margin: auto;
     margin-left: -10px;
     padding-top: 70px;
     padding-bottom: 40px;
 }
 
-.content #development img{
-    width: 90%;
-    margin-left: -10px;
+.content #development img, #josm img{
+    width: 100%;
+    max-width: var(--content-max-width);
     padding-top: 30px;
     padding-bottom: 40px;
 }
 
+.content #josm-logo{
+    width: 60px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.alert{
+    width: 100%;
+    max-width: var(--content-max-width)
+}
+
+
 /* code  */
 
-.language-kotlin{
+.language-kotlin, .language-gradle{
     border-radius: 8px !important;
-    max-width: 800px;
+    max-width: var(--content-max-width);
 }
 
 code-val{
