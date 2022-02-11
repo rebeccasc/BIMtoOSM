@@ -67,7 +67,7 @@
           </li>
           <li><a href="#pageBIMandOSM">BIM & OSM</a></li>
       </ul>
-    </nav>
+    </nav>  <!-- sidebar end-->
 
     <!-- page content  -->
     <div class="content">
@@ -313,8 +313,6 @@
           </ul>
         </div>
 
-        <br>
-
         <div id="ifc-to-osm-translation">
           <h3>IFC to OSM translation</h3>
           To transfrom IFC to OSM data we'll need to filter a lot of information by reducing object dimensions from 3D to 2D. The following basic IFC entities will be translated:
@@ -353,8 +351,6 @@
 
         </div>
 
-        <br>
-
         <div id="workflow">
           <h3>Workflow - parsing data</h3>
           <img src="./parser_workflow.svg"><br>
@@ -388,8 +384,72 @@
       <div id="pageBIMandOSM">
         <h1>BIM & OSM</h1>
         <hr>
-        WIP
+        This open source project wants to make Building Information Model (<a href="https://en.wikipedia.org/wiki/Building_information_modeling">BIM</a>) 
+        data available for OpenStreetMap (<a href="https://www.openstreetmap.org/#map=18/50.81353/12.92928&layers=N">OSM</a>).
+
+        <h3>OSM & indoor data</h3>
+
+        With OSM you can handle not only outdoor data. A large number of projects focus on the representation of indoor data in OSM.
+        These data might be used for indoor localization and navigation. 
+        
+        <h4>How to create and view indoor data in OSM?</h4>
+
+        There are several OSM editors. To handle indoor data <a href="https://josm.openstreetmap.de/">JOSM</a> might be a good choice. 
+        Note: To use JOSM, a JDK needs to be installed.
+
+        <br><br>
+
+        <div class="alert alert-info" role="alert">
+          <table>
+            <tr>
+              <td><img src="https://upload.wikimedia.org/wikipedia/commons/5/51/JOSM_Logo_2014.svg"></td>
+              <td> 
+                <a href="https://josm.openstreetmap.de/">JOSM</a> is an extensible editor for ​OpenStreetMap (OSM) for ​Java 8+.
+              </td>
+    
+            </tr>
+          </table>     
+        </div>
+
+        <div class="alert alert-info" role="alert">
+          <table>
+            <tr>
+              <td><img src="./indoorhelper_1.png"></td>
+              <td> 
+                To <b>create, validate and view indoor data</b> correctly, there is a JOSM plugin called 
+                <a href="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/indoorhelper">IndoorHelper</a>. 
+                Check out the <a href="https://wiki.openstreetmap.org/w/images/0/03/Indoorhelper_how_to.gif">quickstart gif</a> or 
+                <a href="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/indoorhelper">docs.</a> 
+              </td>
+    
+            </tr>
+          </table>     
+        </div>
+
+        <div class="alert alert-info" role="alert">
+          <table>
+            <tr>
+              <td><img src="./piclayer_1.png"></td>
+              <td> 
+                To <b>use georeferenced images</b> for mapping, JOSMs <a href="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/PicLayer">PicLayer</a> plugin
+                makes it possible to load images into JOSM and calibrate them. Check out the <a href="https://wiki.openstreetmap.org/w/images/2/20/Piclayer_usage.gif">quickstart gif</a> 
+                or <a href="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/PicLayer">docs.</a>
+              </td>
+    
+            </tr>
+          </table>     
+        </div>
+
       </div>
+
+      For more information about OSM indoor data see <a href="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/indoorhelper#About_OSM_indoor_data">indoorhelper#About_OSM_indoor_data</a>
+      or <a href="https://wiki.openstreetmap.org/wiki/JOSM/Plugins/indoorhelper#How_to_start">indoorhelper#How_to_start</a>
+
+      <h3>Transfer BIM into OSM</h3>
+      To transfrom IFC to OSM data we'll need to filter a lot of information by reducing object dimensions from 3D to 2D.
+      This parser transforms BIM to OSM data using the OSM <a href="https://wiki.openstreetmap.org/wiki/Simple_Indoor_Tagging">Simple Infoor Tagging</a>
+      schema. At <a href="https://wiki.openstreetmap.org/wiki/Building_Information_Modeling">OSM Building Information Modeling</a> you can find the translation between 
+      BIM and OSM data.
 
 
     </div> <!-- content end-->

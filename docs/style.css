@@ -199,17 +199,21 @@ ul ul a {
     padding-bottom: 40px;
 }
 
-.content #josm-logo{
+.content #josm-logo {
     width: 60px;
     padding-top: 0px;
     padding-bottom: 0px;
+}
+
+.content #pageBIMandOSM img {
+    width: 40px;
+    margin-right: 10px;
 }
 
 .alert{
     width: 100%;
     max-width: var(--content-max-width)
 }
-
 
 /* code  */
 
