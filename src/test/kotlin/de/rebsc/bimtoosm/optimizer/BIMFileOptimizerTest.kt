@@ -32,22 +32,24 @@ internal class BIMFileOptimizerTest {
         //------------ test invalid file ------------ //
         // test invalid filepath
         Assertions.assertThrows(BIMtoOSMException::class.java) {
-            val filepath = "$dir/src/test/resources/test1_IFC4_.ifc"
+            val filepath = "$dir/src/test/resources/test1_IFC4_.ifc".replace("/", File.separator)
             BIMFileOptimizer.optimizeIfcFile(filepath, optimizeInput_RBC = false, optimizeInput_RBL = false)
         }
 
         //------------ test valid file ------------ //
         // test valid filepath
         Assertions.assertDoesNotThrow {
-            val filepath = "$dir/src/test/resources/test1_IFC4.ifc"
+            val filepath = "$dir/src/test/resources/test1_IFC4.ifc".replace("/", File.separator)
             BIMFileOptimizer.optimizeIfcFile(filepath, optimizeInput_RBC = false, optimizeInput_RBL = false)
         }
 
         // test remove block comments
-        val fileReferenceBC = File("$dir/src/test/resources/test2_IFC2X3_TC1.ifc")
+        val fileReferenceBC = File(
+            "$dir/src/test/resources/test2_IFC2X3_TC1.ifc".replace("/", File.separator)
+        )
         val fileOptimizedBC =
             BIMFileOptimizer.optimizeIfcFile(
-                "$dir/src/test/resources/test2_IFC2X3_TC1_BC.ifc",
+                "$dir/src/test/resources/test2_IFC2X3_TC1_BC.ifc".replace("/", File.separator),
                 optimizeInput_RBC = true,
                 optimizeInput_RBL = false
             )
@@ -59,10 +61,12 @@ internal class BIMFileOptimizerTest {
         Assertions.assertTrue(referenceBC.zip(optimizedBC).all { (x, y) -> x == y })
 
         // test remove block comments and blank lines
-        val fileReferenceBL = File("$dir/src/test/resources/test1_IFC4_WBL.ifc")
+        val fileReferenceBL = File(
+            "$dir/src/test/resources/test1_IFC4_WBL.ifc".replace("/", File.separator)
+        )
         val fileOptimizedBL =
             BIMFileOptimizer.optimizeIfcFile(
-                "$dir/src/test/resources/test1_IFC4.ifc",
+                "$dir/src/test/resources/test1_IFC4.ifc".replace("/", File.separator),
                 optimizeInput_RBC = true,
                 optimizeInput_RBL = true
             )

@@ -83,7 +83,7 @@ internal class ExporterTest {
         val dir = System.getProperty("user.dir")
 
         // export data
-        val filename = "$dir\\src\\test\\output\\exportTest.osm"
+        val filename = "$dir/src/test/output/exportTest.osm".replace("/", File.separator)
         exportOSM(filename, dataset, addTimestamp = false)
 
         // read true data and check equality
