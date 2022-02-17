@@ -10,3 +10,4 @@ docs/templates
 !/.idea/codeStyles/Project.xml
 tmp
 src/test/output
+/src/test/resources/geometry_engine/secret_files
