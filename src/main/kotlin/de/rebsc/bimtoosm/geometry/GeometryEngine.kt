@@ -25,6 +25,8 @@ import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import org.bimserver.emf.IfcModelInterface
 import org.bimserver.emf.Schema
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver as Ifc2x3tc1_PlacementResolver
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.GeometryResolver as Ifc2x3tc1_GeometryResolver
 import org.bimserver.models.ifc2x3tc1.IfcColumn as Ifc2x3tc1_IfcColumn
 import org.bimserver.models.ifc2x3tc1.IfcDoor as Ifc2x3tc1_IfcDoor
 import org.bimserver.models.ifc2x3tc1.IfcSlab as Ifc2x3tc1_IfcSlab
@@ -39,6 +41,8 @@ import org.bimserver.models.ifc4.IfcStair as Ifc4_IfcStair
 import org.bimserver.models.ifc4.IfcWall as Ifc4_IfcWall
 import org.bimserver.models.ifc4.IfcWindow as Ifc4_IfcWindow
 import org.bimserver.models.ifc4.IfcSlabTypeEnum as Ifc4_IfcSlabTypeEnum
+import de.rebsc.bimtoosm.geometry.ifc4.PlacementResolver as Ifc4_PlacementResolver
+import de.rebsc.bimtoosm.geometry.ifc4.GeometryResolver as Ifc4_GeometryResolver
 
 /**
  * Engine to extract the object geometry
@@ -57,8 +61,13 @@ class GeometryEngine(private val solution: GeometrySolution) {
         val schema = model.modelMetaData.ifcHeader.ifcSchemaVersion
 
         // resolve placement and geometry of object separately
-        val placementResolver = PlacementResolver()
-        val geometryResolver = GeometryResolver(solution)
+        val placementResolver_ifc4 = Ifc4_PlacementResolver()
+        val geometryResolver_ifc4 = Ifc4_GeometryResolver(solution)
+
+        val placementResolver_ifc2x3tc1 = Ifc2x3tc1_PlacementResolver()
+        val geometryResolver_ifc2x3tc1 = Ifc2x3tc1_GeometryResolver(solution)
+
+
         // connect placement object with geometry object
         val connector: MutableMap<Long, Long> = HashMap()
         // osm data set
@@ -66,23 +75,28 @@ class GeometryEngine(private val solution: GeometrySolution) {
 
         if (schema == Schema.IFC4.headerName) {
             // extract geometry ifc4 data into geometry cache
-            extractIfc4GeometryToCache(model, connector, placementResolver, geometryResolver)
+            extractIfc4GeometryToCache(model, connector, placementResolver_ifc4, geometryResolver_ifc4)
             // transform geometry cache ifc4 to osm
-            transformIfc4GeometryToOSM(connector, placementResolver, geometryResolver, osmDataSet)
+            transformIfc4GeometryToOSM(connector, placementResolver_ifc4, geometryResolver_ifc4, osmDataSet)
         }
         if (schema == Schema.IFC2X3TC1.headerName) {
             // extract geometry ifc2x3tc1 data into geometry cache
-            extractIfc2x3tc1GeometryToCache(model, connector, placementResolver, geometryResolver)
+            extractIfc2x3tc1GeometryToCache(model, connector, placementResolver_ifc2x3tc1, geometryResolver_ifc2x3tc1)
             // transform geometry ifc2x3tc1 cache to osm
-            transformIfc2x3tc1GeometryToOSM(connector, placementResolver, geometryResolver, osmDataSet)
+            transformIfc2x3tc1GeometryToOSM(
+                connector,
+                placementResolver_ifc2x3tc1,
+                geometryResolver_ifc2x3tc1,
+                osmDataSet
+            )
         }
 
         return osmDataSet
     }
 
     /**
-     * Extract Ifc4 elements placement into [PlacementResolver] cache
-     * and Ifc4 elements geometry into [GeometryResolver] cache
+     * Extract Ifc4 elements placement into [de.rebsc.bimtoosm.geometry.ifc4.PlacementResolver] cache
+     * and Ifc4 elements geometry into [de.rebsc.bimtoosm.geometry.ifc4.GeometryResolver] cache
      * @param model with ifc data
      * @param connector connects placement object with geometry object
      * @param placementResolver resolves and keeps objects placement
@@ -91,8 +105,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
     private fun extractIfc4GeometryToCache(
         model: IfcModelInterface,
         connector: MutableMap<Long, Long>,
-        placementResolver: PlacementResolver,
-        geometryResolver: GeometryResolver
+        placementResolver: Ifc4_PlacementResolver,
+        geometryResolver: Ifc4_GeometryResolver
     ) {
         model.getAllWithSubTypes(Ifc4_IfcWall::class.java).forEach { wall ->
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
@@ -128,8 +142,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
     }
 
     /**
-     * Extract Ifc2x3tc1 elements placement into [PlacementResolver] cache
-     * and Ifc2x3tc1 elements geometry into [GeometryResolver] cache
+     * Extract Ifc2x3tc1 elements placement into [de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver] cache
+     * and Ifc2x3tc1 elements geometry into [de.rebsc.bimtoosm.geometry.ifc2x3tc1.GeometryResolver] cache
      * @param model with ifc data
      * @param connector connects placement object with geometry object
      * @param placementResolver resolves and keeps objects placement
@@ -138,8 +152,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
     private fun extractIfc2x3tc1GeometryToCache(
         model: IfcModelInterface,
         connector: MutableMap<Long, Long>,
-        placementResolver: PlacementResolver,
-        geometryResolver: GeometryResolver
+        placementResolver: Ifc2x3tc1_PlacementResolver,
+        geometryResolver: Ifc2x3tc1_GeometryResolver
     ) {
         model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
@@ -185,8 +199,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
      */
     private fun transformIfc4GeometryToOSM(
         connector: MutableMap<Long, Long>,
-        placementResolver: PlacementResolver,
-        geometryResolver: GeometryResolver,
+        placementResolver: Ifc4_PlacementResolver,
+        geometryResolver: Ifc4_GeometryResolver,
         osmDataSet: OSMDataSet
     ) {
         geometryResolver.geometryCacheIfc4.forEach { representation ->
@@ -240,8 +254,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
      */
     private fun transformIfc2x3tc1GeometryToOSM(
         connector: MutableMap<Long, Long>,
-        placementResolver: PlacementResolver,
-        geometryResolver: GeometryResolver,
+        placementResolver: Ifc2x3tc1_PlacementResolver,
+        geometryResolver: Ifc2x3tc1_GeometryResolver,
         osmDataSet: OSMDataSet
     ) {
         geometryResolver.geometryCacheIfc2x3tc1.forEach { representation ->

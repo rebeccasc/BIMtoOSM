@@ -25,6 +25,8 @@ import de.rebsc.bimtoosm.parser.Configuration
 import de.rebsc.bimtoosm.parser.ParserStatus
 import de.rebsc.bimtoosm.parser.PropertiesExtractor
 import de.rebsc.bimtoosm.utils.IdGenerator
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver as Ifc2x3tc1_PlacementResolver
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.GeometryResolver as Ifc2x3tc1_GeometryResolver
 import org.bimserver.models.ifc2x3tc1.IfcColumn as Ifc2x3tc1_IfcColumn
 import org.bimserver.models.ifc2x3tc1.IfcDoor as Ifc2x3tc1_IfcDoor
 import org.bimserver.models.ifc2x3tc1.IfcSlab as Ifc2x3tc1_IfcSlab
@@ -32,6 +34,8 @@ import org.bimserver.models.ifc2x3tc1.IfcStair as Ifc2x3tc1_IfcStair
 import org.bimserver.models.ifc2x3tc1.IfcWall as Ifc2x3tc1_IfcWall
 import org.bimserver.models.ifc2x3tc1.IfcWindow as Ifc2x3tc1_IfcWindow
 import org.bimserver.models.ifc2x3tc1.IfcSlabTypeEnum as Ifc2x3tc1_IfcSlabTypeEnum
+import de.rebsc.bimtoosm.geometry.ifc4.PlacementResolver as Ifc4_PlacementResolver
+import de.rebsc.bimtoosm.geometry.ifc4.GeometryResolver as Ifc4_GeometryResolver
 import org.bimserver.models.ifc4.IfcColumn as Ifc4_IfcColumn
 import org.bimserver.models.ifc4.IfcDoor as Ifc4_IfcDoor
 import org.bimserver.models.ifc4.IfcSlab as Ifc4_IfcSlab
@@ -51,9 +55,17 @@ internal class GeometryResolverTest {
 
     // Test setup
     private val dir = System.getProperty("user.dir")
-    private val placementResolver = PlacementResolver()
-    private val geometryResolverBody = GeometryResolver(GeometrySolution.BODY)
-    private val geometryResolverBB = GeometryResolver(GeometrySolution.BOUNDING_BOX)
+
+    // ifc4
+    private val placementResolver_ifc4 = Ifc4_PlacementResolver()
+    private val geometryResolverBody_ifc4 = Ifc4_GeometryResolver(GeometrySolution.BODY)
+    private val geometryResolverBB_ifc4 = Ifc4_GeometryResolver(GeometrySolution.BOUNDING_BOX)
+
+    // ifc2x3tc1
+    private val placementResolver_ifc2x3tc1 = Ifc2x3tc1_PlacementResolver()
+    private val geometryResolverBody_ifc2x3tc1 = Ifc2x3tc1_GeometryResolver(GeometrySolution.BODY)
+    private val geometryResolverBB_ifc2x3tc1 = Ifc2x3tc1_GeometryResolver(GeometrySolution.BOUNDING_BOX)
+
     private val connector: MutableMap<Long, Long> = HashMap()
 
     @Test
@@ -72,12 +84,12 @@ internal class GeometryResolverTest {
         clearCaches()
         model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
-            placementResolver.resolvePlacement(wall.objectPlacement)
-            geometryResolverBody.resolveWall(wall.representation)
+            placementResolver_ifc2x3tc1.resolvePlacement(wall.objectPlacement)
+            geometryResolverBody_ifc2x3tc1.resolveWall(wall.representation)
         }
 
         // check coordinates
-        val walls = extractWays(geometryResolverBody, placementResolver, connector)
+        val walls = extractWays_Ifc2x3tc1(geometryResolverBody_ifc2x3tc1, placementResolver_ifc2x3tc1, connector)
         assertEquals(walls[0].points[0].x, 0.0)
         assertEquals(walls[0].points[0].y, 0.0)
         assertEquals(walls[0].points[1].x, 0.0)
@@ -176,13 +188,15 @@ internal class GeometryResolverTest {
 
     private fun clearCaches() {
         connector.clear()
-        geometryResolverBB.geometryCacheIfc2x3tc1.clear()
-        placementResolver.placementCacheIfc2x3tc1.clear()
+        geometryResolverBB_ifc2x3tc1.geometryCacheIfc2x3tc1.clear()
+        placementResolver_ifc2x3tc1.placementCacheIfc2x3tc1.clear()
+        geometryResolverBB_ifc4.geometryCacheIfc4.clear()
+        placementResolver_ifc4.placementCacheIfc4.clear()
     }
 
-    private fun extractWays(
-        geometryResolver: GeometryResolver,
-        placementResolver: PlacementResolver,
+    private fun extractWays_Ifc2x3tc1(
+        geometryResolver: Ifc2x3tc1_GeometryResolver,
+        placementResolver: Ifc2x3tc1_PlacementResolver,
         connector: MutableMap<Long, Long>
     ): ArrayList<OSMWay> {
 

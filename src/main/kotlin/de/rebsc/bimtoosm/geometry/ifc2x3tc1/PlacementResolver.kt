@@ -74,7 +74,7 @@ class PlacementResolver {
         return getTransformation(location, xAxis, zAxis)
     }
 
-    private fun getTransform(placement: Ifc2x3tc1_IfcAxis2Placement3D?): Transformation {
+    fun getTransform(placement: Ifc2x3tc1_IfcAxis2Placement3D?): Transformation {
         if (placement == null) return getIdentityTransform()
         val location =
             if (placement.location != null) vectorFor(placement.location.coordinates) else Vector3D(
