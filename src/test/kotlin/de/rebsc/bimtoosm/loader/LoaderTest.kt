@@ -32,13 +32,13 @@ internal class LoaderTest {
         //------------ test invalid file ------------ //
         // test non-existent ifc file
         Assertions.assertThrows(BIMtoOSMException::class.java) {
-            val filepath = "$dir/src/test/resources/test1_IFC4_.ifc".replace("/", File.separator)
+            val filepath = "$dir/src/test/resources/ifc4/invalidFilePath.ifc".replace("/", File.separator)
             Loader.loadIntoModel(filepath)
         }
 
         // test invalid file with block comments
         Assertions.assertThrows(DeserializeException::class.java) {
-            val filepath = "$dir/src/test/resources/test2_IFC2X3_TC1_BC.ifc".replace("/", File.separator)
+            val filepath = "$dir/src/test/resources/ifc2x3tc1/house_1_IFC2X3TC1_BC.ifc".replace("/", File.separator)
             Loader.loadIntoModel(filepath)
         }
 
@@ -47,13 +47,13 @@ internal class LoaderTest {
         //------------ test valid file ------------ //
         // test valid IFC4 file
         Assertions.assertDoesNotThrow {
-            val filepath = "$dir/src/test/resources/test1_IFC4_WBL.ifc".replace("/", File.separator)
+            val filepath = "$dir/src/test/resources/ifc4/kfz_house_IFC4.ifc".replace("/", File.separator)
             Loader.loadIntoModel(filepath)
         }
 
         // test valid IFC2X3_TC1 file
         Assertions.assertDoesNotThrow {
-            val filepath = "$dir/src/test/resources/test2_IFC2X3_TC1.ifc".replace("/", File.separator)
+            val filepath = "$dir/src/test/resources/ifc2x3tc1/house_1_IFC2X3TC1.ifc".replace("/", File.separator)
             Loader.loadIntoModel(filepath)
         }
 
