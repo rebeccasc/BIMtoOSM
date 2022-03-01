@@ -24,6 +24,7 @@ import de.rebsc.bimtoosm.geometry.GeometryEngine
 import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.logger.Logger
 import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
+import java.io.File
 import kotlin.properties.Delegates
 
 
@@ -60,7 +61,7 @@ class BIMtoOSMParser(config: Configuration) : BIMtoOSM {
         // pre-processing
         status = ParserStatus.PRE_PROCESSING
         val ifcFilepath: String = BIMFileOptimizer.optimizeIfcFile(
-            filepath,
+            File(filepath),
             config.optimizeInput_RBC,
             config.optimizeInput_RBL
         ).absolutePath

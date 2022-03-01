@@ -33,14 +33,14 @@ internal class BIMFileOptimizerTest {
         // test invalid filepath
         Assertions.assertThrows(BIMtoOSMException::class.java) {
             val filepath = "$dir/src/test/resources/ifc4/invalidFilePath.ifc".replace("/", File.separator)
-            BIMFileOptimizer.optimizeIfcFile(filepath, optimizeInput_RBC = false, optimizeInput_RBL = false)
+            BIMFileOptimizer.optimizeIfcFile(File(filepath), optimizeInput_RBC = false, optimizeInput_RBL = false)
         }
 
         //------------ test valid file ------------ //
         // test valid filepath
         Assertions.assertDoesNotThrow {
             val filepath = "$dir/src/test/resources/ifc4/kfz_house_IFC4.ifc".replace("/", File.separator)
-            BIMFileOptimizer.optimizeIfcFile(filepath, optimizeInput_RBC = false, optimizeInput_RBL = false)
+            BIMFileOptimizer.optimizeIfcFile(File(filepath), optimizeInput_RBC = false, optimizeInput_RBL = false)
         }
 
         // test remove block comments
@@ -49,7 +49,7 @@ internal class BIMFileOptimizerTest {
         )
         val fileOptimizedBC =
             BIMFileOptimizer.optimizeIfcFile(
-                "$dir/src/test/resources/ifc2x3tc1/house_1_IFC2X3TC1_BC.ifc".replace("/", File.separator),
+                File("$dir/src/test/resources/ifc2x3tc1/house_1_IFC2X3TC1_BC.ifc".replace("/", File.separator)),
                 optimizeInput_RBC = true,
                 optimizeInput_RBL = false
             )
@@ -66,7 +66,7 @@ internal class BIMFileOptimizerTest {
         )
         val fileOptimizedBLBC =
             BIMFileOptimizer.optimizeIfcFile(
-                "$dir/src/test/resources/ifc4/kfz_house_IFC4_BC_BL.ifc".replace("/", File.separator),
+                File("$dir/src/test/resources/ifc4/kfz_house_IFC4_BC_BL.ifc".replace("/", File.separator)),
                 optimizeInput_RBC = true,
                 optimizeInput_RBL = true
             )

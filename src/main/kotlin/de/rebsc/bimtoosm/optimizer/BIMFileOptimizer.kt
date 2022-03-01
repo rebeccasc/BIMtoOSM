@@ -28,16 +28,15 @@ class BIMFileOptimizer {
 
         /**
          * Optimizes ifc file following the configuration
-         * @param filepath to ifc file
+         * @param original ifc file
          * @param optimizeInput_RBC true to remove block comments from file
          * @param optimizeInput_RBL true to remove blank lines from file
          * @return temporary file without block comments
          * @throws BIMtoOSMException if error occurred while reading the file
          */
-        fun optimizeIfcFile(filepath: String, optimizeInput_RBC: Boolean, optimizeInput_RBL: Boolean): File {
+        fun optimizeIfcFile(original: File, optimizeInput_RBC: Boolean, optimizeInput_RBL: Boolean): File {
             if (!optimizeInput_RBC && !optimizeInput_RBL) {
-                val original = File(filepath)
-                if (!original.exists()) throw BIMtoOSMException("File not found: $filepath")
+                if (!original.exists()) throw BIMtoOSMException("File not found: ${original.absolutePath}")
                 return original
             }
 
@@ -46,7 +45,7 @@ class BIMFileOptimizer {
 
             val optimizedContent = StringBuilder()
             try {
-                File(filepath).forEachLine {
+                original.forEachLine {
                     var optimizedLine = it
 
                     // remove block comments
@@ -63,7 +62,7 @@ class BIMFileOptimizer {
                     optimizedContent.append(optimizedLine).append("\n")
                 }
             } catch (e: FileNotFoundException) {
-                throw BIMtoOSMException("File not found: $filepath")
+                throw BIMtoOSMException("File not found: ${original.absolutePath}")
             }
 
             if (optimizedContent.toString().isEmpty()) {
