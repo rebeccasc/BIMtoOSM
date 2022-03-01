@@ -21,40 +21,27 @@ import de.rebsc.bimtoosm.data.osm.OSMNode
 import de.rebsc.bimtoosm.data.osm.OSMWay
 import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
-import de.rebsc.bimtoosm.parser.Configuration
-import de.rebsc.bimtoosm.parser.ParserStatus
-import de.rebsc.bimtoosm.parser.PropertiesExtractor
-import de.rebsc.bimtoosm.utils.IdGenerator
-import de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver as Ifc2x3tc1_PlacementResolver
-import de.rebsc.bimtoosm.geometry.ifc2x3tc1.GeometryResolver as Ifc2x3tc1_GeometryResolver
-import org.bimserver.models.ifc2x3tc1.IfcColumn as Ifc2x3tc1_IfcColumn
-import org.bimserver.models.ifc2x3tc1.IfcDoor as Ifc2x3tc1_IfcDoor
-import org.bimserver.models.ifc2x3tc1.IfcSlab as Ifc2x3tc1_IfcSlab
-import org.bimserver.models.ifc2x3tc1.IfcStair as Ifc2x3tc1_IfcStair
-import org.bimserver.models.ifc2x3tc1.IfcWall as Ifc2x3tc1_IfcWall
-import org.bimserver.models.ifc2x3tc1.IfcWindow as Ifc2x3tc1_IfcWindow
-import org.bimserver.models.ifc2x3tc1.IfcSlabTypeEnum as Ifc2x3tc1_IfcSlabTypeEnum
-import de.rebsc.bimtoosm.geometry.ifc4.PlacementResolver as Ifc4_PlacementResolver
-import de.rebsc.bimtoosm.geometry.ifc4.GeometryResolver as Ifc4_GeometryResolver
-import org.bimserver.models.ifc4.IfcColumn as Ifc4_IfcColumn
-import org.bimserver.models.ifc4.IfcDoor as Ifc4_IfcDoor
-import org.bimserver.models.ifc4.IfcSlab as Ifc4_IfcSlab
-import org.bimserver.models.ifc4.IfcStair as Ifc4_IfcStair
-import org.bimserver.models.ifc4.IfcWall as Ifc4_IfcWall
-import org.bimserver.models.ifc4.IfcWindow as Ifc4_IfcWindow
-import org.bimserver.models.ifc4.IfcSlabTypeEnum as Ifc4_IfcSlabTypeEnum
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
-import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import java.io.File
+import java.io.IOException
+import java.net.URL
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.GeometryResolver as Ifc2x3tc1_GeometryResolver
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver as Ifc2x3tc1_PlacementResolver
+import de.rebsc.bimtoosm.geometry.ifc4.GeometryResolver as Ifc4_GeometryResolver
+import de.rebsc.bimtoosm.geometry.ifc4.PlacementResolver as Ifc4_PlacementResolver
+import org.bimserver.models.ifc2x3tc1.IfcWall as Ifc2x3tc1_IfcWall
 
 
 internal class GeometryResolverTest {
 
     // Test setup
-    private val dir = System.getProperty("user.dir")
+
+    // URLs
+    private val url_wall_with_window_IFC2X3 =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/wall_with_window_IFC2X3.ifc")
 
     // ifc4
     private val placementResolver_ifc4 = Ifc4_PlacementResolver()
@@ -72,9 +59,16 @@ internal class GeometryResolverTest {
     fun resolveWallTest_Ifc2x3tc1() {
 
         // load file and optimize
+        val file_wall_with_window_IFC2X3: File
+        try {
+            file_wall_with_window_IFC2X3 = downloadFile(url_wall_with_window_IFC2X3)
+            // TODO load more files
+        } catch (e: IOException) {
+            throw IOException("Could not download file ${e.message}. Abort test resolveWallTest_Ifc2x3tc1")
+        }
+
         val ifcFilepath_Ifc2x3tc1: String = BIMFileOptimizer.optimizeIfcFile(
-            "$dir/src/test/resources/geometry_engine/ifc2x3tc1/wall_with_window_IFC2X3.ifc"
-                .replace("/", File.separator),
+            file_wall_with_window_IFC2X3,
             optimizeInput_RBC = true,
             optimizeInput_RBL = true
         ).absolutePath
@@ -223,4 +217,18 @@ internal class GeometryResolverTest {
 
         return wayList
     }
+
+    @Throws(IOException::class)
+    private fun downloadFile(url: URL): File {
+        // TODO check if tmp dict already exists, if not create it
+        val tmpFile = File("tmp${File.separator}tmpFileTest")
+        try {
+            val bytes = url.readBytes()
+            tmpFile.writeBytes(bytes)
+        } catch (e: IOException) {
+            throw IOException(url.toString())
+        }
+        return tmpFile
+    }
+
 }
