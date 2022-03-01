@@ -1,7 +1,7 @@
 package de.rebsc.bimtoosm.geometry
 
 /******************************************************************************
- * Copyright (c) 2010-2017 Helga Tauscher
+ * Copyright (c) 2010-2017 hlg
  * http://github.com/hlg/GroovyIFC
  *
  * This file is part of Groovy Ifc Tools, which are distributed
