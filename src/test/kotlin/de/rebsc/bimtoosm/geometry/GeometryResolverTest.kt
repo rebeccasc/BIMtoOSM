@@ -60,12 +60,9 @@ internal class GeometryResolverTest {
 
         // load file and optimize
         val file_wall_with_window_IFC2X3: File
-        try {
-            file_wall_with_window_IFC2X3 = downloadFile(url_wall_with_window_IFC2X3)
-            // TODO load more files
-        } catch (e: IOException) {
-            throw IOException("Could not download file ${e.message}. Abort test resolveWallTest_Ifc2x3tc1")
-        }
+
+        file_wall_with_window_IFC2X3 = downloadFile(url_wall_with_window_IFC2X3)
+        // TODO load more files
 
         val ifcFilepath_Ifc2x3tc1: String = BIMFileOptimizer.optimizeIfcFile(
             file_wall_with_window_IFC2X3,
@@ -226,7 +223,7 @@ internal class GeometryResolverTest {
             val bytes = url.readBytes()
             tmpFile.writeBytes(bytes)
         } catch (e: IOException) {
-            throw IOException(url.toString())
+            throw IOException("Could not download file $url. Abort test.")
         }
         return tmpFile
     }
