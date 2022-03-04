@@ -22,23 +22,36 @@ import org.bimserver.plugins.deserializers.DeserializeException
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.io.IOException
+import java.net.URL
 
 internal class LoaderTest {
 
+    // Test setup
+
+    // URLs
+    private val url_wall_with_window_IFC2X3 =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/wall_single_with_window_IFC2X3.ifc")
+    private val url_house_1_IFC2X3_BC =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/building/house_1_IFC2X3_BC.ifc")
+    private val url_kfz_house_IFC4 =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc4/building/kfz_house_IFC4.ifc")
+    private val url_house_1_IFC2X3 =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/building/house_1_IFC2X3.ifc")
+
+
     @Test
     fun loadFileTest() {
-        val dir = System.getProperty("user.dir")
-
         //------------ test invalid file ------------ //
         // test non-existent ifc file
         Assertions.assertThrows(BIMtoOSMException::class.java) {
-            val filepath = "$dir/src/test/resources/ifc4/invalidFilePath.ifc".replace("/", File.separator)
-            Loader.loadIntoModel(filepath)
+            val invalidFilePath = downloadFile(url_wall_with_window_IFC2X3).name
+            Loader.loadIntoModel(invalidFilePath)
         }
 
         // test invalid file with block comments
         Assertions.assertThrows(DeserializeException::class.java) {
-            val filepath = "$dir/src/test/resources/ifc2x3tc1/house_1_IFC2X3TC1_BC.ifc".replace("/", File.separator)
+            val filepath = downloadFile(url_house_1_IFC2X3_BC).path
             Loader.loadIntoModel(filepath)
         }
 
@@ -47,16 +60,46 @@ internal class LoaderTest {
         //------------ test valid file ------------ //
         // test valid IFC4 file
         Assertions.assertDoesNotThrow {
-            val filepath = "$dir/src/test/resources/ifc4/kfz_house_IFC4.ifc".replace("/", File.separator)
+            url_kfz_house_IFC4
+            val filepath = downloadFile(url_kfz_house_IFC4).path
             Loader.loadIntoModel(filepath)
         }
 
         // test valid IFC2X3_TC1 file
         Assertions.assertDoesNotThrow {
-            val filepath = "$dir/src/test/resources/ifc2x3tc1/house_1_IFC2X3TC1.ifc".replace("/", File.separator)
+            url_kfz_house_IFC4
+            val filepath = downloadFile(url_house_1_IFC2X3).path
             Loader.loadIntoModel(filepath)
         }
 
+        // clean up test directory
+        cleanTestDirectory()
+    }
+
+    // helper
+
+    @Throws(IOException::class)
+    private fun downloadFile(url: URL): File {
+        // check if test directory already exists, if not create
+        val directoryPath = "${System.getProperty("user.dir")}/src/test/output/tmp_test".replace("/", File.separator)
+        val directory = File(directoryPath)
+        if (!directory.exists()) {
+            directory.mkdir()
+        }
+        // download file into test directory
+        val tmpFile = File("$directoryPath${File.separator}tmpFileTest")
+        try {
+            val bytes = url.readBytes()
+            tmpFile.writeBytes(bytes)
+        } catch (e: IOException) {
+            throw IOException("Could not download file $url. Abort test.")
+        }
+        return tmpFile
+    }
+
+    private fun cleanTestDirectory(){
+        val directoryPath = "${System.getProperty("user.dir")}/src/test/output/tmp_test".replace("/", File.separator)
+        File(directoryPath).deleteRecursively()
     }
 
 }

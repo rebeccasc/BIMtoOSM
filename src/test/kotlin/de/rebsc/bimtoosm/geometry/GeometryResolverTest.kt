@@ -41,7 +41,7 @@ internal class GeometryResolverTest {
 
     // URLs
     private val url_wall_with_window_IFC2X3 =
-        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/wall_with_window_IFC2X3.ifc")
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/wall_single_with_window_IFC2X3.ifc")
 
     // ifc4
     private val placementResolver_ifc4 = Ifc4_PlacementResolver()
@@ -57,11 +57,8 @@ internal class GeometryResolverTest {
 
     @Test
     fun resolveWallTest_Ifc2x3tc1() {
-
         // load file and optimize
-        val file_wall_with_window_IFC2X3: File
-
-        file_wall_with_window_IFC2X3 = downloadFile(url_wall_with_window_IFC2X3)
+        val file_wall_with_window_IFC2X3 = downloadFile(url_wall_with_window_IFC2X3)
         // TODO load more files
 
         val ifcFilepath_Ifc2x3tc1: String = BIMFileOptimizer.optimizeIfcFile(
@@ -95,6 +92,9 @@ internal class GeometryResolverTest {
         //------------ test GeometrySolution.BOUNDINGBOX ------------ //
         clearCaches()
         // TODO implement
+
+        // clean up test directory
+        cleanTestDirectory()
     }
 
     @Test
@@ -217,8 +217,14 @@ internal class GeometryResolverTest {
 
     @Throws(IOException::class)
     private fun downloadFile(url: URL): File {
-        // TODO check if tmp dict already exists, if not create it
-        val tmpFile = File("tmp${File.separator}tmpFileTest")
+        // check if test directory already exists, if not create
+        val directoryPath = "${System.getProperty("user.dir")}/src/test/output/tmp_test".replace("/", File.separator)
+        val directory = File(directoryPath)
+        if (!directory.exists()) {
+            directory.mkdir()
+        }
+        // download file into test directory
+        val tmpFile = File("$directoryPath${File.separator}tmpFileTest")
         try {
             val bytes = url.readBytes()
             tmpFile.writeBytes(bytes)
@@ -226,6 +232,11 @@ internal class GeometryResolverTest {
             throw IOException("Could not download file $url. Abort test.")
         }
         return tmpFile
+    }
+
+    private fun cleanTestDirectory(){
+        val directoryPath = "${System.getProperty("user.dir")}/src/test/output/tmp_test".replace("/", File.separator)
+        File(directoryPath).deleteRecursively()
     }
 
 }
