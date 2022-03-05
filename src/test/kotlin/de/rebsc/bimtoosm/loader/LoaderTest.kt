@@ -30,13 +30,13 @@ internal class LoaderTest {
     // Test setup
 
     // URLs
-    private val url_wall_with_window_IFC2X3 =
+    private val urlWallWithWindow_ifc2X3 =
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/wall_single_with_window_IFC2X3.ifc")
-    private val url_house_1_IFC2X3_BC =
+    private val urlHouse1_ifc2X3_BC =
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/building/house_1_IFC2X3_BC.ifc")
-    private val url_kfz_house_IFC4 =
+    private val urlKfzHouse_ifc4 =
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc4/building/kfz_house_IFC4.ifc")
-    private val url_house_1_IFC2X3 =
+    private val urlHouse1ifc2X3 =
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/building/house_1_IFC2X3.ifc")
 
 
@@ -45,13 +45,13 @@ internal class LoaderTest {
         //------------ test invalid file ------------ //
         // test non-existent ifc file
         Assertions.assertThrows(BIMtoOSMException::class.java) {
-            val invalidFilePath = downloadFile(url_wall_with_window_IFC2X3).name
+            val invalidFilePath = downloadFile(urlWallWithWindow_ifc2X3).name
             Loader.loadIntoModel(invalidFilePath)
         }
 
         // test invalid file with block comments
         Assertions.assertThrows(DeserializeException::class.java) {
-            val filepath = downloadFile(url_house_1_IFC2X3_BC).path
+            val filepath = downloadFile(urlHouse1_ifc2X3_BC).path
             Loader.loadIntoModel(filepath)
         }
 
@@ -60,15 +60,15 @@ internal class LoaderTest {
         //------------ test valid file ------------ //
         // test valid IFC4 file
         Assertions.assertDoesNotThrow {
-            url_kfz_house_IFC4
-            val filepath = downloadFile(url_kfz_house_IFC4).path
+            urlKfzHouse_ifc4
+            val filepath = downloadFile(urlKfzHouse_ifc4).path
             Loader.loadIntoModel(filepath)
         }
 
         // test valid IFC2X3_TC1 file
         Assertions.assertDoesNotThrow {
-            url_kfz_house_IFC4
-            val filepath = downloadFile(url_house_1_IFC2X3).path
+            urlKfzHouse_ifc4
+            val filepath = downloadFile(urlHouse1ifc2X3).path
             Loader.loadIntoModel(filepath)
         }
 
@@ -97,7 +97,7 @@ internal class LoaderTest {
         return tmpFile
     }
 
-    private fun cleanTestDirectory(){
+    private fun cleanTestDirectory() {
         val directoryPath = "${System.getProperty("user.dir")}/src/test/tmp_test".replace("/", File.separator)
         File(directoryPath).deleteRecursively()
     }

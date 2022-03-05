@@ -40,7 +40,7 @@ internal class GeometryResolverTest {
     // Test setup
 
     // URLs
-    private val url_wall_with_window_IFC2X3 =
+    private val urlWallWithWindow_ifc2x3 =
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/wall_single_with_window_IFC2X3.ifc")
 
     // ifc4
@@ -49,35 +49,35 @@ internal class GeometryResolverTest {
     private val geometryResolverBB_ifc4 = Ifc4_GeometryResolver(GeometrySolution.BOUNDING_BOX)
 
     // ifc2x3tc1
-    private val placementResolver_ifc2x3tc1 = Ifc2x3tc1_PlacementResolver()
-    private val geometryResolverBody_ifc2x3tc1 = Ifc2x3tc1_GeometryResolver(GeometrySolution.BODY)
-    private val geometryResolverBB_ifc2x3tc1 = Ifc2x3tc1_GeometryResolver(GeometrySolution.BOUNDING_BOX)
+    private val placementResolver_ifc2x3 = Ifc2x3tc1_PlacementResolver()
+    private val geometryResolverBody_ifc2x3 = Ifc2x3tc1_GeometryResolver(GeometrySolution.BODY)
+    private val geometryResolverBB_ifc2x3 = Ifc2x3tc1_GeometryResolver(GeometrySolution.BOUNDING_BOX)
 
     private val connector: MutableMap<Long, Long> = HashMap()
 
     @Test
     fun resolveWallTest_Ifc2x3tc1() {
         // load file and optimize
-        val file_wall_with_window_IFC2X3 = downloadFile(url_wall_with_window_IFC2X3)
+        val fileWallWithWindow_ifc2x3 = downloadFile(urlWallWithWindow_ifc2x3)
         // TODO load more files
 
-        val ifcFilepath_Ifc2x3tc1: String = BIMFileOptimizer.optimizeIfcFile(
-            file_wall_with_window_IFC2X3,
+        val fileWallWithWindowOptimized_ifc2x3: String = BIMFileOptimizer.optimizeIfcFile(
+            fileWallWithWindow_ifc2x3,
             optimizeInput_RBC = true,
             optimizeInput_RBL = true
         ).absolutePath
-        val model = Loader.loadIntoModel(ifcFilepath_Ifc2x3tc1)
+        val model = Loader.loadIntoModel(fileWallWithWindowOptimized_ifc2x3)
 
         //------------ test GeometrySolution.BODY ------------ //
         clearCaches()
         model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
-            placementResolver_ifc2x3tc1.resolvePlacement(wall.objectPlacement)
-            geometryResolverBody_ifc2x3tc1.resolveWall(wall.representation)
+            placementResolver_ifc2x3.resolvePlacement(wall.objectPlacement)
+            geometryResolverBody_ifc2x3.resolveWall(wall.representation)
         }
 
         // check coordinates
-        val walls = extractWays_Ifc2x3tc1(geometryResolverBody_ifc2x3tc1, placementResolver_ifc2x3tc1, connector)
+        val walls = extractWays_Ifc2x3tc1(geometryResolverBody_ifc2x3, placementResolver_ifc2x3, connector)
         assertEquals(walls[0].points[0].x, 0.0)
         assertEquals(walls[0].points[0].y, 0.0)
         assertEquals(walls[0].points[1].x, 0.0)
@@ -179,8 +179,8 @@ internal class GeometryResolverTest {
 
     private fun clearCaches() {
         connector.clear()
-        geometryResolverBB_ifc2x3tc1.geometryCacheIfc2x3tc1.clear()
-        placementResolver_ifc2x3tc1.placementCacheIfc2x3tc1.clear()
+        geometryResolverBB_ifc2x3.geometryCacheIfc2x3tc1.clear()
+        placementResolver_ifc2x3.placementCacheIfc2x3tc1.clear()
         geometryResolverBB_ifc4.geometryCacheIfc4.clear()
         placementResolver_ifc4.placementCacheIfc4.clear()
     }
@@ -234,7 +234,7 @@ internal class GeometryResolverTest {
         return tmpFile
     }
 
-    private fun cleanTestDirectory(){
+    private fun cleanTestDirectory() {
         val directoryPath = "${System.getProperty("user.dir")}/src/test/tmp_test".replace("/", File.separator)
         File(directoryPath).deleteRecursively()
     }
