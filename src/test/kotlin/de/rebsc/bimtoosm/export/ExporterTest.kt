@@ -81,14 +81,14 @@ internal class ExporterTest {
 
     @Test
     fun exportOSMTest() {
+        val dir = System.getProperty("user.dir")
+
         // check if test directory already exists, if not create
-        val directoryPath = "${System.getProperty("user.dir")}/src/test/output".replace("/", File.separator)
+        val directoryPath = "$dir/src/test/output".replace("/", File.separator)
         val directory = File(directoryPath)
         if (!directory.exists()) {
             directory.mkdir()
         }
-
-        val dir = System.getProperty("user.dir")
 
         // export data
         val filename = "$dir/src/test/output/exportTest.osm".replace("/", File.separator)
@@ -100,5 +100,8 @@ internal class ExporterTest {
             trueFileAsString.replace("\\s+".toRegex(), ""),
             fileAsString.replace("\\s".toRegex(), "")
         )
+
+        // clean test directory
+        directory.deleteRecursively()
     }
 }
