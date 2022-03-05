@@ -23,6 +23,7 @@ import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
+import jdk.jfr.Description
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -42,6 +43,8 @@ internal class GeometryResolverTest {
     // URLs
     private val urlWallWithWindow_ifc2x3 =
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/wall_single_with_window_IFC2X3.ifc")
+    private val urlWallWithWindow_ifc2x3_resolvedGeo =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/resolved_placements/wall_single_with_window_IFC2X3.txt")
 
     // ifc4
     private val placementResolver_ifc4 = Ifc4_PlacementResolver()
@@ -56,11 +59,10 @@ internal class GeometryResolverTest {
     private val connector: MutableMap<Long, Long> = HashMap()
 
     @Test
-    fun resolveWallTest_Ifc2x3tc1() {
-        // load file and optimize
+    @Description("IfcWallStandardCase test for IFC2X3 on geometry BODY and BOX")
+    fun resolveWallTest1_Ifc2x3tc1() {
+        // load optimized file into model
         val fileWallWithWindow_ifc2x3 = downloadFile(urlWallWithWindow_ifc2x3)
-        // TODO load more files
-
         val fileWallWithWindowOptimized_ifc2x3: String = BIMFileOptimizer.optimizeIfcFile(
             fileWallWithWindow_ifc2x3,
             optimizeInput_RBC = true,
@@ -70,24 +72,27 @@ internal class GeometryResolverTest {
 
         //------------ test GeometrySolution.BODY ------------ //
         clearCaches()
+
+        // fill placement cache and geometry cache with wall objects
         model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
             placementResolver_ifc2x3.resolvePlacement(wall.objectPlacement)
             geometryResolverBody_ifc2x3.resolveWall(wall.representation)
         }
 
-        // check coordinates
+        // extract walls out of placement cache and geometry cache
         val walls = extractWays_Ifc2x3tc1(geometryResolverBody_ifc2x3, placementResolver_ifc2x3, connector)
-        assertEquals(walls[0].points[0].x, 0.0)
-        assertEquals(walls[0].points[0].y, 0.0)
-        assertEquals(walls[0].points[1].x, 0.0)
-        assertEquals(walls[0].points[1].y, 0.3)
-        assertEquals(walls[0].points[2].x, 5.0)
-        assertEquals(walls[0].points[2].y, 0.3)
-        assertEquals(walls[0].points[3].x, 5.0)
-        assertEquals(walls[0].points[3].y, 0.0)
-        assertEquals(walls[0].points[4].x, walls[0].points[0].x)
-        assertEquals(walls[0].points[4].y, walls[0].points[0].y)
+
+        // check if only one wall in list
+        assertEquals(walls.size, 1)
+
+        // check resolved geometry
+        val fileWallWithWindow_ifc2x3_resolvedGeo = downloadFile(urlWallWithWindow_ifc2x3_resolvedGeo)
+        val resolvedCoords = loadResolvedGeometry(fileWallWithWindow_ifc2x3_resolvedGeo)
+        for (i in 0 until walls[0].points.size) {
+            assertEquals(walls[0].points[i].x, resolvedCoords[i].x)
+            assertEquals(walls[0].points[i].y, resolvedCoords[i].y)
+        }
 
         //------------ test GeometrySolution.BOUNDINGBOX ------------ //
         clearCaches()
@@ -98,6 +103,15 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Description("IfcWall test for IFC2X3 on geometry BODY and BOX")
+    fun resolveWallTest2_Ifc2x3tc1() {
+        // TODO test with GeometrySolution.BODY
+        // TODO test with GeometrySolution.BOUNDING_BOX
+        // TODO check Ifc2x3 resolveWall()
+    }
+
+    @Test
+    @Description("")
     fun resolveWallTest_Ifc4() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
@@ -105,6 +119,7 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Description("")
     fun resolveSlabTest_Ifc2x3tc1() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
@@ -112,14 +127,15 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Description("")
     fun resolveSlabTest_Ifc4() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
         // TODO check Ifc4 resolveSlab()
     }
 
-
     @Test
+    @Description("")
     fun resolveColumnTest_Ifc2x3tc1() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
@@ -127,6 +143,7 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Description("")
     fun resolveColumnTest_Ifc4() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
@@ -134,6 +151,7 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Description("")
     fun resolveDoorTest_Ifc2x3tc1() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
@@ -141,6 +159,7 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Description("")
     fun resolveDoorTest_Ifc4() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
@@ -148,6 +167,7 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Description("")
     fun resolveWindowTest_Ifc2x3tc1() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
@@ -155,6 +175,7 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Description("")
     fun resolveWindowTest_Ifc4() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
@@ -162,6 +183,7 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Description("")
     fun resolveStairTest_Ifc2x3tc1() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
@@ -169,6 +191,7 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Description("")
     fun resolveStairTest_Ifc4() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
@@ -213,6 +236,22 @@ internal class GeometryResolverTest {
         }
 
         return wayList
+    }
+
+    private fun loadResolvedGeometry(file: File): ArrayList<Point2D> {
+        // follow file schema expected:
+        // point,value x-coordinate,value y-coordinate
+
+        // list of x,y-pairs
+        val coords = ArrayList<Point2D>()
+        file.forEachLine { line ->
+            if (!line.startsWith("#")) {
+                val x = line.split(",")[1].toDouble()
+                val y = line.split(",")[2].toDouble()
+                coords.add(Point2D(x, y))
+            }
+        }
+        return coords
     }
 
     @Throws(IOException::class)
