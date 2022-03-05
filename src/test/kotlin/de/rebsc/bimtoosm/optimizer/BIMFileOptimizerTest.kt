@@ -43,8 +43,6 @@ internal class BIMFileOptimizerTest {
 
     @Test
     fun optimizeIfcFile() {
-        val dir = System.getProperty("user.dir")
-
         //------------ test invalid file ------------ //
         // test invalid filepath
         Assertions.assertThrows(BIMtoOSMException::class.java) {
@@ -100,7 +98,7 @@ internal class BIMFileOptimizerTest {
     @Throws(IOException::class)
     private fun downloadFile(url: URL, tmpFileName: String): File {
         // check if test directory already exists, if not create
-        val directoryPath = "${System.getProperty("user.dir")}/src/test/output/tmp_test".replace("/", File.separator)
+        val directoryPath = "${System.getProperty("user.dir")}/src/test/tmp_test".replace("/", File.separator)
         val directory = File(directoryPath)
         if (!directory.exists()) {
             directory.mkdir()
@@ -116,8 +114,8 @@ internal class BIMFileOptimizerTest {
         return tmpFile
     }
 
-    private fun cleanTestDirectory(){
-        val directoryPath = "${System.getProperty("user.dir")}/src/test/output/tmp_test".replace("/", File.separator)
+    private fun cleanTestDirectory() {
+        val directoryPath = "${System.getProperty("user.dir")}/src/test/tmp_test".replace("/", File.separator)
         File(directoryPath).deleteRecursively()
     }
 

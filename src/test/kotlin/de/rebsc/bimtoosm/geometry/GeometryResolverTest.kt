@@ -218,7 +218,7 @@ internal class GeometryResolverTest {
     @Throws(IOException::class)
     private fun downloadFile(url: URL): File {
         // check if test directory already exists, if not create
-        val directoryPath = "${System.getProperty("user.dir")}/src/test/output/tmp_test".replace("/", File.separator)
+        val directoryPath = "${System.getProperty("user.dir")}/src/test/tmp_test".replace("/", File.separator)
         val directory = File(directoryPath)
         if (!directory.exists()) {
             directory.mkdir()
@@ -235,7 +235,7 @@ internal class GeometryResolverTest {
     }
 
     private fun cleanTestDirectory(){
-        val directoryPath = "${System.getProperty("user.dir")}/src/test/output/tmp_test".replace("/", File.separator)
+        val directoryPath = "${System.getProperty("user.dir")}/src/test/tmp_test".replace("/", File.separator)
         File(directoryPath).deleteRecursively()
     }
 

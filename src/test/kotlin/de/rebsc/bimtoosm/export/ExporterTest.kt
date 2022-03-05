@@ -80,8 +80,14 @@ internal class ExporterTest {
             "</osm>"
 
     @Test
-    @Disabled("Disabled because github CI runs into FileNotFoundException at ExporterTest.kt:87")
     fun exportOSMTest() {
+        // check if test directory already exists, if not create
+        val directoryPath = "${System.getProperty("user.dir")}/src/test/output".replace("/", File.separator)
+        val directory = File(directoryPath)
+        if (!directory.exists()) {
+            directory.mkdir()
+        }
+
         val dir = System.getProperty("user.dir")
 
         // export data
