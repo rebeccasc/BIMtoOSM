@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test
 import java.io.File
 import java.io.IOException
 import java.net.URL
+import kotlin.math.roundToInt
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.GeometryResolver as Ifc2x3tc1_GeometryResolver
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver as Ifc2x3tc1_PlacementResolver
 import de.rebsc.bimtoosm.geometry.ifc4.GeometryResolver as Ifc4_GeometryResolver
@@ -45,6 +46,13 @@ internal class GeometryResolverTest {
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/wall_single_with_window_IFC2X3.ifc")
     private val urlWallWithWindow_ifc2x3_resolvedGeo =
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/resolved_placements/wall_single_with_window_IFC2X3.txt")
+    private val urlWallCrossing_ifc2x3 =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/wall_crossing_IFC2X3.ifc")
+    private val urlWallCrossing_1_resolvedGeo_ifc2x3 =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/resolved_placements/wall_1_crossing_IFC2X3.txt")
+    private val urlWallSingle_ifc2x3 =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwall/wall_single_IFC2X3.ifc")
+
 
     // ifc4
     private val placementResolver_ifc4 = Ifc4_PlacementResolver()
@@ -90,8 +98,54 @@ internal class GeometryResolverTest {
         val fileWallWithWindow_ifc2x3_resolvedGeo = downloadFile(urlWallWithWindow_ifc2x3_resolvedGeo)
         val resolvedCoords = loadResolvedGeometry(fileWallWithWindow_ifc2x3_resolvedGeo)
         for (i in 0 until walls[0].points.size) {
-            assertEquals(walls[0].points[i].x, resolvedCoords[i].x)
-            assertEquals(walls[0].points[i].y, resolvedCoords[i].y)
+            assertEquals(walls[0].points[i].x, resolvedCoords[i].x, 0.1)
+            assertEquals(walls[0].points[i].y, resolvedCoords[i].y, 0.1)
+        }
+
+        //------------ test GeometrySolution.BOUNDINGBOX ------------ //
+        clearCaches()
+        // TODO implement
+
+        // clean up test directory
+        cleanTestDirectory()
+    }
+
+    @Test
+    @Description("IfcWallStandardCase test for IFC2X3 on geometry BODY and BOX")
+    fun resolveWallTest2_Ifc2x3tc1() {
+        // load optimized file into model
+        val fileWallCrossing_ifc2x3 = downloadFile(urlWallCrossing_ifc2x3)
+        val fileWallCrossingOptimized_ifc2x3: String = BIMFileOptimizer.optimizeIfcFile(
+            fileWallCrossing_ifc2x3,
+            optimizeInput_RBC = true,
+            optimizeInput_RBL = true
+        ).absolutePath
+        val model = Loader.loadIntoModel(fileWallCrossingOptimized_ifc2x3)
+
+        //------------ test GeometrySolution.BODY ------------ //
+        clearCaches()
+
+        // fill placement cache and geometry cache with wall objects
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
+            connector[wall.objectPlacement.expressId] = wall.representation.expressId
+            placementResolver_ifc2x3.resolvePlacement(wall.objectPlacement)
+            geometryResolverBody_ifc2x3.resolveWall(wall.representation)
+        }
+
+        // extract walls out of placement cache and geometry cache
+        val walls = extractWays_Ifc2x3tc1(geometryResolverBody_ifc2x3, placementResolver_ifc2x3, connector)
+
+        // check if only one wall in list
+        assertEquals(walls.size, 2)
+
+        // check resolved geometry
+        val fileWallCrossing_1_ifc2x3_resolvedGeo = downloadFile(urlWallCrossing_1_resolvedGeo_ifc2x3)
+        val resolvedCoords = loadResolvedGeometry(fileWallCrossing_1_ifc2x3_resolvedGeo)
+
+        // For now convert points from mm to m because this is not handled in engine
+        for (i in 0 until walls[0].points.size) {
+            assertEquals(walls[0].points[i].x / 1000.0, resolvedCoords[i].x, 0.1)
+            assertEquals(walls[0].points[i].y / 1000.0, resolvedCoords[i].y, 0.1)
         }
 
         //------------ test GeometrySolution.BOUNDINGBOX ------------ //
@@ -104,10 +158,10 @@ internal class GeometryResolverTest {
 
     @Test
     @Description("IfcWall test for IFC2X3 on geometry BODY and BOX")
-    fun resolveWallTest2_Ifc2x3tc1() {
+    fun resolveWallTest3_Ifc2x3tc1() {
         // TODO test with GeometrySolution.BODY
         // TODO test with GeometrySolution.BOUNDING_BOX
-        // TODO check Ifc2x3 resolveWall()
+        // TODO check Ifc2X3 resolveWall()
     }
 
     @Test
