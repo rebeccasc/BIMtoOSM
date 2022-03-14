@@ -1,6 +1,6 @@
 package de.rebsc.bimtoosm.geometry.ifc2x3
 
-import de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver
 import de.rebsc.bimtoosm.utils.math.Point3D
 import org.bimserver.models.ifc2x3tc1.Ifc2x3tc1Factory
 import org.bimserver.models.ifc2x3tc1.IfcAxis2Placement3D
@@ -26,7 +26,7 @@ internal class Ifc2x3PlacementResolverTest {
 
     @Test
     fun getAbsolutePointTest_Ifc2x3tc1() {
-        val resolver = PlacementResolver()
+        val resolver = Ifc2x3PlacementResolver()
         val placement3D: IfcAxis2Placement3D = createAxisPlacement_Ifc2x3tc1(
             listOf(0.0, 0.0, 0.0),
             listOf(0.0, 0.0, 1.0),

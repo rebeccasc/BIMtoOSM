@@ -14,7 +14,7 @@ package de.rebsc.bimtoosm.geometry.ifc4
  *****************************************************************************/
 
 import de.rebsc.bimtoosm.utils.math.Point3D
-import de.rebsc.bimtoosm.geometry.ifc4.PlacementResolver as Ifc4_PlacementResolver
+import de.rebsc.bimtoosm.geometry.ifc4.Ifc4PlacementResolver as Ifc4_PlacementResolver
 import org.bimserver.models.ifc4.Ifc4Factory
 import org.bimserver.models.ifc4.IfcAxis2Placement3D as Ifc4_IfcAxis2Placement3D
 import org.bimserver.models.ifc4.IfcCartesianPoint as Ifc4_IfcCartesianPoint

@@ -20,24 +20,23 @@ package de.rebsc.bimtoosm.geometry.ifc2x3
 import de.rebsc.bimtoosm.data.osm.OSMNode
 import de.rebsc.bimtoosm.data.osm.OSMWay
 import de.rebsc.bimtoosm.geometry.GeometrySolution
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3GeometryResolver
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver
 import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import jdk.jfr.Description
-import org.junit.jupiter.api.Assertions.*
+import org.bimserver.models.ifc2x3tc1.IfcWall
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.io.IOException
 import java.net.URL
-import de.rebsc.bimtoosm.geometry.ifc2x3tc1.GeometryResolver as Ifc2x3tc1_GeometryResolver
-import de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver as Ifc2x3tc1_PlacementResolver
-import org.bimserver.models.ifc2x3tc1.IfcWall as Ifc2x3tc1_IfcWall
 
 
-internal class Ifc2x3GeometryResolverTest {
-
+internal class Ifc2x3ResolveWallTest {
     // Test setup
 
     // URLs
@@ -53,15 +52,15 @@ internal class Ifc2x3GeometryResolverTest {
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwall/wall_single_IFC2X3.ifc")
 
     // Parser
-    private val placementResolver = Ifc2x3tc1_PlacementResolver()
-    private val geometryResolverBody = Ifc2x3tc1_GeometryResolver(GeometrySolution.BODY)
-    private val geometryResolverBB = Ifc2x3tc1_GeometryResolver(GeometrySolution.BOUNDING_BOX)
+    private val placementResolver = Ifc2x3PlacementResolver()
+    private val geometryResolverBody = Ifc2x3GeometryResolver(GeometrySolution.BODY)
+    private val geometryResolverBB = Ifc2x3GeometryResolver(GeometrySolution.BOUNDING_BOX)
 
     private val connector: MutableMap<Long, Long> = HashMap()
 
     @Test
-    @Description("IfcWallStandardCase test 1 for IFC2X3 on geometry BODY and BOX")
-    fun resolveWallTest1() {
+    @Description("IfcWallStandardCase test 1 for IFC2X3 on geometry solution BODY")
+    fun resolveWallTestBody1() {
         // load optimized file into model
         val fileWallWithWindow = downloadFile(urlWallWithWindow)
         val fileWallWithWindowOptimized: String = BIMFileOptimizer.optimizeIfcFile(
@@ -69,11 +68,10 @@ internal class Ifc2x3GeometryResolverTest {
         ).absolutePath
         val model = Loader.loadIntoModel(fileWallWithWindowOptimized)
 
-        // --- test GeometrySolution.BODY
         clearCaches()
 
         // fill placement cache and geometry cache with wall objects
-        model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
+        model.getAllWithSubTypes(IfcWall::class.java).forEach { wall ->
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
             placementResolver.resolvePlacement(wall.objectPlacement)
             geometryResolverBody.resolveWall(wall.representation)
@@ -83,27 +81,30 @@ internal class Ifc2x3GeometryResolverTest {
         val walls = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector)
 
         // check if only one wall in list
-        assertEquals(walls.size, 1)
+        Assertions.assertEquals(1, walls.size)
 
         // check resolved geometry
         val fileWallWithWindowResolvedGeo = downloadFile(urlWallWithWindowResolvedGeo)
         val resolvedCoords = loadResolvedGeometry(fileWallWithWindowResolvedGeo)
         for (i in 0 until walls[0].points.size) {
-            assertEquals(walls[0].points[i].x, resolvedCoords[i].x, 0.1)
-            assertEquals(walls[0].points[i].y, resolvedCoords[i].y, 0.1)
+            Assertions.assertEquals(resolvedCoords[i].x, walls[0].points[i].x, 0.1)
+            Assertions.assertEquals(resolvedCoords[i].y, walls[0].points[i].y, 0.1)
         }
-
-        // --- test GeometrySolution.BOUNDINGBOX
-        clearCaches()
-        // TODO implement
 
         // clean up test directory
         cleanTestDirectory()
     }
 
     @Test
-    @Description("IfcWallStandardCase test 2 for IFC2X3 on geometry BODY and BOX")
-    fun resolveWallTest2() {
+    @Description("IfcWallStandardCase test 1 for IFC2X3 on geometry solution BOUNDINGBOX")
+    fun resolveWallTestBB1() {
+        // TODO implement
+    }
+
+    @Test
+    @Disabled("as long as TODOs are open")
+    @Description("IfcWallStandardCase test 2 for IFC2X3 on geometry solution BODY")
+    fun resolveWallTestBody2() {
         // load optimized file into model
         val fileWallCrossing = downloadFile(urlWallCrossing)
         val fileWallCrossingOptimized: String = BIMFileOptimizer.optimizeIfcFile(
@@ -111,11 +112,10 @@ internal class Ifc2x3GeometryResolverTest {
         ).absolutePath
         val model = Loader.loadIntoModel(fileWallCrossingOptimized)
 
-        //------------ test GeometrySolution.BODY ------------ //
         clearCaches()
 
         // fill placement cache and geometry cache with wall objects
-        model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
+        model.getAllWithSubTypes(IfcWall::class.java).forEach { wall ->
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
             placementResolver.resolvePlacement(wall.objectPlacement)
             geometryResolverBody.resolveWall(wall.representation)
@@ -125,38 +125,35 @@ internal class Ifc2x3GeometryResolverTest {
         val walls = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector)
 
         // check if only one wall in list
-        assertEquals(walls.size, 2)
+        Assertions.assertEquals(2, walls.size)
 
         // check resolved geometry
         val fileWallCrossing1ResolvedGeo = downloadFile(urlWallCrossing1ResolvedGeo)
         val resolvedCoords = loadResolvedGeometry(fileWallCrossing1ResolvedGeo)
 
         // there is no warranty for order in 'walls', select the one you want to test
-        var wallIndex = 1
-        for(i in 0 until walls[0].points.size){
-            if(walls[0].points[0].x == 0.893){
-                wallIndex = 0
-            }
-        }
+        // TODO find correct wall
 
         // for now convert points from mm to m because this is not handled in engine
-        for (i in 0 until walls[wallIndex].points.size) {
-            assertEquals(walls[wallIndex].points[i].x / 1000.0, resolvedCoords[i].x, 0.1)
-            assertEquals(walls[wallIndex].points[i].y / 1000.0, resolvedCoords[i].y, 0.1)
+        for (i in 0 until walls[0].points.size) {
+            Assertions.assertEquals(resolvedCoords[i].x, walls[0].points[i].x / 1000.0, 0.1)
+            Assertions.assertEquals(resolvedCoords[i].y, walls[0].points[i].y / 1000.0, 0.1)
         }
-
-        //------------ test GeometrySolution.BOUNDINGBOX ------------ //
-        clearCaches()
-        // TODO implement
 
         // clean up test directory
         cleanTestDirectory()
     }
 
     @Test
+    @Description("IfcWallStandardCase test 2 for IFC2X3 on geometry solution BOUNDINGBOX")
+    fun resolveWallTestBB2() {
+        // TODO implement
+    }
+
+    @Test
     @Disabled("as long as IFCFACETEDBREP is not implemented")
-    @Description("IfcWall test for IFC2X3 on geometry BODY and BOX")
-    fun resolveWallTest3() {
+    @Description("IfcWall test for IFC2X3 on geometry solution BODY")
+    fun resolveWallTestBody3() {
         // load optimized file into model
         val fileWallSingle = downloadFile(urlWallSingle)
         val fileWallSingleOptimized: String = BIMFileOptimizer.optimizeIfcFile(
@@ -164,11 +161,10 @@ internal class Ifc2x3GeometryResolverTest {
         ).absolutePath
         val model = Loader.loadIntoModel(fileWallSingleOptimized)
 
-        //------------ test GeometrySolution.BODY ------------ //
         clearCaches()
 
         // fill placement cache and geometry cache with wall objects
-        model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
+        model.getAllWithSubTypes(IfcWall::class.java).forEach { wall ->
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
             placementResolver.resolvePlacement(wall.objectPlacement)
             geometryResolverBody.resolveWall(wall.representation)
@@ -178,66 +174,44 @@ internal class Ifc2x3GeometryResolverTest {
         val walls = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector)
 
         // check if only one wall in list
-        assertEquals(walls.size, 1)
+        Assertions.assertEquals(1, walls.size)
 
         // check resolved geometry
-        /*
-        val fileWallSingle_1_ifc2x3_resolvedGeo = downloadFile()
-        val resolvedCoords = loadResolvedGeometry(fileWallSingle_1_ifc2x3_resolvedGeo)
-
-        // For now convert points from mm to m because this is not handled in engine
-        for (i in 0 until walls[1].points.size) {
-            assertEquals(walls[1].points[i].x, resolvedCoords[i].x, 0.1)
-            assertEquals(walls[1].points[i].y, resolvedCoords[i].y, 0.1)
-        }
-        */
-
-        //------------ test GeometrySolution.BOUNDINGBOX ------------ //
-        clearCaches()
-        // TODO implement
 
         // clean up test directory
         cleanTestDirectory()
     }
 
     @Test
-    @Description("")
-    fun resolveSlabTest() {
-        // TODO test with GeometrySolution.BODY
-        // TODO test with GeometrySolution.BOUNDING_BOX
-        // TODO check Ifc2x3tc1 resolveSlab()
-    }
+    @Disabled("as long as IFCFACETEDBREP is not implemented")
+    @Description("IfcWall test for IFC2X3 on geometry solution BOUNDINGBOX")
+    fun resolveWallTestBB3() {
+        // load optimized file into model
+        val fileWallSingle = downloadFile(urlWallSingle)
+        val fileWallSingleOptimized: String = BIMFileOptimizer.optimizeIfcFile(
+            fileWallSingle, optimizeInput_RBC = true, optimizeInput_RBL = true
+        ).absolutePath
+        val model = Loader.loadIntoModel(fileWallSingleOptimized)
 
-    @Test
-    @Description("")
-    fun resolveColumnTest() {
-        // TODO test with GeometrySolution.BODY
-        // TODO test with GeometrySolution.BOUNDING_BOX
-        // TODO check Ifc2x3tc1 resolveColumn()
-    }
+        clearCaches()
 
-    @Test
-    @Description("")
-    fun resolveDoorTest() {
-        // TODO test with GeometrySolution.BODY
-        // TODO test with GeometrySolution.BOUNDING_BOX
-        // TODO check Ifc2x3tc1 resolveDoor()
-    }
+        // fill placement cache and geometry cache with wall objects
+        model.getAllWithSubTypes(IfcWall::class.java).forEach { wall ->
+            connector[wall.objectPlacement.expressId] = wall.representation.expressId
+            placementResolver.resolvePlacement(wall.objectPlacement)
+            geometryResolverBB.resolveWall(wall.representation)
+        }
 
-    @Test
-    @Description("")
-    fun resolveWindowTest() {
-        // TODO test with GeometrySolution.BODY
-        // TODO test with GeometrySolution.BOUNDING_BOX
-        // TODO check Ifc2x3tc1 resolveWindow()
-    }
+        // extract walls out of placement cache and geometry cache
+        val walls = extractWays_Ifc2x3tc1(geometryResolverBB, placementResolver, connector)
 
-    @Test
-    @Description("")
-    fun resolveStairTest() {
-        // TODO test with GeometrySolution.BODY
-        // TODO test with GeometrySolution.BOUNDING_BOX
-        // TODO check Ifc2x3tc1 resolveStair()
+        // check if only one wall in list
+        Assertions.assertEquals(1, walls.size)
+
+        // check resolved geometry
+
+        // clean up test directory
+        cleanTestDirectory()
     }
 
     // helper
@@ -249,8 +223,8 @@ internal class Ifc2x3GeometryResolverTest {
     }
 
     private fun extractWays_Ifc2x3tc1(
-        geometryResolver: Ifc2x3tc1_GeometryResolver,
-        placementResolver: Ifc2x3tc1_PlacementResolver,
+        geometryResolver: Ifc2x3GeometryResolver,
+        placementResolver: Ifc2x3PlacementResolver,
         connector: MutableMap<Long, Long>
     ): ArrayList<OSMWay> {
 

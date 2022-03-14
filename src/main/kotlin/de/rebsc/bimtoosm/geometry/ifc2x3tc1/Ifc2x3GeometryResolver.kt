@@ -55,7 +55,7 @@ import org.bimserver.models.ifc2x3tc1.IfcCompositeCurve as Ifc2x3tc1_IfcComposit
 import org.bimserver.models.ifc2x3tc1.IfcTrimmedCurve as Ifc2x3tc1_IfcTrimmedCurve
 
 
-class GeometryResolver(private val solution: GeometrySolution) {
+class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
 
     private val logger = Logger.get(this::class.java)
 

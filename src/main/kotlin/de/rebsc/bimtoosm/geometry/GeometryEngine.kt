@@ -25,8 +25,8 @@ import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import org.bimserver.emf.IfcModelInterface
 import org.bimserver.emf.Schema
-import de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver as Ifc2x3tc1_PlacementResolver
-import de.rebsc.bimtoosm.geometry.ifc2x3tc1.GeometryResolver as Ifc2x3tc1_GeometryResolver
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver as Ifc2x3tc1_PlacementResolver
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3GeometryResolver as Ifc2x3tc1_GeometryResolver
 import org.bimserver.models.ifc2x3tc1.IfcColumn as Ifc2x3tc1_IfcColumn
 import org.bimserver.models.ifc2x3tc1.IfcDoor as Ifc2x3tc1_IfcDoor
 import org.bimserver.models.ifc2x3tc1.IfcSlab as Ifc2x3tc1_IfcSlab
@@ -41,7 +41,7 @@ import org.bimserver.models.ifc4.IfcStair as Ifc4_IfcStair
 import org.bimserver.models.ifc4.IfcWall as Ifc4_IfcWall
 import org.bimserver.models.ifc4.IfcWindow as Ifc4_IfcWindow
 import org.bimserver.models.ifc4.IfcSlabTypeEnum as Ifc4_IfcSlabTypeEnum
-import de.rebsc.bimtoosm.geometry.ifc4.PlacementResolver as Ifc4_PlacementResolver
+import de.rebsc.bimtoosm.geometry.ifc4.Ifc4PlacementResolver as Ifc4_PlacementResolver
 import de.rebsc.bimtoosm.geometry.ifc4.GeometryResolver as Ifc4_GeometryResolver
 
 /**
@@ -95,7 +95,7 @@ class GeometryEngine(private val solution: GeometrySolution) {
     }
 
     /**
-     * Extract Ifc4 elements placement into [de.rebsc.bimtoosm.geometry.ifc4.PlacementResolver] cache
+     * Extract Ifc4 elements placement into [de.rebsc.bimtoosm.geometry.ifc4.Ifc4PlacementResolver] cache
      * and Ifc4 elements geometry into [de.rebsc.bimtoosm.geometry.ifc4.GeometryResolver] cache
      * @param model with ifc data
      * @param connector connects placement object with geometry object
@@ -142,8 +142,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
     }
 
     /**
-     * Extract Ifc2x3tc1 elements placement into [de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver] cache
-     * and Ifc2x3tc1 elements geometry into [de.rebsc.bimtoosm.geometry.ifc2x3tc1.GeometryResolver] cache
+     * Extract Ifc2x3tc1 elements placement into [de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver] cache
+     * and Ifc2x3tc1 elements geometry into [de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3GeometryResolver] cache
      * @param model with ifc data
      * @param connector connects placement object with geometry object
      * @param placementResolver resolves and keeps objects placement
