@@ -146,10 +146,12 @@
               <span class="hljs-keyword">val</span> defaultConfig = <span class="hljs-type">Configuration</span>()
 
               <span class="hljs-comment">// Init parser</span>
-              <span class="hljs-keyword">val</span> parser = <span class="hljs-type">BIMtoOSMParser</span>(config)
+              <span class="hljs-keyword">val</span> parser = <span class="hljs-type">BIMtoOSMParser</span>(defaultConfig)
 
               <span class="hljs-comment">// Parse BIM file</span>
               <span class="hljs-keyword">val</span> osmData: <span class="hljs-type">BIMtoOSMParser</span> = parser.parse(<span class="hljs-string">"path-to-file.ifc"</span>)
+            
+              <span class="hljs-comment">// Access the data: see section 'Full Setup & Configuration' below</span>
             </code>
           </pre> 
         </div>
@@ -160,7 +162,8 @@
           <div class="alert alert-warning" role="alert">
             <b>Caution</b>: Currently, the source code is being rebuilt from scratch and the API might change!
           </div>
-
+          
+          Class <code-val-header>BIMtoOSMParser</code-val-header>
           <pre>
             <code class="language-kotlin hljs">
               <span class="hljs-comment">/**
@@ -176,7 +179,7 @@
               <span class="hljs-keyword">fun</span> <span class="hljs-title">parse</span>(<span class="hljs-title">filepath</span>: <span class="hljs-type">String</span>): <span class="hljs-type">OSMDataSet</span>
 
               <span class="hljs-comment">/**
-               * Gives information about current ParserStatus
+               * Gives information about current parser status
                */</span>
               <span class="hljs-keyword">fun</span> <span class="hljs-title">status</span>(): <span class="hljs-type">String</span>
 
@@ -208,7 +211,7 @@
         </div>
 
         <div id="setup">
-          <h3>Setup & Configuration</h3>
+          <h3>Full Setup & Configuration</h3>
           <pre>
             <code class="language-kotlin hljs">
               <span class="hljs-comment">// Setup configuration (description see below):
@@ -231,7 +234,7 @@
               <span class="hljs-keyword">val</span> osmData: <span class="hljs-type">BIMtoOSMParser</span> = parser.parse(<span class="hljs-string">"path-to-file.ifc"</span>)
 
               <span class="hljs-comment">// Export OSM data</span>
-              <span class="hljs-type">Exporter</span>.exportOSM(<span class="hljs-string">"path-to-file.ifc"</span>, osmData, <span class="hljs-built_in">true</span>)
+              <span class="hljs-type">Exporter</span>.exportOSM(<span class="hljs-string">"bim-to-osm.osm"</span>, osmData, <span class="hljs-built_in">true</span>)
             </code>
           </pre> 
 
@@ -261,10 +264,8 @@
           <h4>How to access the data</h4>
           <pre>
             <code class="language-kotlin hljs">
-              <span class="hljs-comment">// Parse</span>
-              <span class="hljs-keyword">val</span> defaultConfig = <span class="hljs-type">Configuration</span>()
-              <span class="hljs-keyword">val</span> parser = <span class="hljs-type">BIMtoOSMParser</span>(defaultConfig)
-              <span class="hljs-keyword">val</span> osmData: <span class="hljs-type">OSMDataSet</span> = parser.parse(<span class="hljs-string">"path-to-file.ifc"</span>)
+              <span class="hljs-comment">// Data</span>
+              <span class="hljs-keyword">val</span> osmData: <span class="hljs-type">OSMDataSet</span>
 
               <span class="hljs-comment">// Access data</span>
 

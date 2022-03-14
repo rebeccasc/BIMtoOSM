@@ -227,3 +227,9 @@ code-val{
     font-family: var(--font-family-code);
     font-size: 14px;
 }
+
+code-val-header{
+    color: #000000 !important;
+    font-family: var(--font-family-code);
+    font-size: 16px;
+}
