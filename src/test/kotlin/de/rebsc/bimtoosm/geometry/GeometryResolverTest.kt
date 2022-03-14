@@ -25,16 +25,17 @@ import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import jdk.jfr.Description
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.io.IOException
 import java.net.URL
-import kotlin.math.roundToInt
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.GeometryResolver as Ifc2x3tc1_GeometryResolver
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.PlacementResolver as Ifc2x3tc1_PlacementResolver
 import de.rebsc.bimtoosm.geometry.ifc4.GeometryResolver as Ifc4_GeometryResolver
 import de.rebsc.bimtoosm.geometry.ifc4.PlacementResolver as Ifc4_PlacementResolver
 import org.bimserver.models.ifc2x3tc1.IfcWall as Ifc2x3tc1_IfcWall
+import org.bimserver.models.ifc4.IfcWall as Ifc4_IfcWall
 
 
 internal class GeometryResolverTest {
@@ -53,6 +54,9 @@ internal class GeometryResolverTest {
     private val urlWallSingle_ifc2x3 =
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwall/wall_single_IFC2X3.ifc")
 
+    private val urlWallSquareOnSite_ifc4 =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc4/wall/ifcwall/wall_square_on_site_IFC4.ifc")
+
 
     // ifc4
     private val placementResolver_ifc4 = Ifc4_PlacementResolver()
@@ -67,14 +71,12 @@ internal class GeometryResolverTest {
     private val connector: MutableMap<Long, Long> = HashMap()
 
     @Test
-    @Description("IfcWallStandardCase test for IFC2X3 on geometry BODY and BOX")
+    @Description("IfcWallStandardCase test 1 for IFC2X3 on geometry BODY and BOX")
     fun resolveWallTest1_Ifc2x3tc1() {
         // load optimized file into model
         val fileWallWithWindow_ifc2x3 = downloadFile(urlWallWithWindow_ifc2x3)
         val fileWallWithWindowOptimized_ifc2x3: String = BIMFileOptimizer.optimizeIfcFile(
-            fileWallWithWindow_ifc2x3,
-            optimizeInput_RBC = true,
-            optimizeInput_RBL = true
+            fileWallWithWindow_ifc2x3, optimizeInput_RBC = true, optimizeInput_RBL = true
         ).absolutePath
         val model = Loader.loadIntoModel(fileWallWithWindowOptimized_ifc2x3)
 
@@ -111,14 +113,12 @@ internal class GeometryResolverTest {
     }
 
     @Test
-    @Description("IfcWallStandardCase test for IFC2X3 on geometry BODY and BOX")
+    @Description("IfcWallStandardCase test 2 for IFC2X3 on geometry BODY and BOX")
     fun resolveWallTest2_Ifc2x3tc1() {
         // load optimized file into model
         val fileWallCrossing_ifc2x3 = downloadFile(urlWallCrossing_ifc2x3)
         val fileWallCrossingOptimized_ifc2x3: String = BIMFileOptimizer.optimizeIfcFile(
-            fileWallCrossing_ifc2x3,
-            optimizeInput_RBC = true,
-            optimizeInput_RBL = true
+            fileWallCrossing_ifc2x3, optimizeInput_RBC = true, optimizeInput_RBL = true
         ).absolutePath
         val model = Loader.loadIntoModel(fileWallCrossingOptimized_ifc2x3)
 
@@ -142,10 +142,16 @@ internal class GeometryResolverTest {
         val fileWallCrossing_1_ifc2x3_resolvedGeo = downloadFile(urlWallCrossing_1_resolvedGeo_ifc2x3)
         val resolvedCoords = loadResolvedGeometry(fileWallCrossing_1_ifc2x3_resolvedGeo)
 
-        // For now convert points from mm to m because this is not handled in engine
-        for (i in 0 until walls[0].points.size) {
-            assertEquals(walls[0].points[i].x / 1000.0, resolvedCoords[i].x, 0.1)
-            assertEquals(walls[0].points[i].y / 1000.0, resolvedCoords[i].y, 0.1)
+        // there is no warranty for order in 'walls', select the one you want to test
+        var wallIndex = 0
+        if(walls[0].points[0].x != 0.893){
+            wallIndex = 1
+        }
+
+        // for now convert points from mm to m because this is not handled in engine
+        for (i in 0 until walls[wallIndex].points.size) {
+            assertEquals(walls[wallIndex].points[i].x / 1000.0, resolvedCoords[i].x, 0.1)
+            assertEquals(walls[wallIndex].points[i].y / 1000.0, resolvedCoords[i].y, 0.1)
         }
 
         //------------ test GeometrySolution.BOUNDINGBOX ------------ //
@@ -157,19 +163,56 @@ internal class GeometryResolverTest {
     }
 
     @Test
+    @Disabled("as long as IFCFACETEDBREP is not implemented")
     @Description("IfcWall test for IFC2X3 on geometry BODY and BOX")
     fun resolveWallTest3_Ifc2x3tc1() {
-        // TODO test with GeometrySolution.BODY
-        // TODO test with GeometrySolution.BOUNDING_BOX
-        // TODO check Ifc2X3 resolveWall()
+        // load optimized file into model
+        val fileWallSingle_ifc2x3 = downloadFile(urlWallSingle_ifc2x3)
+        val fileWallSingleOptimized_ifc2x3: String = BIMFileOptimizer.optimizeIfcFile(
+            fileWallSingle_ifc2x3, optimizeInput_RBC = true, optimizeInput_RBL = true
+        ).absolutePath
+        val model = Loader.loadIntoModel(fileWallSingleOptimized_ifc2x3)
+
+        //------------ test GeometrySolution.BODY ------------ //
+        clearCaches()
+
+        // fill placement cache and geometry cache with wall objects
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
+            connector[wall.objectPlacement.expressId] = wall.representation.expressId
+            placementResolver_ifc2x3.resolvePlacement(wall.objectPlacement)
+            geometryResolverBody_ifc2x3.resolveWall(wall.representation)
+        }
+
+        // extract walls out of placement cache and geometry cache
+        val walls = extractWays_Ifc2x3tc1(geometryResolverBody_ifc2x3, placementResolver_ifc2x3, connector)
+
+        // check if only one wall in list
+        assertEquals(walls.size, 1)
+
+        // check resolved geometry
+        /*
+        val fileWallSingle_1_ifc2x3_resolvedGeo = downloadFile()
+        val resolvedCoords = loadResolvedGeometry(fileWallSingle_1_ifc2x3_resolvedGeo)
+
+        // For now convert points from mm to m because this is not handled in engine
+        for (i in 0 until walls[1].points.size) {
+            assertEquals(walls[1].points[i].x, resolvedCoords[i].x, 0.1)
+            assertEquals(walls[1].points[i].y, resolvedCoords[i].y, 0.1)
+        }
+        */
+
+        //------------ test GeometrySolution.BOUNDINGBOX ------------ //
+        clearCaches()
+        // TODO implement
+
+        // clean up test directory
+        cleanTestDirectory()
     }
 
     @Test
     @Description("")
     fun resolveWallTest_Ifc4() {
-        // TODO test with GeometrySolution.BODY
-        // TODO test with GeometrySolution.BOUNDING_BOX
-        // TODO check Ifc4 resolveWall()
+
     }
 
     @Test
@@ -277,6 +320,35 @@ internal class GeometryResolverTest {
             val connectorPlacementKey = connectorPlacements.entries.first().key
             val placements =
                 placementResolver.placementCacheIfc2x3tc1.filterKeys { it.expressId == connectorPlacementKey }
+            val placement = placements.entries.first()
+
+            // transform representation using placement
+            val osmNodeList = ArrayList<OSMNode>()
+            representation.value.forEach { point ->
+                val absolutePoint =
+                    placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
+                osmNodeList.add(OSMNode(-1, Point2D(absolutePoint.x, absolutePoint.y)))
+            }
+            wayList.add(OSMWay(representation.key.productRepresentation.expressId, osmNodeList))
+        }
+
+        return wayList
+    }
+
+    private fun extractWays_Ifc4(
+        geometryResolver: Ifc4_GeometryResolver,
+        placementResolver: Ifc4_PlacementResolver,
+        connector: MutableMap<Long, Long>
+    ): ArrayList<OSMWay> {
+
+        val wayList: ArrayList<OSMWay> = ArrayList()
+
+        geometryResolver.geometryCacheIfc4.forEach { representation ->
+            // find placement connected to representation
+            val connectorPlacements =
+                connector.filterValues { it == representation.key.productRepresentation.expressId }
+            val connectorPlacementKey = connectorPlacements.entries.first().key
+            val placements = placementResolver.placementCacheIfc4.filterKeys { it.expressId == connectorPlacementKey }
             val placement = placements.entries.first()
 
             // transform representation using placement
