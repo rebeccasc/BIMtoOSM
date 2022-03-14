@@ -16,7 +16,7 @@ A parser to transform **B**uilding **I**nformation **M**odeling ([BIM](https://e
 val defaultConfig = Configuration()
 
 // Init parser
-val parser = BIMtoOSMParser(config)
+val parser = BIMtoOSMParser(defaultConfig)
 
 // Parse BIM file
 val osmData: OSMDataSet = parser.parse("path-to-file.ifc")
@@ -24,7 +24,7 @@ val osmData: OSMDataSet = parser.parse("path-to-file.ifc")
 // Access the data (for full description see wiki -> Usage)
 
 // Export OSM data
-Exporter.exportOSM("path-to-file.ifc", osmData, true)
+Exporter.exportOSM("bim-to-osm.osm", osmData, true)
 ```
 
 ### Use JOSM GUI
