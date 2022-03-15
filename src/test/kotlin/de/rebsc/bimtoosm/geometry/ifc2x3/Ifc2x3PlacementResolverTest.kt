@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test
 internal class Ifc2x3PlacementResolverTest {
 
     @Test
-    fun getAbsolutePointTest_Ifc2x3tc1() {
+    fun getAbsolutePointTest() {
         val resolver = Ifc2x3PlacementResolver()
         val placement3D: IfcAxis2Placement3D = createAxisPlacement_Ifc2x3tc1(
             listOf(0.0, 0.0, 0.0),

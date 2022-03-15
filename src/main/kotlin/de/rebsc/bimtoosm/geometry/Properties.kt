@@ -26,7 +26,7 @@ enum class GeometrySolution {
 }
 
 /**
- * Currently supported Tobject types
+ * Currently supported object types
  */
 enum class SupportedObjectType {
 

@@ -32,8 +32,8 @@ internal class Ifc4ResolveWallTest {
 
     // Parser
     private val placementResolver = Ifc4PlacementResolver()
-    private val geometryResolverBody = GeometryResolver(GeometrySolution.BODY)
-    private val geometryResolverBB = GeometryResolver(GeometrySolution.BOUNDING_BOX)
+    private val geometryResolverBody = Ifc4GeometryResolver(GeometrySolution.BODY)
+    private val geometryResolverBB = Ifc4GeometryResolver(GeometrySolution.BOUNDING_BOX)
 
 
     @Test

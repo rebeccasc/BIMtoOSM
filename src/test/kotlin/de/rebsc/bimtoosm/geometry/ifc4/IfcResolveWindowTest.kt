@@ -3,7 +3,6 @@ package de.rebsc.bimtoosm.geometry.ifc4
 import de.rebsc.bimtoosm.geometry.GeometrySolution
 import jdk.jfr.Description
 import org.junit.jupiter.api.Test
-import java.net.URL
 
 /******************************************************************************
  * Copyright (C) 2021  de.rebsc
@@ -29,8 +28,8 @@ internal class Ifc4ResolveWindowTest {
 
     // Parser
     private val placementResolver = Ifc4PlacementResolver()
-    private val geometryResolverBody = GeometryResolver(GeometrySolution.BODY)
-    private val geometryResolverBB = GeometryResolver(GeometrySolution.BOUNDING_BOX)
+    private val geometryResolverBody = Ifc4GeometryResolver(GeometrySolution.BODY)
+    private val geometryResolverBB = Ifc4GeometryResolver(GeometrySolution.BOUNDING_BOX)
 
 
     @Test

@@ -53,7 +53,7 @@ import org.bimserver.models.ifc4.IfcCompositeProfileDef as Ifc4_IfcCompositeProf
 import org.bimserver.models.ifc4.IfcDerivedProfileDef as Ifc4_IfcDerivedProfileDef
 
 
-class GeometryResolver(private val solution: GeometrySolution) {
+class Ifc4GeometryResolver(private val solution: GeometrySolution) {
 
     private val logger = Logger.get(this::class.java)
 
