@@ -53,7 +53,20 @@ import org.bimserver.models.ifc2x3tc1.IfcCurve as Ifc2x3tc1_IfcCurve
 import org.bimserver.models.ifc2x3tc1.IfcPolyline as Ifc2x3tc1_IfcPolyline
 import org.bimserver.models.ifc2x3tc1.IfcCompositeCurve as Ifc2x3tc1_IfcCompositeCurve
 import org.bimserver.models.ifc2x3tc1.IfcTrimmedCurve as Ifc2x3tc1_IfcTrimmedCurve
-
+import org.bimserver.models.ifc2x3tc1.IfcConnectedFaceSet as Ifc2x3tc1_IfcConnectedFaceSet
+import org.bimserver.models.ifc2x3tc1.IfcClosedShell as Ifc2x3tc1_IfcClosedShell
+import org.bimserver.models.ifc2x3tc1.IfcOpenShell as Ifc2x3tc1_IfcOpenShell
+import org.bimserver.models.ifc2x3tc1.IfcTopologicalRepresentationItem as Ifc2x3tc1_IfcTopologicalRepresentationItem
+import org.bimserver.models.ifc2x3tc1.IfcFace as Ifc2x3tc1_IfcFace
+import org.bimserver.models.ifc2x3tc1.IfcEdge as Ifc2x3tc1_IfcEdge
+import org.bimserver.models.ifc2x3tc1.IfcFaceBound as Ifc2x3tc1_IfcFaceBound
+import org.bimserver.models.ifc2x3tc1.IfcFaceOuterBound as Ifc2x3tc1_IfcFaceOuterBound
+import org.bimserver.models.ifc2x3tc1.IfcPath as Ifc2x3tc1_IfcPath
+import org.bimserver.models.ifc2x3tc1.IfcVertex as Ifc2x3tc1_IfcVertex
+import org.bimserver.models.ifc2x3tc1.IfcLoop as Ifc2x3tc1_IfcLoop
+import org.bimserver.models.ifc2x3tc1.IfcPolyLoop as Ifc2x3tc1_IfcPolyLoop
+import org.bimserver.models.ifc2x3tc1.IfcVertexLoop as Ifc2x3tc1_IfcVertexLoop
+import org.bimserver.models.ifc2x3tc1.IfcEdgeLoop as Ifc2x3tc1_IfcEdgeLoop
 
 class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
 
@@ -378,8 +391,145 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @return List holding resolved local coordinates
      */
     private fun resolveIfcFacetedBrep(entity: Ifc2x3tc1_IfcFacetedBrep): List<Vector3D> {
+        // resolve attribute outer: IfcClosedShell subtype of IfcConnectedFaceSet
+        return resolveIfcTopologicalRepresentationItem(entity.outer)
+    }
+
+    /**
+     * TODO add description
+     */
+    private fun resolveIfcTopologicalRepresentationItem(entity: Ifc2x3tc1_IfcTopologicalRepresentationItem): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        when (entity) {
+            is Ifc2x3tc1_IfcConnectedFaceSet -> {
+                return resolveIfcConnectedFaceSet(entity)
+            }
+            is Ifc2x3tc1_IfcEdge -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcFace -> {
+                return resolveIfcFace(entity)
+            }
+            is Ifc2x3tc1_IfcFaceBound -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcPath -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcVertex -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcLoop -> {
+                // TODO implement
+            }
+        }
+        return geometry
+    }
+
+    /**
+     * TODO add description
+     */
+    private fun resolveIfcConnectedFaceSet(entity: Ifc2x3tc1_IfcConnectedFaceSet): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // check if closed shell or open shell
+        when (entity) {
+            is Ifc2x3tc1_IfcClosedShell -> {
+                return resolveIfcClosedShell(entity)
+            }
+            is Ifc2x3tc1_IfcOpenShell -> {
+                return resolveIfcOpenShell(entity)
+            }
+        }
+        return geometry
+    }
+
+    /**
+     * TODO add description
+     */
+    private fun resolveIfcClosedShell(entity: Ifc2x3tc1_IfcClosedShell): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // resolve list of CfsFaces
+        entity.cfsFaces.forEach { face ->
+            geometry.addAll(resolveIfcFace(face))
+            // TODO handle point duplications
+        }
+        return geometry
+    }
+
+    /**
+     * TODO add description
+     */
+    private fun resolveIfcOpenShell(entity: Ifc2x3tc1_IfcOpenShell): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         // TODO implement
+        return geometry
+    }
+
+    /**
+     * TODO add description
+     */
+    private fun resolveIfcFace(entity: Ifc2x3tc1_IfcFace): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // resolve list of bounds
+        entity.bounds.forEach { bound ->
+            // note:
+            // for now only handle IfcFaceOuterBound to ignore cutouts,
+            // there is only one IfcFaceOuterBound defined for IfcFaceBound so this loop should only be called once
+            if (bound is Ifc2x3tc1_IfcFaceOuterBound) {
+                geometry.addAll(resolveIfcFaceBound(bound))
+            }
+        }
+        return geometry
+    }
+
+    /**
+     * TODO add description
+     */
+    private fun resolveIfcFaceBound(entity: Ifc2x3tc1_IfcFaceBound): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // handle IfcFaceOuterBound and IfcFaceBound the same way
+        val data = resolveLoop(entity.bound)
+        // handle orientation, if true no action needed, if false handle translation
+        if (entity.orientation.value == 1) {
+            // if sense is FALSE the senses of all its component oriented edges are implicitly reversed  when used in the face
+            // TODO handle orientation, translate data
+        }
+        geometry.addAll(data)
+        return geometry
+    }
+
+    /**
+     * TODO add description
+     */
+    private fun resolveLoop(entity: Ifc2x3tc1_IfcLoop): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        when (entity) {
+            is Ifc2x3tc1_IfcPolyLoop -> {
+                return resolvePolyLoop(entity)
+            }
+            is Ifc2x3tc1_IfcVertexLoop -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcEdgeLoop -> {
+                // TODO implement
+            }
+        }
+        return geometry
+    }
+
+    /**
+     * TODO add description
+     */
+    private fun resolvePolyLoop(entity: Ifc2x3tc1_IfcPolyLoop): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // collect all points of polygon loop
+        entity.polygon.forEach { cartesian ->
+            val x = cartesian.coordinates[0]
+            val y = cartesian.coordinates[1]
+            geometry.add(Vector3D(x, y, 0.0))
+        }
+        // add first coordinate again to close the loop
+        geometry.add(Vector3D(geometry[0].x, geometry[0].y, geometry[0].z))
         return geometry
     }
 
@@ -391,6 +541,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveIfcCurve(entity: Ifc2x3tc1_IfcCurve): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         when (entity.eClass().name) {
+            // TODO use 'is' to check class?
             // handle subtypes of IfcBoundedCurve
             "IfcCompositeCurve" -> {
                 geometry.addAll(resolveIfcCompositeCurve(entity as Ifc2x3tc1_IfcCompositeCurve))
