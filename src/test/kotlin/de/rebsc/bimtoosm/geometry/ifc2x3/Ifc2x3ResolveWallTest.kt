@@ -29,7 +29,6 @@ import de.rebsc.bimtoosm.utils.math.Point3D
 import jdk.jfr.Description
 import org.bimserver.models.ifc2x3tc1.IfcWall
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.io.IOException
@@ -50,6 +49,8 @@ internal class Ifc2x3ResolveWallTest {
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwallstandardcase/resolved_placements/wall_1_crossing_IFC2X3.txt")
     private val urlWallSingle =
         URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwall/wall_single_IFC2X3.ifc")
+    private val urlWallSingleResolvedGeo =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/wall/ifcwall/resolved_placements/wall_single_IFC2X3.txt")
 
     // Parser
     private val placementResolver = Ifc2x3PlacementResolver()
@@ -131,7 +132,7 @@ internal class Ifc2x3ResolveWallTest {
         val resolvedCoords = loadResolvedGeometry(fileWallCrossing1ResolvedGeo)
 
         // there is no warranty for order in 'walls', find the one you want to test
-        val wallToTest = walls.find { it.points[0].x ==  892.89902 }
+        val wallToTest = walls.find { it.points[0].x == 892.89902 }
 
         // for now convert points from mm to m because this is not handled in engine
         for (i in 0 until wallToTest!!.points.size) {
@@ -150,7 +151,6 @@ internal class Ifc2x3ResolveWallTest {
     }
 
     @Test
-    @Disabled("as long as IFCFACETEDBREP is not implemented")
     @Description("IfcWall test for IFC2X3 on geometry solution BODY")
     fun resolveWallTestBody3() {
         // load optimized file into model
@@ -176,13 +176,20 @@ internal class Ifc2x3ResolveWallTest {
         Assertions.assertEquals(1, walls.size)
 
         // check resolved geometry
+        val fileWallSingleResolvedGeo = downloadFile(urlWallSingleResolvedGeo)
+        val resolvedCoords = loadResolvedGeometry(fileWallSingleResolvedGeo)
+
+        // for now convert points from mm to m because this is not handled in engine
+        for (i in 0 until walls[0].points.size) {
+            Assertions.assertEquals(resolvedCoords[i].x, walls[0].points[i].x / 1000.0, 0.1)
+            Assertions.assertEquals(resolvedCoords[i].y, walls[0].points[i].y / 1000.0, 0.1)
+        }
 
         // clean up test directory
         cleanTestDirectory()
     }
 
     @Test
-    @Disabled("as long as IFCFACETEDBREP is not implemented")
     @Description("IfcWall test for IFC2X3 on geometry solution BOUNDINGBOX")
     fun resolveWallTestBB3() {
         // TODO implement
