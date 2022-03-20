@@ -24,6 +24,7 @@ import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3GeometryResolver
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver
 import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
+import de.rebsc.bimtoosm.utils.IdGenerator
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import jdk.jfr.Description
@@ -178,7 +179,6 @@ internal class Ifc2x3ResolveWallTest {
         // check resolved geometry
         val fileWallSingleResolvedGeo = downloadFile(urlWallSingleResolvedGeo)
         val resolvedCoords = loadResolvedGeometry(fileWallSingleResolvedGeo)
-
         // for now convert points from mm to m because this is not handled in engine
         for (i in 0 until walls[0].points.size) {
             Assertions.assertEquals(resolvedCoords[i].x, walls[0].points[i].x / 1000.0, 0.1)
@@ -225,7 +225,7 @@ internal class Ifc2x3ResolveWallTest {
             representation.value.forEach { point ->
                 val absolutePoint =
                     placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
-                osmNodeList.add(OSMNode(-1, Point2D(absolutePoint.x, absolutePoint.y)))
+                osmNodeList.add(OSMNode(IdGenerator.createUUID(allowNegative = true), Point2D(absolutePoint.x, absolutePoint.y)))
             }
             wayList.add(OSMWay(representation.key.productRepresentation.expressId, osmNodeList))
         }
