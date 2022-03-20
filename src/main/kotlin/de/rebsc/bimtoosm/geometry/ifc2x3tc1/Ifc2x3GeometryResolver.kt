@@ -67,6 +67,13 @@ import org.bimserver.models.ifc2x3tc1.IfcLoop as Ifc2x3tc1_IfcLoop
 import org.bimserver.models.ifc2x3tc1.IfcPolyLoop as Ifc2x3tc1_IfcPolyLoop
 import org.bimserver.models.ifc2x3tc1.IfcVertexLoop as Ifc2x3tc1_IfcVertexLoop
 import org.bimserver.models.ifc2x3tc1.IfcEdgeLoop as Ifc2x3tc1_IfcEdgeLoop
+import org.bimserver.models.ifc2x3tc1.IfcBSplineCurve as Ifc2x3tc1_IfcBSplineCurve
+import org.bimserver.models.ifc2x3tc1.IfcCircle as Ifc2x3tc1_IfcCircle
+import org.bimserver.models.ifc2x3tc1.IfcEllipse as Ifc2x3tc1_IfcEllipse
+import org.bimserver.models.ifc2x3tc1.IfcLine as Ifc2x3tc1_IfcLine
+import org.bimserver.models.ifc2x3tc1.IfcOffsetCurve2D as Ifc2x3tc1_IfcOffsetCurve2D
+import org.bimserver.models.ifc2x3tc1.IfcOffsetCurve3D as Ifc2x3tc1_IfcOffsetCurve3D
+
 
 class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
 
@@ -549,32 +556,31 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcCurve(entity: Ifc2x3tc1_IfcCurve): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        when (entity.eClass().name) {
-            // TODO use 'is' to check class?
+        when (entity) {
             // handle subtypes of IfcBoundedCurve
-            "IfcCompositeCurve" -> {
-                geometry.addAll(resolveIfcCompositeCurve(entity as Ifc2x3tc1_IfcCompositeCurve))
+            is Ifc2x3tc1_IfcCompositeCurve -> {
+                geometry.addAll(resolveIfcCompositeCurve(entity))
             }
-            "IfcPolyline" -> {
-                geometry.addAll(resolveIfcPolyline(entity as Ifc2x3tc1_IfcPolyline))
+            is Ifc2x3tc1_IfcPolyline -> {
+                geometry.addAll(resolveIfcPolyline(entity))
             }
-            "IfcTrimmedCurve" -> {
-                geometry.addAll(resolveIfcTrimmedCurve(entity as Ifc2x3tc1_IfcTrimmedCurve))
+            is Ifc2x3tc1_IfcTrimmedCurve -> {
+                geometry.addAll(resolveIfcTrimmedCurve(entity))
             }
-            "IfcBSplineCurve" -> {/*TODO implement*/
+            is Ifc2x3tc1_IfcBSplineCurve -> {/*TODO implement*/
             }
             // handle subtypes of IfcConic
-            "IfcCircle" -> {/*TODO implement*/
+            is Ifc2x3tc1_IfcCircle -> {/*TODO implement*/
             }
-            "IfcEllipse" -> {/*TODO implement*/
+            is Ifc2x3tc1_IfcEllipse -> {/*TODO implement*/
             }
             // handle IfcLine
-            "IfcLine" -> {/*TODO implement*/
+            is Ifc2x3tc1_IfcLine -> {/*TODO implement*/
             }
             // handle IfcOffsetCurve2D/3D
-            "IfcOffsetCurve2D" -> {/*TODO implement*/
+            is Ifc2x3tc1_IfcOffsetCurve2D -> {/*TODO implement*/
             }
-            "IfcOffsetCurve3D" -> {/*TODO implement*/
+            is Ifc2x3tc1_IfcOffsetCurve3D -> {/*TODO implement*/
             }
         }
         return geometry
