@@ -36,6 +36,7 @@ import org.bimserver.models.ifc2x3tc1.IfcWindow as Ifc2x3tc1_IfcWindow
 import org.bimserver.models.ifc2x3tc1.IfcSlabTypeEnum as Ifc2x3tc1_IfcSlabTypeEnum
 import de.rebsc.bimtoosm.geometry.ifc4.Ifc4GeometryResolver
 import de.rebsc.bimtoosm.geometry.ifc4.Ifc4PlacementResolver
+import de.rebsc.bimtoosm.utils.UnitConverter
 import org.bimserver.models.ifc4.IfcColumn as Ifc4_IfcColumn
 import org.bimserver.models.ifc4.IfcDoor as Ifc4_IfcDoor
 import org.bimserver.models.ifc4.IfcSlab as Ifc4_IfcSlab
@@ -50,6 +51,7 @@ import org.bimserver.models.ifc4.IfcSlabTypeEnum as Ifc4_IfcSlabTypeEnum
 class GeometryEngine(private val solution: GeometrySolution) {
 
     private val logger = Logger.get(this::class.java)
+    private lateinit var units: IfcUnitPrefix
 
     /**
      * Transform each object in [model] into OSM object and put it into [OSMDataSet]
@@ -270,10 +272,9 @@ class GeometryEngine(private val solution: GeometrySolution) {
             // transform representation using placement
             val osmNodeList = ArrayList<OSMNode>()
             representation.value.forEach { point ->
-                val absolutePoint =
+                var absolutePoint =
                     placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
-                // TODO check points for unit (transform into meter)
-
+                absolutePoint = UnitConverter.toMeter(absolutePoint, units.lengthUnitPrefix)
                 val id = IdGenerator.createUUID(allowNegative = true)
                 osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y)))
             }
