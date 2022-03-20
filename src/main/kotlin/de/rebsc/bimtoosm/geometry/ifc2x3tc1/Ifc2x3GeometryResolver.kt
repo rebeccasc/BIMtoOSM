@@ -456,7 +456,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
         // remove duplicates
         val geometryFiltered = ArrayList<Vector3D>()
         geometry.forEach { point ->
-            if(!geometryFiltered.contains(point)){
+            if(!geometryFiltered.any{it.x == point.x && it.y == point.y && it.z == point.z}){
                 geometryFiltered.add(point)
             }
         }
