@@ -450,10 +450,19 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
         val geometry = ArrayList<Vector3D>()
         // resolve list of CfsFaces
         entity.cfsFaces.forEach { face ->
+            // different faces may use the same coordinates so there are probably duplicates in list
             geometry.addAll(resolveIfcFace(face))
-            // TODO handle point duplications
         }
-        return geometry
+        // remove duplicates
+        val geometryFiltered = ArrayList<Vector3D>()
+        geometry.forEach { point ->
+            if(!geometryFiltered.contains(point)){
+                geometryFiltered.add(point)
+            }
+        }
+        // add the first point as last point to close the loop
+        geometryFiltered.add(geometryFiltered.first())
+        return geometryFiltered
     }
 
     /**
@@ -474,7 +483,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
         entity.bounds.forEach { bound ->
             // note:
             // for now only handle IfcFaceOuterBound to ignore cutouts,
-            // there is only one IfcFaceOuterBound defined for IfcFaceBound so this loop should only be called once
+            // there is only one IfcFaceOuterBound defined for IfcFaceBound so this iteration should only return one object
             if (bound is Ifc2x3tc1_IfcFaceOuterBound) {
                 geometry.addAll(resolveIfcFaceBound(bound))
             }
