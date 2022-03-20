@@ -24,10 +24,14 @@ import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3GeometryResolver
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver
 import de.rebsc.bimtoosm.loader.Loader
 import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
+import de.rebsc.bimtoosm.parser.IfcUnitPrefix
+import de.rebsc.bimtoosm.parser.PropertiesExtractor
 import de.rebsc.bimtoosm.utils.IdGenerator
+import de.rebsc.bimtoosm.utils.UnitConverter
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import jdk.jfr.Description
+import org.bimserver.models.ifc2x3tc1.IfcSIPrefix
 import org.bimserver.models.ifc2x3tc1.IfcWall
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -69,6 +73,7 @@ internal class Ifc2x3ResolveWallTest {
             fileWallWithWindow, optimizeInput_RBC = true, optimizeInput_RBL = true
         ).absolutePath
         val model = Loader.loadIntoModel(fileWallWithWindowOptimized)
+        val units = PropertiesExtractor.extractIfcUnits(model)
 
         clearCaches()
 
@@ -80,7 +85,7 @@ internal class Ifc2x3ResolveWallTest {
         }
 
         // extract walls out of placement cache and geometry cache
-        val walls = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector)
+        val walls = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector, units)
 
         // check if only one wall in list
         Assertions.assertEquals(1, walls.size)
@@ -112,6 +117,7 @@ internal class Ifc2x3ResolveWallTest {
             fileWallCrossing, optimizeInput_RBC = true, optimizeInput_RBL = true
         ).absolutePath
         val model = Loader.loadIntoModel(fileWallCrossingOptimized)
+        val units = PropertiesExtractor.extractIfcUnits(model)
 
         clearCaches()
 
@@ -123,7 +129,7 @@ internal class Ifc2x3ResolveWallTest {
         }
 
         // extract walls out of placement cache and geometry cache
-        val walls = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector)
+        val walls = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector, units)
 
         // check if only one wall in list
         Assertions.assertEquals(2, walls.size)
@@ -133,12 +139,10 @@ internal class Ifc2x3ResolveWallTest {
         val resolvedCoords = loadResolvedGeometry(fileWallCrossing1ResolvedGeo)
 
         // there is no warranty for order in 'walls', find the one you want to test
-        val wallToTest = walls.find { it.points[0].x == 892.89902 }
-
-        // for now convert points from mm to m because this is not handled in engine
+        val wallToTest = walls.find { it.points[0].x == 0.89289902 }
         for (i in 0 until wallToTest!!.points.size) {
-            Assertions.assertEquals(resolvedCoords[i].x, wallToTest.points[i].x / 1000.0, 0.1)
-            Assertions.assertEquals(resolvedCoords[i].y, wallToTest.points[i].y / 1000.0, 0.1)
+            Assertions.assertEquals(resolvedCoords[i].x, wallToTest.points[i].x, 0.1)
+            Assertions.assertEquals(resolvedCoords[i].y, wallToTest.points[i].y, 0.1)
         }
 
         // clean up test directory
@@ -160,6 +164,7 @@ internal class Ifc2x3ResolveWallTest {
             fileWallSingle, optimizeInput_RBC = true, optimizeInput_RBL = true
         ).absolutePath
         val model = Loader.loadIntoModel(fileWallSingleOptimized)
+        val units = PropertiesExtractor.extractIfcUnits(model)
 
         clearCaches()
 
@@ -171,7 +176,7 @@ internal class Ifc2x3ResolveWallTest {
         }
 
         // extract walls out of placement cache and geometry cache
-        val walls = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector)
+        val walls = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector, units)
 
         // check if only one wall in list
         Assertions.assertEquals(1, walls.size)
@@ -179,10 +184,9 @@ internal class Ifc2x3ResolveWallTest {
         // check resolved geometry
         val fileWallSingleResolvedGeo = downloadFile(urlWallSingleResolvedGeo)
         val resolvedCoords = loadResolvedGeometry(fileWallSingleResolvedGeo)
-        // for now convert points from mm to m because this is not handled in engine
         for (i in 0 until walls[0].points.size) {
-            Assertions.assertEquals(resolvedCoords[i].x, walls[0].points[i].x / 1000.0, 0.1)
-            Assertions.assertEquals(resolvedCoords[i].y, walls[0].points[i].y / 1000.0, 0.1)
+            Assertions.assertEquals(resolvedCoords[i].x, walls[0].points[i].x, 0.1)
+            Assertions.assertEquals(resolvedCoords[i].y, walls[0].points[i].y, 0.1)
         }
 
         // clean up test directory
@@ -206,7 +210,8 @@ internal class Ifc2x3ResolveWallTest {
     private fun extractWays_Ifc2x3tc1(
         geometryResolver: Ifc2x3GeometryResolver,
         placementResolver: Ifc2x3PlacementResolver,
-        connector: MutableMap<Long, Long>
+        connector: MutableMap<Long, Long>,
+        units: IfcUnitPrefix
     ): ArrayList<OSMWay> {
 
         val wayList: ArrayList<OSMWay> = ArrayList()
@@ -223,8 +228,10 @@ internal class Ifc2x3ResolveWallTest {
             // transform representation using placement
             val osmNodeList = ArrayList<OSMNode>()
             representation.value.forEach { point ->
-                val absolutePoint =
+                var absolutePoint =
                     placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
+                // convert to meter if necessary
+                absolutePoint = UnitConverter.toMeter(absolutePoint, units.lengthUnitPrefix)
                 osmNodeList.add(OSMNode(IdGenerator.createUUID(allowNegative = true), Point2D(absolutePoint.x, absolutePoint.y)))
             }
             wayList.add(OSMWay(representation.key.productRepresentation.expressId, osmNodeList))

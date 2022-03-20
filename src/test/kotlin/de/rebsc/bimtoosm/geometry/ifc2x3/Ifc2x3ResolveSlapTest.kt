@@ -22,7 +22,9 @@ import de.rebsc.bimtoosm.data.osm.OSMWay
 import de.rebsc.bimtoosm.geometry.GeometrySolution
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3GeometryResolver
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver
+import de.rebsc.bimtoosm.parser.IfcUnitPrefix
 import de.rebsc.bimtoosm.utils.IdGenerator
+import de.rebsc.bimtoosm.utils.UnitConverter
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import jdk.jfr.Description
@@ -67,7 +69,8 @@ internal class Ifc2x3ResolveSlapTest {
     private fun extractWays_Ifc2x3tc1(
         geometryResolver: Ifc2x3GeometryResolver,
         placementResolver: Ifc2x3PlacementResolver,
-        connector: MutableMap<Long, Long>
+        connector: MutableMap<Long, Long>,
+        units: IfcUnitPrefix
     ): ArrayList<OSMWay> {
 
         val wayList: ArrayList<OSMWay> = ArrayList()
@@ -84,8 +87,10 @@ internal class Ifc2x3ResolveSlapTest {
             // transform representation using placement
             val osmNodeList = ArrayList<OSMNode>()
             representation.value.forEach { point ->
-                val absolutePoint =
+                var absolutePoint =
                     placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
+                // convert to meter if necessary
+                absolutePoint = UnitConverter.toMeter(absolutePoint, units.lengthUnitPrefix)
                 osmNodeList.add(OSMNode(IdGenerator.createUUID(allowNegative = true), Point2D(absolutePoint.x, absolutePoint.y)))
             }
             wayList.add(OSMWay(representation.key.productRepresentation.expressId, osmNodeList))
