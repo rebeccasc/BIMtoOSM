@@ -22,22 +22,27 @@ import de.rebsc.bimtoosm.data.osm.OSMWay
 import de.rebsc.bimtoosm.geometry.GeometrySolution
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3GeometryResolver
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver
+import de.rebsc.bimtoosm.loader.Loader
+import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
 import de.rebsc.bimtoosm.parser.IfcUnitPrefix
+import de.rebsc.bimtoosm.parser.PropertiesExtractor
 import de.rebsc.bimtoosm.utils.IdGenerator
 import de.rebsc.bimtoosm.utils.UnitConverter
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import jdk.jfr.Description
+import org.bimserver.models.ifc2x3tc1.IfcSlab
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.io.IOException
 import java.net.URL
 
-internal class Ifc2x3ResolveSlapTest {
+internal class Ifc2x3ResolveSlabTest {
     // Test setup
 
     // URLs
-
+    private val urlSlabSingle = URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/slab/ifcslab/slab_single_IFC2X3.ifc")
     // Parser
     private val placementResolver = Ifc2x3PlacementResolver()
     private val geometryResolverBody = Ifc2x3GeometryResolver(GeometrySolution.BODY)
@@ -47,9 +52,30 @@ internal class Ifc2x3ResolveSlapTest {
 
 
     @Test
-    @Description("")
-    fun resolveSlabTestBody() {
-        // TODO implement
+    @Description("IfcSlab test 1 for IFC2X3 on geometry solution BODY")
+    fun resolveSlabTestBody1() {
+        // load optimized file into model
+        val fileSlabSingle = downloadFile(urlSlabSingle)
+        val fileSlabSingleOptimized: String = BIMFileOptimizer.optimizeIfcFile(
+            fileSlabSingle, optimizeInput_RBC = true, optimizeInput_RBL = true
+        ).absolutePath
+        val model = Loader.loadIntoModel(fileSlabSingleOptimized)
+        val units = PropertiesExtractor.extractIfcUnits(model)
+
+        clearCaches()
+
+        // fill placement cache and geometry cache with wall objects
+        model.getAllWithSubTypes(IfcSlab::class.java).forEach { slab ->
+            connector[slab.objectPlacement.expressId] = slab.representation.expressId
+            placementResolver.resolvePlacement(slab.objectPlacement)
+            geometryResolverBody.resolveWall(slab.representation)
+        }
+
+        // extract slabs out of placement cache and geometry cache
+        val slabs = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector, units)
+
+        // check if only one slab in list
+        Assertions.assertEquals(1, slabs.size)
     }
 
     @Test
