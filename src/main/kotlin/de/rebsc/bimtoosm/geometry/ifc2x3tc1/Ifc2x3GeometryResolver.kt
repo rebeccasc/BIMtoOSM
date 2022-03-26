@@ -22,6 +22,9 @@ import de.rebsc.bimtoosm.geometry.GeometrySolution
 import de.rebsc.bimtoosm.geometry.SupportedObjectType
 import de.rebsc.bimtoosm.logger.Logger
 import de.rebsc.bimtoosm.utils.math.Vector3D
+import org.bimserver.models.ifc4.IfcBSplineCurve
+import org.bimserver.models.ifc4.IfcBoundingBox
+import org.bimserver.models.ifc4.IfcMappedItem
 import org.bimserver.models.ifc2x3tc1.IfcBoundingBox as Ifc2x3tc1_IfcBoundingBox
 import org.bimserver.models.ifc2x3tc1.IfcMappedItem as Ifc2x3tc1_IfcMappedItem
 import org.bimserver.models.ifc2x3tc1.IfcStyledItem as Ifc2x3tc1_IfcStyledItem
@@ -32,6 +35,7 @@ import org.bimserver.models.ifc2x3tc1.IfcProductRepresentation as Ifc2x3tc1_IfcP
 import org.bimserver.models.ifc2x3tc1.IfcMaterialDefinitionRepresentation as Ifc2x3tc1_IfcMaterialDefinitionRepresentation
 import org.bimserver.models.ifc2x3tc1.IfcExtrudedAreaSolid as Ifc2x3tc1_IfcExtrudedAreaSolid
 import org.bimserver.models.ifc2x3tc1.IfcFacetedBrep as Ifc2x3tc1_IfcFacetedBrep
+import org.bimserver.models.ifc2x3tc1.IfcFacetedBrepWithVoids as Ifc2x3tc1_IfcFacetedBrepWithVoids
 import org.bimserver.models.ifc2x3tc1.IfcRectangleProfileDef as Ifc2x3tc1_IfcRectangleProfileDef
 import org.bimserver.models.ifc2x3tc1.IfcIShapeProfileDef as Ifc2x3tc1_IfcIShapeProfileDef
 import org.bimserver.models.ifc2x3tc1.IfcLShapeProfileDef as Ifc2x3tc1_IfcLShapeProfileDef
@@ -73,6 +77,38 @@ import org.bimserver.models.ifc2x3tc1.IfcEllipse as Ifc2x3tc1_IfcEllipse
 import org.bimserver.models.ifc2x3tc1.IfcLine as Ifc2x3tc1_IfcLine
 import org.bimserver.models.ifc2x3tc1.IfcOffsetCurve2D as Ifc2x3tc1_IfcOffsetCurve2D
 import org.bimserver.models.ifc2x3tc1.IfcOffsetCurve3D as Ifc2x3tc1_IfcOffsetCurve3D
+import org.bimserver.models.ifc2x3tc1.IfcBooleanResult as Ifc2x3tc1_IfcBooleanResult
+import org.bimserver.models.ifc2x3tc1.IfcBooleanOperator as Ifc2x3tc1_IfcBooleanOperator
+import org.bimserver.models.ifc2x3tc1.IfcBooleanOperand as Ifc2x3tc1_IfcBooleanOperand
+import org.bimserver.models.ifc2x3tc1.IfcSolidModel as Ifc2x3tc1_IfcSolidModel
+import org.bimserver.models.ifc2x3tc1.IfcManifoldSolidBrep as Ifc2x3tc1_IfcManifoldSolidBrep
+import org.bimserver.models.ifc2x3tc1.IfcSweptAreaSolid as Ifc2x3tc1_IfcSweptAreaSolid
+import org.bimserver.models.ifc2x3tc1.IfcCsgSolid as Ifc2x3tc1_IfcCsgSolid
+import org.bimserver.models.ifc2x3tc1.IfcSweptDiskSolid as Ifc2x3tc1_IfcSweptDiskSolid
+import org.bimserver.models.ifc2x3tc1.IfcHalfSpaceSolid as Ifc2x3tc1_IfcHalfSpaceSolid
+import org.bimserver.models.ifc2x3tc1.IfcBoxedHalfSpace as Ifc2x3tc1_IfcBoxedHalfSpace
+import org.bimserver.models.ifc2x3tc1.IfcPolygonalBoundedHalfSpace as Ifc2x3tc1_IfcPolygonalBoundedHalfSpace
+import org.bimserver.models.ifc2x3tc1.IfcCsgPrimitive3D as Ifc2x3tc1_IfcCsgPrimitive3D
+import org.bimserver.models.ifc2x3tc1.IfcBlock as Ifc2x3tc1_IfcBlock
+import org.bimserver.models.ifc2x3tc1.IfcRectangularPyramid as Ifc2x3tc1_IfcRectangularPyramid
+import org.bimserver.models.ifc2x3tc1.IfcRightCircularCylinder as Ifc2x3tc1_IfcRightCircularCylinder
+import org.bimserver.models.ifc2x3tc1.IfcRightCircularCone as Ifc2x3tc1_IfcRightCircularCone
+import org.bimserver.models.ifc2x3tc1.IfcSphere as Ifc2x3tc1_IfcSphere
+import org.bimserver.models.ifc2x3tc1.IfcRevolvedAreaSolid as Ifc2x3tc1_IfcRevolvedAreaSolid
+import org.bimserver.models.ifc2x3tc1.IfcSurfaceCurveSweptAreaSolid as Ifc2x3tc1_IfcSurfaceCurveSweptAreaSolid
+import org.bimserver.models.ifc2x3tc1.IfcCompositeCurveSegment as Ifc2x3tc1_IfcCompositeCurveSegment
+import org.bimserver.models.ifc2x3tc1.IfcDirection as Ifc2x3tc1_IfcDirection
+import org.bimserver.models.ifc2x3tc1.IfcPlacement as Ifc2x3tc1_IfcPlacement
+import org.bimserver.models.ifc2x3tc1.IfcSurface as Ifc2x3tc1_IfcSurface
+import org.bimserver.models.ifc2x3tc1.IfcPoint as Ifc2x3tc1_IfcPoint
+import org.bimserver.models.ifc2x3tc1.IfcVector as Ifc2x3tc1_IfcVector
+import org.bimserver.models.ifc2x3tc1.IfcCartesianTransformationOperator as Ifc2x3tc1_IfcCartesianTransformationOperator
+import org.bimserver.models.ifc2x3tc1.IfcSectionedSpine as Ifc2x3tc1_IfcSectionedSpine
+import org.bimserver.models.ifc2x3tc1.IfcGeometricSet as Ifc2x3tc1_IfcGeometricSet
+import org.bimserver.models.ifc2x3tc1.IfcFaceBasedSurfaceModel as Ifc2x3tc1_IfcFaceBasedSurfaceModel
+import org.bimserver.models.ifc2x3tc1.IfcShellBasedSurfaceModel as Ifc2x3tc1_IfcShellBasedSurfaceModel
+import org.bimserver.models.ifc2x3tc1.IfcBoundedCurve as Ifc2x3tc1_IfcBoundedCurve
+import org.bimserver.models.ifc2x3tc1.IfcConic as Ifc2x3tc1_IfcConic
 
 
 class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
@@ -263,15 +299,20 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveBody(shapeRepresentation: Ifc2x3tc1_IfcRepresentation): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         shapeRepresentation.items.forEach { item ->
-            if (item is Ifc2x3tc1_IfcExtrudedAreaSolid) {
-                geometry.addAll(resolveIfcExtrudedAreaSolid(item))
-                return@forEach
+            when(item){
+                is Ifc2x3tc1_IfcTopologicalRepresentationItem -> {
+                    geometry.addAll(resolveIfcTopologicalRepresentationItem(item))
+                }
+                is Ifc2x3tc1_IfcGeometricRepresentationItem -> {
+                    geometry.addAll(resolveIfcGeometricRepresentationItem(item))
+                }
+                is Ifc2x3tc1_IfcMappedItem -> {
+                    // TODO implement
+                }
+                is Ifc2x3tc1_IfcStyledItem -> {
+                    // TODO implement
+                }
             }
-            if (item is Ifc2x3tc1_IfcFacetedBrep) {
-                geometry.addAll(resolveIfcFacetedBrep(item))
-                return@forEach
-            }
-            // TODO handle more body representation items
             logger.warn("resolveBody -> Unknown RepresentationType of ${shapeRepresentation.expressId}")
         }
 
@@ -289,31 +330,408 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveBoundingBox(shapeRepresentation: Ifc2x3tc1_IfcRepresentation): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         shapeRepresentation.items.forEach { item ->
-            if (item is Ifc2x3tc1_IfcGeometricRepresentationItem) {
-                if (item is Ifc2x3tc1_IfcBoundingBox) {
-                    val cartesianPoint = item.corner.coordinates
-                    geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1], 0.0))
-                    geometry.add(Vector3D(cartesianPoint[0] + item.xDim, cartesianPoint[1], 0.0))
-                    geometry.add(Vector3D(cartesianPoint[0] + item.xDim, cartesianPoint[1] + item.yDim, 0.0))
-                    geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1] + item.yDim, 0.0))
-                    geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1], 0.0))
+            when (item){
+                is Ifc2x3tc1_IfcGeometricRepresentationItem -> {
+                    geometry.addAll(resolveIfcGeometricRepresentationItem(item))
                 }
-                // INFO: ignore other IfcGeometricRepresentationItems for now
-            }
-            if (item is Ifc2x3tc1_IfcMappedItem) {
-                logger.info("${Ifc2x3tc1_IfcMappedItem::class.java.name} not supported right now")
-                // TODO implement
-            }
-            if (item is Ifc2x3tc1_IfcStyledItem) {
-                logger.info("${Ifc2x3tc1_IfcStyledItem::class.java.name} not supported right now")
-                // TODO implement
+                is Ifc2x3tc1_IfcMappedItem -> {
+                    // TODO implement
+                }
+                is Ifc2x3tc1_IfcStyledItem -> {
+                    // TODO implement
+                }
             }
         }
-
         if (geometry.isEmpty()) {
             logger.warn("resolveBoundingBox-> Resolved geometry of ${shapeRepresentation.expressId} is empty")
         }
         return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcTopologicalRepresentationItem] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcTopologicalRepresentationItem(entity: Ifc2x3tc1_IfcTopologicalRepresentationItem): List<Vector3D> {
+        when (entity) {
+            is Ifc2x3tc1_IfcConnectedFaceSet -> {
+                return resolveIfcConnectedFaceSet(entity)
+            }
+            is Ifc2x3tc1_IfcEdge -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcFace -> {
+                return resolveIfcFace(entity)
+            }
+            is Ifc2x3tc1_IfcFaceBound -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcPath -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcVertex -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcLoop -> {
+                // TODO implement
+            }
+        }
+        return ArrayList()
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcConnectedFaceSet] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcConnectedFaceSet(entity: Ifc2x3tc1_IfcConnectedFaceSet): List<Vector3D> {
+        // check if closed shell or open shell
+        when (entity) {
+            is Ifc2x3tc1_IfcClosedShell -> {
+                return resolveIfcClosedShell(entity)
+            }
+            is Ifc2x3tc1_IfcOpenShell -> {
+                return resolveIfcOpenShell(entity)
+            }
+        }
+        return ArrayList()
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcClosedShell] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcClosedShell(entity: Ifc2x3tc1_IfcClosedShell): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // resolve list of CfsFaces
+        entity.cfsFaces.forEach { face ->
+            // different faces may use the same coordinates so there are probably duplicates in list
+            geometry.addAll(resolveIfcFace(face))
+        }
+        // remove duplicates
+        val geometryFiltered = ArrayList<Vector3D>()
+        geometry.forEach { point ->
+            if(!geometryFiltered.any{it.x == point.x && it.y == point.y && it.z == point.z}){
+                geometryFiltered.add(point)
+            }
+        }
+        // add the first point as last point to close the loop
+        geometryFiltered.add(geometryFiltered.first())
+        return geometryFiltered
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcOpenShell] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcOpenShell(entity: Ifc2x3tc1_IfcOpenShell): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // TODO implement
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcFace] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcFace(entity: Ifc2x3tc1_IfcFace): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // resolve list of bounds
+        entity.bounds.forEach { bound ->
+            // note:
+            // for now only handle IfcFaceOuterBound to ignore cutouts,
+            // there is only one IfcFaceOuterBound defined for IfcFaceBound so this iteration should only return one object
+            if (bound is Ifc2x3tc1_IfcFaceOuterBound) {
+                geometry.addAll(resolveIfcFaceBound(bound))
+            }
+        }
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcFaceBound] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcFaceBound(entity: Ifc2x3tc1_IfcFaceBound): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // handle IfcFaceOuterBound and IfcFaceBound the same way
+        val data = resolveLoop(entity.bound)
+        // handle orientation, if true no action needed, if false handle translation
+        if (entity.orientation.value == 1) {
+            // if sense is FALSE the senses of all its component oriented edges are implicitly reversed  when used in the face
+            // TODO handle orientation, translate data
+        }
+        geometry.addAll(data)
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcLoop] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveLoop(entity: Ifc2x3tc1_IfcLoop): List<Vector3D> {
+        when (entity) {
+            is Ifc2x3tc1_IfcPolyLoop -> {
+                return resolvePolyLoop(entity)
+            }
+            is Ifc2x3tc1_IfcVertexLoop -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcEdgeLoop -> {
+                // TODO implement
+            }
+        }
+        return ArrayList()
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcPolyLoop] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolvePolyLoop(entity: Ifc2x3tc1_IfcPolyLoop): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        // collect all points of polygon loop
+        entity.polygon.forEach { cartesian ->
+            val x = cartesian.coordinates[0]
+            val y = cartesian.coordinates[1]
+            geometry.add(Vector3D(x, y, 0.0))
+        }
+        // add first coordinate again to close the loop
+        geometry.add(Vector3D(geometry[0].x, geometry[0].y, geometry[0].z))
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcGeometricRepresentationItem] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcGeometricRepresentationItem(entity: Ifc2x3tc1_IfcGeometricRepresentationItem): List<Vector3D>{
+        when(entity){
+            is Ifc2x3tc1_IfcCompositeCurve -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcCurve ->{
+                return resolveIfcCurve(entity)
+            }
+            is Ifc2x3tc1_IfcDirection ->{
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcPlacement -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcPoint ->{
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcSurface ->{
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcVector ->{
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcBooleanResult -> {
+                return resolveIfcBooleanResult(entity)
+            }
+            is Ifc2x3tc1_IfcSolidModel -> {
+                return resolveIfcSolidModel(entity)
+            }
+            is Ifc2x3tc1_IfcHalfSpaceSolid ->{
+                return resolveIfcHalfSpaceSolid(entity)
+            }
+            is IfcBoundingBox -> {
+                return resolveIfcBoundingBox(entity as org.bimserver.models.ifc2x3tc1.IfcBoundingBox)
+            }
+            is Ifc2x3tc1_IfcCartesianTransformationOperator -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcSectionedSpine -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcGeometricSet -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcFaceBasedSurfaceModel -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcShellBasedSurfaceModel -> {
+                // TODO implement
+            }
+        }
+        return ArrayList()
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcBoundingBox] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcBoundingBox(entity: Ifc2x3tc1_IfcBoundingBox): List<Vector3D>{
+        val geometry = ArrayList<Vector3D>()
+        val cartesianPoint = entity.corner.coordinates
+        geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1], 0.0))
+        geometry.add(Vector3D(cartesianPoint[0] + entity.xDim, cartesianPoint[1], 0.0))
+        geometry.add(Vector3D(cartesianPoint[0] + entity.xDim, cartesianPoint[1] + entity.yDim, 0.0))
+        geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1] + entity.yDim, 0.0))
+        geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1], 0.0))
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcCurve] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcCurve(entity: Ifc2x3tc1_IfcCurve): List<Vector3D> {
+        when (entity) {
+            is Ifc2x3tc1_IfcBoundedCurve -> {
+                return resolveIfcBoundedCurve(entity)
+            }
+            is Ifc2x3tc1_IfcConic -> {
+                return resolveIfcConic(entity)
+            }
+            is Ifc2x3tc1_IfcLine -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcOffsetCurve2D -> {
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcOffsetCurve3D -> {
+                // TODO implement
+            }
+        }
+        return ArrayList()
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcBoundedCurve] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcBoundedCurve(entity: Ifc2x3tc1_IfcBoundedCurve): List<Vector3D>{
+        when(entity) {
+            is Ifc2x3tc1_IfcCompositeCurve ->{
+                return resolveIfcCompositeCurve(entity)
+            }
+            is Ifc2x3tc1_IfcPolyline -> {
+                return resolveIfcPolyline(entity)
+            }
+            is Ifc2x3tc1_IfcTrimmedCurve ->{
+                return resolveIfcTrimmedCurve(entity)
+            }
+            is IfcBSplineCurve ->{
+                // TODO implement
+            }
+        }
+        return ArrayList()
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcConic] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcConic(entity: Ifc2x3tc1_IfcConic): List<Vector3D>{
+        val geometry = ArrayList<Vector3D>()
+        when(entity) {
+            is Ifc2x3tc1_IfcCircle ->{
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcEllipse -> {
+                // TODO implement
+            }
+        }
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcPolyline] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcPolyline(entity: Ifc2x3tc1_IfcPolyline): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        entity.points.forEach { point ->
+            geometry.add(Vector3D(point.coordinates[0], point.coordinates[1], 0.0))
+        }
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcCompositeCurve] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcCompositeCurve(entity: Ifc2x3tc1_IfcCompositeCurve): List<Vector3D> {
+        val geometry = ArrayList<Vector3D>()
+        entity.segments.forEach { segment ->
+            val parentCurve = segment.parentCurve
+            val parentCurveShape = resolveIfcCurve(parentCurve)
+            if (parentCurveShape.isEmpty()) {
+                return ArrayList()    // return empty array once one segment cannot be resolved
+            }
+            geometry.addAll(parentCurveShape)
+        }
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcTrimmedCurve] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcTrimmedCurve(entity: Ifc2x3tc1_IfcTrimmedCurve): List<Vector3D> {
+        // TODO implement properly - handle trim of basis curve
+        return resolveIfcCurve(entity.basisCurve)
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcSolidModel] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcSolidModel(entity: Ifc2x3tc1_IfcSolidModel): List<Vector3D>{
+        when(entity){
+            is Ifc2x3tc1_IfcManifoldSolidBrep ->{
+                return resolveIfcManifoldSolidBrep(entity)
+            }
+            is Ifc2x3tc1_IfcSweptAreaSolid ->{
+                return resolveIfcSweptAreaSolid(entity)
+            }
+            is Ifc2x3tc1_IfcCsgSolid ->{
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcSweptDiskSolid ->{
+                // TODO implement
+            }
+        }
+        return ArrayList()
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcSweptAreaSolid] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcSweptAreaSolid(entity: Ifc2x3tc1_IfcSweptAreaSolid): List<Vector3D>{
+        when(entity){
+            is Ifc2x3tc1_IfcExtrudedAreaSolid ->{
+                return resolveIfcExtrudedAreaSolid(entity)
+            }
+            is Ifc2x3tc1_IfcRevolvedAreaSolid ->{
+                // TODO Implement
+            }
+            is Ifc2x3tc1_IfcSurfaceCurveSweptAreaSolid ->{
+                // TODO implement
+            }
+        }
+        return ArrayList()
     }
 
     /**
@@ -393,6 +811,23 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     }
 
     /**
+     * Resolves geometry of [Ifc2x3tc1_IfcManifoldSolidBrep] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcManifoldSolidBrep(entity: Ifc2x3tc1_IfcManifoldSolidBrep): List<Vector3D>{
+        when(entity){
+            is Ifc2x3tc1_IfcFacetedBrep ->{
+                return resolveIfcFacetedBrep(entity)
+            }
+            is Ifc2x3tc1_IfcFacetedBrepWithVoids ->{
+                // TODO Implement
+            }
+        }
+        return ArrayList()
+    }
+
+    /**
      * Resolves geometry of [Ifc2x3tc1_IfcFacetedBrep] entity
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
@@ -403,228 +838,101 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     }
 
     /**
-     * TODO add description
-     */
-    private fun resolveIfcTopologicalRepresentationItem(entity: Ifc2x3tc1_IfcTopologicalRepresentationItem): List<Vector3D> {
-        val geometry = ArrayList<Vector3D>()
-        when (entity) {
-            is Ifc2x3tc1_IfcConnectedFaceSet -> {
-                return resolveIfcConnectedFaceSet(entity)
-            }
-            is Ifc2x3tc1_IfcEdge -> {
-                // TODO implement
-            }
-            is Ifc2x3tc1_IfcFace -> {
-                return resolveIfcFace(entity)
-            }
-            is Ifc2x3tc1_IfcFaceBound -> {
-                // TODO implement
-            }
-            is Ifc2x3tc1_IfcPath -> {
-                // TODO implement
-            }
-            is Ifc2x3tc1_IfcVertex -> {
-                // TODO implement
-            }
-            is Ifc2x3tc1_IfcLoop -> {
-                // TODO implement
-            }
-        }
-        return geometry
-    }
-
-    /**
-     * TODO add description
-     */
-    private fun resolveIfcConnectedFaceSet(entity: Ifc2x3tc1_IfcConnectedFaceSet): List<Vector3D> {
-        val geometry = ArrayList<Vector3D>()
-        // check if closed shell or open shell
-        when (entity) {
-            is Ifc2x3tc1_IfcClosedShell -> {
-                return resolveIfcClosedShell(entity)
-            }
-            is Ifc2x3tc1_IfcOpenShell -> {
-                return resolveIfcOpenShell(entity)
-            }
-        }
-        return geometry
-    }
-
-    /**
-     * TODO add description
-     */
-    private fun resolveIfcClosedShell(entity: Ifc2x3tc1_IfcClosedShell): List<Vector3D> {
-        val geometry = ArrayList<Vector3D>()
-        // resolve list of CfsFaces
-        entity.cfsFaces.forEach { face ->
-            // different faces may use the same coordinates so there are probably duplicates in list
-            geometry.addAll(resolveIfcFace(face))
-        }
-        // remove duplicates
-        val geometryFiltered = ArrayList<Vector3D>()
-        geometry.forEach { point ->
-            if(!geometryFiltered.any{it.x == point.x && it.y == point.y && it.z == point.z}){
-                geometryFiltered.add(point)
-            }
-        }
-        // add the first point as last point to close the loop
-        geometryFiltered.add(geometryFiltered.first())
-        return geometryFiltered
-    }
-
-    /**
-     * TODO add description
-     */
-    private fun resolveIfcOpenShell(entity: Ifc2x3tc1_IfcOpenShell): List<Vector3D> {
-        val geometry = ArrayList<Vector3D>()
-        // TODO implement
-        return geometry
-    }
-
-    /**
-     * TODO add description
-     */
-    private fun resolveIfcFace(entity: Ifc2x3tc1_IfcFace): List<Vector3D> {
-        val geometry = ArrayList<Vector3D>()
-        // resolve list of bounds
-        entity.bounds.forEach { bound ->
-            // note:
-            // for now only handle IfcFaceOuterBound to ignore cutouts,
-            // there is only one IfcFaceOuterBound defined for IfcFaceBound so this iteration should only return one object
-            if (bound is Ifc2x3tc1_IfcFaceOuterBound) {
-                geometry.addAll(resolveIfcFaceBound(bound))
-            }
-        }
-        return geometry
-    }
-
-    /**
-     * TODO add description
-     */
-    private fun resolveIfcFaceBound(entity: Ifc2x3tc1_IfcFaceBound): List<Vector3D> {
-        val geometry = ArrayList<Vector3D>()
-        // handle IfcFaceOuterBound and IfcFaceBound the same way
-        val data = resolveLoop(entity.bound)
-        // handle orientation, if true no action needed, if false handle translation
-        if (entity.orientation.value == 1) {
-            // if sense is FALSE the senses of all its component oriented edges are implicitly reversed  when used in the face
-            // TODO handle orientation, translate data
-        }
-        geometry.addAll(data)
-        return geometry
-    }
-
-    /**
-     * TODO add description
-     */
-    private fun resolveLoop(entity: Ifc2x3tc1_IfcLoop): List<Vector3D> {
-        val geometry = ArrayList<Vector3D>()
-        when (entity) {
-            is Ifc2x3tc1_IfcPolyLoop -> {
-                return resolvePolyLoop(entity)
-            }
-            is Ifc2x3tc1_IfcVertexLoop -> {
-                // TODO implement
-            }
-            is Ifc2x3tc1_IfcEdgeLoop -> {
-                // TODO implement
-            }
-        }
-        return geometry
-    }
-
-    /**
-     * TODO add description
-     */
-    private fun resolvePolyLoop(entity: Ifc2x3tc1_IfcPolyLoop): List<Vector3D> {
-        val geometry = ArrayList<Vector3D>()
-        // collect all points of polygon loop
-        entity.polygon.forEach { cartesian ->
-            val x = cartesian.coordinates[0]
-            val y = cartesian.coordinates[1]
-            geometry.add(Vector3D(x, y, 0.0))
-        }
-        // add first coordinate again to close the loop
-        geometry.add(Vector3D(geometry[0].x, geometry[0].y, geometry[0].z))
-        return geometry
-    }
-
-    /**
-     * Resolves geometry of [Ifc2x3tc1_IfcCurve] entity
+     * Resolves geometry of [Ifc2x3tc1_IfcHalfSpaceSolid] entity
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcCurve(entity: Ifc2x3tc1_IfcCurve): List<Vector3D> {
+    private fun resolveIfcHalfSpaceSolid(entity: Ifc2x3tc1_IfcHalfSpaceSolid): List<Vector3D>{
         val geometry = ArrayList<Vector3D>()
-        when (entity) {
-            // handle subtypes of IfcBoundedCurve
-            is Ifc2x3tc1_IfcCompositeCurve -> {
-                geometry.addAll(resolveIfcCompositeCurve(entity))
+        when(entity){
+            is Ifc2x3tc1_IfcBoxedHalfSpace ->{
+                // TODO implement
             }
-            is Ifc2x3tc1_IfcPolyline -> {
-                geometry.addAll(resolveIfcPolyline(entity))
-            }
-            is Ifc2x3tc1_IfcTrimmedCurve -> {
-                geometry.addAll(resolveIfcTrimmedCurve(entity))
-            }
-            is Ifc2x3tc1_IfcBSplineCurve -> {/*TODO implement*/
-            }
-            // handle subtypes of IfcConic
-            is Ifc2x3tc1_IfcCircle -> {/*TODO implement*/
-            }
-            is Ifc2x3tc1_IfcEllipse -> {/*TODO implement*/
-            }
-            // handle IfcLine
-            is Ifc2x3tc1_IfcLine -> {/*TODO implement*/
-            }
-            // handle IfcOffsetCurve2D/3D
-            is Ifc2x3tc1_IfcOffsetCurve2D -> {/*TODO implement*/
-            }
-            is Ifc2x3tc1_IfcOffsetCurve3D -> {/*TODO implement*/
+            is Ifc2x3tc1_IfcPolygonalBoundedHalfSpace ->{
+                // TODO Implement
             }
         }
         return geometry
     }
 
     /**
-     * Resolves geometry of [Ifc2x3tc1_IfcPolyline] entity
+     * Resolves geometry of [Ifc2x3tc1_IfcCsgPrimitive3D] entity
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcPolyline(entity: Ifc2x3tc1_IfcPolyline): List<Vector3D> {
+    private fun resolveIfcCsgPrimitive3D(entity: Ifc2x3tc1_IfcCsgPrimitive3D): List<Vector3D>{
         val geometry = ArrayList<Vector3D>()
-        entity.points.forEach { point ->
-            geometry.add(Vector3D(point.coordinates[0], point.coordinates[1], 0.0))
-        }
-        return geometry
-    }
-
-    /**
-     * Resolves geometry of [Ifc2x3tc1_IfcCompositeCurve] entity
-     * @param entity to resolve geometry
-     * @return List holding resolved local coordinates
-     */
-    private fun resolveIfcCompositeCurve(entity: Ifc2x3tc1_IfcCompositeCurve): List<Vector3D> {
-        val geometry = ArrayList<Vector3D>()
-        entity.segments.forEach { segment ->
-            val parentCurve = segment.parentCurve
-            val parentCurveShape = resolveIfcCurve(parentCurve)
-            if (parentCurveShape.isEmpty()) {
-                return ArrayList()    // return empty array once one segment cannot be resolved
+        when(entity){
+            is Ifc2x3tc1_IfcBlock ->{
+                // TODO implement
             }
-            geometry.addAll(parentCurveShape)
+            is Ifc2x3tc1_IfcRectangularPyramid ->{
+                // TODO Implement
+            }
+            is Ifc2x3tc1_IfcRightCircularCylinder ->{
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcRightCircularCone ->{
+                // TODO implement
+            }
+            is Ifc2x3tc1_IfcSphere ->{
+                // TODO implement
+            }
         }
         return geometry
     }
 
     /**
-     * Resolves geometry of [Ifc2x3tc1_IfcTrimmedCurve] entity
+     * Resolves geometry of [Ifc2x3tc1_IfcBooleanResult] entity
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcTrimmedCurve(entity: Ifc2x3tc1_IfcTrimmedCurve): List<Vector3D> {
-        // TODO implement properly - handle trim of basis curve
-        return resolveIfcCurve(entity.basisCurve)
+    private fun resolveIfcBooleanResult(entity: Ifc2x3tc1_IfcBooleanResult): List<Vector3D> {
+        val geometryFirstOperand = resolveIfcBooleanOperand(entity.firstOperand)
+        val geometrySecondOperand = resolveIfcBooleanOperand(entity.secondOperand)
+        when (entity.operator.value) {
+            Ifc2x3tc1_IfcBooleanOperator.DIFFERENCE.value -> {
+                val geometryFirstOperandCopy = ArrayList(geometryFirstOperand)
+                geometryFirstOperand.forEach { point1 ->
+                    geometrySecondOperand.forEach { point2 ->
+                        if(point1.equalsVector(point2)){
+                            geometryFirstOperandCopy.remove(point1)
+                        }
+                    }
+                }
+                return geometryFirstOperandCopy
+            }
+            Ifc2x3tc1_IfcBooleanOperator.INTERSECTION.value -> {
+                // TODO implement
+            }
+            Ifc2x3tc1_IfcBooleanOperator.UNION.value -> {
+                // TODO implement
+            }
+        }
+        return ArrayList()
+    }
+
+    /**
+     * Resolves geometry of [Ifc2x3tc1_IfcBooleanOperand] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcBooleanOperand(entity: Ifc2x3tc1_IfcBooleanOperand): List<Vector3D>{
+        when(entity){
+            is Ifc2x3tc1_IfcSolidModel -> {
+                return resolveIfcSolidModel(entity)
+            }
+            is Ifc2x3tc1_IfcHalfSpaceSolid ->{
+                return resolveIfcHalfSpaceSolid(entity)
+            }
+            is Ifc2x3tc1_IfcBooleanResult -> {
+                return resolveIfcBooleanResult(entity)
+            }
+            is Ifc2x3tc1_IfcCsgPrimitive3D ->{
+                return resolveIfcCsgPrimitive3D(entity)
+            }
+        }
+        return ArrayList()
     }
 
 }
