@@ -5,12 +5,18 @@ import de.rebsc.bimtoosm.data.osm.OSMWay
 import de.rebsc.bimtoosm.geometry.GeometrySolution
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3GeometryResolver
 import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver
+import de.rebsc.bimtoosm.loader.Loader
+import de.rebsc.bimtoosm.optimizer.BIMFileOptimizer
 import de.rebsc.bimtoosm.parser.IfcUnitPrefix
+import de.rebsc.bimtoosm.parser.PropertiesExtractor
 import de.rebsc.bimtoosm.utils.IdGenerator
 import de.rebsc.bimtoosm.utils.UnitConverter
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import jdk.jfr.Description
+import org.bimserver.models.ifc2x3tc1.IfcDoor
+import org.bimserver.models.ifc2x3tc1.IfcWall
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.io.IOException
@@ -20,6 +26,10 @@ internal class Ifc2x3ResolveDoorTest {
     // Test setup
 
     // URLs
+    private val urlDoorSingle =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/door/door_single_IFC2X3.ifc")
+    private val urlDoorSingleResolvedGeo =
+        URL("https://raw.githubusercontent.com/rebeccasc/IfcTestFiles/master/ifc2X3/door/resolved_placements/door_single_IFC2X3.txt")
 
     // Parser
     private val placementResolver = Ifc2x3PlacementResolver()
@@ -30,9 +40,41 @@ internal class Ifc2x3ResolveDoorTest {
 
 
     @Test
-    @Description("")
+    @Description("IfcDoor test for IFC2X3 on geometry solution BODY")
     fun resolveDoorTestBody() {
-        // TODO implement
+        // load optimized file into model
+        val fileDoorSingle = downloadFile(urlDoorSingle)
+        val fileDoorSingleOptimized: String = BIMFileOptimizer.optimizeIfcFile(
+            fileDoorSingle, optimizeInput_RBC = true, optimizeInput_RBL = true
+        ).absolutePath
+        val model = Loader.loadIntoModel(fileDoorSingleOptimized)
+        val units = PropertiesExtractor.extractIfcUnits(model)
+
+        clearCaches()
+
+        // fill placement cache and geometry cache with wall objects
+        model.getAllWithSubTypes(IfcDoor::class.java).forEach { door ->
+            connector[door.objectPlacement.expressId] = door.representation.expressId
+            placementResolver.resolvePlacement(door.objectPlacement)
+            geometryResolverBody.resolveWall(door.representation)
+        }
+
+        // extract doors out of placement cache and geometry cache
+        val doors = extractWays_Ifc2x3tc1(geometryResolverBody, placementResolver, connector, units)
+
+        // check if only one door in list
+        Assertions.assertEquals(1, doors.size)
+
+        // check resolved geometry
+        val fileDoorSingleResolvedGeo = downloadFile(urlDoorSingleResolvedGeo)
+        val resolvedCoords = loadResolvedGeometry(fileDoorSingleResolvedGeo)
+        for (i in 0 until doors[0].points.size) {
+            Assertions.assertEquals(resolvedCoords[i].x, doors[0].points[i].x, 0.1)
+            Assertions.assertEquals(resolvedCoords[i].y, doors[0].points[i].y, 0.1)
+        }
+
+        // clean up test directory
+        cleanTestDirectory()
     }
 
     @Test
@@ -74,7 +116,12 @@ internal class Ifc2x3ResolveDoorTest {
                     placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
                 // convert to meter if necessary
                 absolutePoint = UnitConverter.toMeter(absolutePoint, units.lengthUnitPrefix)
-                osmNodeList.add(OSMNode(IdGenerator.createUUID(allowNegative = true), Point2D(absolutePoint.x, absolutePoint.y)))
+                osmNodeList.add(
+                    OSMNode(
+                        IdGenerator.createUUID(allowNegative = true),
+                        Point2D(absolutePoint.x, absolutePoint.y)
+                    )
+                )
             }
             wayList.add(OSMWay(representation.key.productRepresentation.expressId, osmNodeList))
         }
