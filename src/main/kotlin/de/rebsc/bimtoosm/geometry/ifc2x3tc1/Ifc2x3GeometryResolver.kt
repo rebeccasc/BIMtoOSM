@@ -21,10 +21,18 @@ import de.rebsc.bimtoosm.exception.BIMtoOSMException
 import de.rebsc.bimtoosm.geometry.GeometrySolution
 import de.rebsc.bimtoosm.geometry.SupportedObjectType
 import de.rebsc.bimtoosm.logger.Logger
+import de.rebsc.bimtoosm.utils.geometry.Geometry
 import de.rebsc.bimtoosm.utils.math.Vector3D
+import org.bimserver.models.ifc2x3tc1.IfcTransitionCode
+import org.bimserver.models.ifc2x3tc1.Tristate
 import org.bimserver.models.ifc4.IfcBSplineCurve
 import org.bimserver.models.ifc4.IfcBoundingBox
-import org.bimserver.models.ifc4.IfcMappedItem
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
+import org.bimserver.models.ifc2x3tc1.IfcAxis2Placement2D as Ifc2x3tc1_IfcAxis2Placement2D
+import org.bimserver.models.ifc2x3tc1.IfcAxis2Placement3D as Ifc2x3tc1_IfcAxis2Placement3D
 import org.bimserver.models.ifc2x3tc1.IfcBoundingBox as Ifc2x3tc1_IfcBoundingBox
 import org.bimserver.models.ifc2x3tc1.IfcMappedItem as Ifc2x3tc1_IfcMappedItem
 import org.bimserver.models.ifc2x3tc1.IfcStyledItem as Ifc2x3tc1_IfcStyledItem
@@ -56,6 +64,7 @@ import org.bimserver.models.ifc2x3tc1.IfcDerivedProfileDef as Ifc2x3tc1_IfcDeriv
 import org.bimserver.models.ifc2x3tc1.IfcCurve as Ifc2x3tc1_IfcCurve
 import org.bimserver.models.ifc2x3tc1.IfcPolyline as Ifc2x3tc1_IfcPolyline
 import org.bimserver.models.ifc2x3tc1.IfcCompositeCurve as Ifc2x3tc1_IfcCompositeCurve
+import org.bimserver.models.ifc2x3tc1.IfcCompositeCurveSegment as Ifc2x3tc1_IfcCompositeCurveSegment
 import org.bimserver.models.ifc2x3tc1.IfcTrimmedCurve as Ifc2x3tc1_IfcTrimmedCurve
 import org.bimserver.models.ifc2x3tc1.IfcConnectedFaceSet as Ifc2x3tc1_IfcConnectedFaceSet
 import org.bimserver.models.ifc2x3tc1.IfcClosedShell as Ifc2x3tc1_IfcClosedShell
@@ -71,7 +80,6 @@ import org.bimserver.models.ifc2x3tc1.IfcLoop as Ifc2x3tc1_IfcLoop
 import org.bimserver.models.ifc2x3tc1.IfcPolyLoop as Ifc2x3tc1_IfcPolyLoop
 import org.bimserver.models.ifc2x3tc1.IfcVertexLoop as Ifc2x3tc1_IfcVertexLoop
 import org.bimserver.models.ifc2x3tc1.IfcEdgeLoop as Ifc2x3tc1_IfcEdgeLoop
-import org.bimserver.models.ifc2x3tc1.IfcBSplineCurve as Ifc2x3tc1_IfcBSplineCurve
 import org.bimserver.models.ifc2x3tc1.IfcCircle as Ifc2x3tc1_IfcCircle
 import org.bimserver.models.ifc2x3tc1.IfcEllipse as Ifc2x3tc1_IfcEllipse
 import org.bimserver.models.ifc2x3tc1.IfcLine as Ifc2x3tc1_IfcLine
@@ -96,7 +104,6 @@ import org.bimserver.models.ifc2x3tc1.IfcRightCircularCone as Ifc2x3tc1_IfcRight
 import org.bimserver.models.ifc2x3tc1.IfcSphere as Ifc2x3tc1_IfcSphere
 import org.bimserver.models.ifc2x3tc1.IfcRevolvedAreaSolid as Ifc2x3tc1_IfcRevolvedAreaSolid
 import org.bimserver.models.ifc2x3tc1.IfcSurfaceCurveSweptAreaSolid as Ifc2x3tc1_IfcSurfaceCurveSweptAreaSolid
-import org.bimserver.models.ifc2x3tc1.IfcCompositeCurveSegment as Ifc2x3tc1_IfcCompositeCurveSegment
 import org.bimserver.models.ifc2x3tc1.IfcDirection as Ifc2x3tc1_IfcDirection
 import org.bimserver.models.ifc2x3tc1.IfcPlacement as Ifc2x3tc1_IfcPlacement
 import org.bimserver.models.ifc2x3tc1.IfcSurface as Ifc2x3tc1_IfcSurface
@@ -109,6 +116,7 @@ import org.bimserver.models.ifc2x3tc1.IfcFaceBasedSurfaceModel as Ifc2x3tc1_IfcF
 import org.bimserver.models.ifc2x3tc1.IfcShellBasedSurfaceModel as Ifc2x3tc1_IfcShellBasedSurfaceModel
 import org.bimserver.models.ifc2x3tc1.IfcBoundedCurve as Ifc2x3tc1_IfcBoundedCurve
 import org.bimserver.models.ifc2x3tc1.IfcConic as Ifc2x3tc1_IfcConic
+import org.bimserver.models.ifc2x3tc1.IfcCartesianPoint as Ifc2x3tc1_IfcCartesianPoint
 
 
 class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
@@ -299,7 +307,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveBody(shapeRepresentation: Ifc2x3tc1_IfcRepresentation): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         shapeRepresentation.items.forEach { item ->
-            when(item){
+            when (item) {
                 is Ifc2x3tc1_IfcTopologicalRepresentationItem -> {
                     geometry.addAll(resolveIfcTopologicalRepresentationItem(item))
                 }
@@ -313,7 +321,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
                     // TODO implement
                 }
             }
-            logger.warn("resolveBody -> Unknown RepresentationType of ${shapeRepresentation.expressId}")
+
         }
 
         if (geometry.isEmpty()) {
@@ -330,7 +338,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveBoundingBox(shapeRepresentation: Ifc2x3tc1_IfcRepresentation): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         shapeRepresentation.items.forEach { item ->
-            when (item){
+            when (item) {
                 is Ifc2x3tc1_IfcGeometricRepresentationItem -> {
                     geometry.addAll(resolveIfcGeometricRepresentationItem(item))
                 }
@@ -411,14 +419,15 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             geometry.addAll(resolveIfcFace(face))
         }
         // remove duplicates
+        // TODO check if its possible to simply delete duplicates or if the polygon gets messed up
         val geometryFiltered = ArrayList<Vector3D>()
         geometry.forEach { point ->
-            if(!geometryFiltered.any{it.x == point.x && it.y == point.y && it.z == point.z}){
+            if (!geometryFiltered.any { it.x == point.x && it.y == point.y && it.z == point.z }) {
                 geometryFiltered.add(point)
             }
         }
         // add the first point as last point to close the loop
-        geometryFiltered.add(geometryFiltered.first())
+//        geometryFiltered.add(geometryFiltered.first())
         return geometryFiltered
     }
 
@@ -513,27 +522,27 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcGeometricRepresentationItem(entity: Ifc2x3tc1_IfcGeometricRepresentationItem): List<Vector3D>{
-        when(entity){
-            is Ifc2x3tc1_IfcCompositeCurve -> {
+    private fun resolveIfcGeometricRepresentationItem(entity: Ifc2x3tc1_IfcGeometricRepresentationItem): List<Vector3D> {
+        when (entity) {
+            is Ifc2x3tc1_IfcCompositeCurveSegment -> {
                 // TODO implement
             }
-            is Ifc2x3tc1_IfcCurve ->{
+            is Ifc2x3tc1_IfcCurve -> {
                 return resolveIfcCurve(entity)
             }
-            is Ifc2x3tc1_IfcDirection ->{
+            is Ifc2x3tc1_IfcDirection -> {
                 // TODO implement
             }
             is Ifc2x3tc1_IfcPlacement -> {
                 // TODO implement
             }
-            is Ifc2x3tc1_IfcPoint ->{
+            is Ifc2x3tc1_IfcPoint -> {
                 // TODO implement
             }
-            is Ifc2x3tc1_IfcSurface ->{
+            is Ifc2x3tc1_IfcSurface -> {
                 // TODO implement
             }
-            is Ifc2x3tc1_IfcVector ->{
+            is Ifc2x3tc1_IfcVector -> {
                 // TODO implement
             }
             is Ifc2x3tc1_IfcBooleanResult -> {
@@ -542,7 +551,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             is Ifc2x3tc1_IfcSolidModel -> {
                 return resolveIfcSolidModel(entity)
             }
-            is Ifc2x3tc1_IfcHalfSpaceSolid ->{
+            is Ifc2x3tc1_IfcHalfSpaceSolid -> {
                 return resolveIfcHalfSpaceSolid(entity)
             }
             is IfcBoundingBox -> {
@@ -572,7 +581,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcBoundingBox(entity: Ifc2x3tc1_IfcBoundingBox): List<Vector3D>{
+    private fun resolveIfcBoundingBox(entity: Ifc2x3tc1_IfcBoundingBox): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         val cartesianPoint = entity.corner.coordinates
         geometry.add(Vector3D(cartesianPoint[0], cartesianPoint[1], 0.0))
@@ -614,18 +623,18 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcBoundedCurve(entity: Ifc2x3tc1_IfcBoundedCurve): List<Vector3D>{
-        when(entity) {
-            is Ifc2x3tc1_IfcCompositeCurve ->{
+    private fun resolveIfcBoundedCurve(entity: Ifc2x3tc1_IfcBoundedCurve): List<Vector3D> {
+        when (entity) {
+            is Ifc2x3tc1_IfcCompositeCurve -> {
                 return resolveIfcCompositeCurve(entity)
             }
             is Ifc2x3tc1_IfcPolyline -> {
                 return resolveIfcPolyline(entity)
             }
-            is Ifc2x3tc1_IfcTrimmedCurve ->{
+            is Ifc2x3tc1_IfcTrimmedCurve -> {
                 return resolveIfcTrimmedCurve(entity)
             }
-            is IfcBSplineCurve ->{
+            is IfcBSplineCurve -> {
                 // TODO implement
             }
         }
@@ -637,11 +646,22 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcConic(entity: Ifc2x3tc1_IfcConic): List<Vector3D>{
+    private fun resolveIfcConic(entity: Ifc2x3tc1_IfcConic): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        when(entity) {
-            is Ifc2x3tc1_IfcCircle ->{
-                // TODO implement
+        when (entity) {
+            is Ifc2x3tc1_IfcCircle -> {
+                // get center
+                val center = (entity.position as org.bimserver.models.ifc2x3tc1.IfcAxis2Placement2D).location.coordinates
+                // TODO handle axis and refDirection
+
+                // add 37 points to represent circle
+                for (i in 0..360 step 10) {
+                    val x = center[0] + entity.radius * cos(Math.toRadians(i.toDouble()))
+                    val y = center[0] + entity.radius * sin(Math.toRadians(i.toDouble()))
+                    geometry.add(Vector3D(x, y, 0.0))
+                }
+                geometry.add(geometry[0])
+                return geometry
             }
             is Ifc2x3tc1_IfcEllipse -> {
                 // TODO implement
@@ -658,6 +678,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveIfcPolyline(entity: Ifc2x3tc1_IfcPolyline): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         entity.points.forEach { point ->
+            // TODo handle axis and refDirection
             geometry.add(Vector3D(point.coordinates[0], point.coordinates[1], 0.0))
         }
         return geometry
@@ -673,9 +694,30 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
         entity.segments.forEach { segment ->
             val parentCurve = segment.parentCurve
             val parentCurveShape = resolveIfcCurve(parentCurve)
-            if (parentCurveShape.isEmpty()) {
-                return ArrayList()    // return empty array once one segment cannot be resolved
+            when (segment.transition) {
+                // TODO need for connection between segments?
+                IfcTransitionCode.DISCONTINUOUS -> {
+                    // open curve
+                    // TODO implement
+                }
+                IfcTransitionCode.CONTINUOUS -> {
+                    // TODO implement
+                }
+                IfcTransitionCode.CONTSAMEGRADIENT -> {
+                    // TODO implement
+                }
+                IfcTransitionCode.CONTSAMEGRADIENTSAMECURVATURE -> {
+                    // TODO implement
+                }
             }
+            if (segment.sameSense == Tristate.TRUE) {
+                // TODO implement
+            } else {
+                // TODO implement
+            }
+//            if (parentCurveShape.isEmpty()) {
+//                return ArrayList()    // return empty array once one segment cannot be resolved
+//            }
             geometry.addAll(parentCurveShape)
         }
         return geometry
@@ -687,8 +729,51 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @return List holding resolved local coordinates
      */
     private fun resolveIfcTrimmedCurve(entity: Ifc2x3tc1_IfcTrimmedCurve): List<Vector3D> {
-        // TODO implement properly - handle trim of basis curve
-        return resolveIfcCurve(entity.basisCurve)
+
+        // TODO test/fix
+
+        val basisCurveGeometry = resolveIfcCurve(entity.basisCurve)
+        val trimmingPoint1 = entity.trim1[1] as Ifc2x3tc1_IfcCartesianPoint
+        val trimmingPoint2 = entity.trim2[1] as Ifc2x3tc1_IfcCartesianPoint
+
+        // TODO handle axis and refDirection
+
+
+        // find trimming points in basic curve
+        var deltaTrimmingPoint1 = 10000.0
+        var indexClosestToTrimmingPoint1 = 0
+        var deltaTrimmingPoint2 = 10000.0
+        var indexClosestToTrimmingPoint2 = 0
+        var i = 0
+        basisCurveGeometry.forEach { point ->
+            var deltaX = point.x - trimmingPoint1.coordinates[0]
+            var deltaY = point.y - trimmingPoint1.coordinates[1]
+            var delta = sqrt(deltaX.pow(2.0) + deltaY.pow(2.0))
+            if (delta < deltaTrimmingPoint1) {
+                deltaTrimmingPoint1 = delta
+                indexClosestToTrimmingPoint1 = i
+            }
+            deltaX = point.x - trimmingPoint2.coordinates[0]
+            deltaY = point.y - trimmingPoint2.coordinates[1]
+            delta = sqrt(deltaX.pow(2.0) + deltaY.pow(2.0))
+            if (delta < deltaTrimmingPoint2) {
+                deltaTrimmingPoint2 = delta
+                indexClosestToTrimmingPoint2 = i
+            }
+            ++i
+        }
+
+        // trim
+        if (entity.senseAgreement == Tristate.TRUE) {
+            // trim counterclockwise
+            return basisCurveGeometry.slice(indexClosestToTrimmingPoint2..indexClosestToTrimmingPoint1)
+        } else {
+            // trim clockwise
+            val trimmed = ArrayList<Vector3D>()
+            trimmed.addAll(basisCurveGeometry.slice(indexClosestToTrimmingPoint1 until basisCurveGeometry.size))
+            trimmed.addAll(basisCurveGeometry.slice(0 .. indexClosestToTrimmingPoint2))
+            return trimmed
+        }
     }
 
     /**
@@ -696,18 +781,18 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcSolidModel(entity: Ifc2x3tc1_IfcSolidModel): List<Vector3D>{
-        when(entity){
-            is Ifc2x3tc1_IfcManifoldSolidBrep ->{
+    private fun resolveIfcSolidModel(entity: Ifc2x3tc1_IfcSolidModel): List<Vector3D> {
+        when (entity) {
+            is Ifc2x3tc1_IfcManifoldSolidBrep -> {
                 return resolveIfcManifoldSolidBrep(entity)
             }
-            is Ifc2x3tc1_IfcSweptAreaSolid ->{
+            is Ifc2x3tc1_IfcSweptAreaSolid -> {
                 return resolveIfcSweptAreaSolid(entity)
             }
-            is Ifc2x3tc1_IfcCsgSolid ->{
+            is Ifc2x3tc1_IfcCsgSolid -> {
                 // TODO implement
             }
-            is Ifc2x3tc1_IfcSweptDiskSolid ->{
+            is Ifc2x3tc1_IfcSweptDiskSolid -> {
                 // TODO implement
             }
         }
@@ -719,15 +804,15 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcSweptAreaSolid(entity: Ifc2x3tc1_IfcSweptAreaSolid): List<Vector3D>{
-        when(entity){
-            is Ifc2x3tc1_IfcExtrudedAreaSolid ->{
+    private fun resolveIfcSweptAreaSolid(entity: Ifc2x3tc1_IfcSweptAreaSolid): List<Vector3D> {
+        when (entity) {
+            is Ifc2x3tc1_IfcExtrudedAreaSolid -> {
                 return resolveIfcExtrudedAreaSolid(entity)
             }
-            is Ifc2x3tc1_IfcRevolvedAreaSolid ->{
+            is Ifc2x3tc1_IfcRevolvedAreaSolid -> {
                 // TODO Implement
             }
-            is Ifc2x3tc1_IfcSurfaceCurveSweptAreaSolid ->{
+            is Ifc2x3tc1_IfcSurfaceCurveSweptAreaSolid -> {
                 // TODO implement
             }
         }
@@ -745,6 +830,8 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
         var locationY = entity.position.location.coordinates[1]
 
         when (entity.sweptArea) {
+            // TODO pack subclasses in methods
+
             // handle IfcParameterizedProfileDef
             is Ifc2x3tc1_IfcIShapeProfileDef -> {/*TODO implement */
             }
@@ -767,19 +854,31 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             is Ifc2x3tc1_IfcEllipseProfileDef -> {/*TODO implement */
             }
             is Ifc2x3tc1_IfcRectangleProfileDef -> {
-                // TODO test new placement
                 locationX = (entity.sweptArea as Ifc2x3tc1_IfcRectangleProfileDef).position.location.coordinates[0]
                 locationY = (entity.sweptArea as Ifc2x3tc1_IfcRectangleProfileDef).position.location.coordinates[1]
 
+                // TODO handle axis and refDirection
+
                 // extract dimensions
-                val halfxDim = (entity.sweptArea as Ifc2x3tc1_IfcRectangleProfileDef).xDim / 2.0
-                val halfyDim = (entity.sweptArea as Ifc2x3tc1_IfcRectangleProfileDef).yDim / 2.0
-                // get points of shape
-                geometry.add(Vector3D(locationX - halfxDim, locationY - halfyDim, 0.0))
-                geometry.add(Vector3D(locationX + halfxDim, locationY - halfyDim, 0.0))
-                geometry.add(Vector3D(locationX + halfxDim, locationY + halfyDim, 0.0))
-                geometry.add(Vector3D(locationX - halfxDim, locationY + halfyDim, 0.0))
-                geometry.add(Vector3D(locationX - halfxDim, locationY - halfyDim, 0.0))
+                val halfXDim = (entity.sweptArea as Ifc2x3tc1_IfcRectangleProfileDef).xDim / 2.0
+                val halfYDim = (entity.sweptArea as Ifc2x3tc1_IfcRectangleProfileDef).yDim / 2.0
+
+                // get points of rectangle shape
+                geometry.add(Vector3D(locationX - halfXDim, locationY - halfYDim, 0.0))
+                geometry.add(Vector3D(locationX + halfXDim, locationY - halfYDim, 0.0))
+                geometry.add(Vector3D(locationX + halfXDim, locationY + halfYDim, 0.0))
+                geometry.add(Vector3D(locationX - halfXDim, locationY + halfYDim, 0.0))
+                geometry.add(Vector3D(locationX - halfXDim, locationY - halfYDim, 0.0))
+
+                // get points at depth
+                if (entity.extrudedDirection.directionRatios[0] == 0.0 && entity.extrudedDirection.directionRatios[1] == 0.0) {
+                    // depth vector equals z-axis, so we can ignore points at depth because in 2D the points will
+                    // simply be duplicated
+                    return geometry
+                } else {
+                    // TODO add points at depth
+                }
+
                 return geometry
             }
             is Ifc2x3tc1_IfcTrapeziumProfileDef -> {/*TODO implement */
@@ -789,6 +888,8 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             }
             // handle IfcArbitraryClosedProfileDef
             is Ifc2x3tc1_IfcArbitraryClosedProfileDef -> {
+                // TODO handle Ifc2x3tc1_IfcArbitraryProfileDefWithVoids
+
                 val outerCurve = (entity.sweptArea as Ifc2x3tc1_IfcArbitraryClosedProfileDef).outerCurve
                 val curveShape = resolveIfcCurve(outerCurve)
                 curveShape.forEach { point ->
@@ -796,9 +897,17 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
                     point.y += locationY
                 }
                 geometry.addAll(curveShape)
+
+                // get points at depth
+                if (entity.extrudedDirection.directionRatios[0] == 0.0 && entity.extrudedDirection.directionRatios[1] == 0.0) {
+                    // depth vector equals z-axis, so we can ignore points at depth because in 2D the points will
+                    // simply be duplicated
+                    return geometry
+                } else {
+                    // TODO add points at depth
+                }
+
                 return geometry
-            }
-            is Ifc2x3tc1_IfcArbitraryProfileDefWithVoids -> {/*TODO implement */
             }
             // handle IfcCompositeProfileDef
             is Ifc2x3tc1_IfcCompositeProfileDef -> {/*TODO implement */
@@ -815,12 +924,12 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcManifoldSolidBrep(entity: Ifc2x3tc1_IfcManifoldSolidBrep): List<Vector3D>{
-        when(entity){
-            is Ifc2x3tc1_IfcFacetedBrep ->{
+    private fun resolveIfcManifoldSolidBrep(entity: Ifc2x3tc1_IfcManifoldSolidBrep): List<Vector3D> {
+        when (entity) {
+            is Ifc2x3tc1_IfcFacetedBrep -> {
                 return resolveIfcFacetedBrep(entity)
             }
-            is Ifc2x3tc1_IfcFacetedBrepWithVoids ->{
+            is Ifc2x3tc1_IfcFacetedBrepWithVoids -> {
                 // TODO Implement
             }
         }
@@ -842,13 +951,13 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcHalfSpaceSolid(entity: Ifc2x3tc1_IfcHalfSpaceSolid): List<Vector3D>{
+    private fun resolveIfcHalfSpaceSolid(entity: Ifc2x3tc1_IfcHalfSpaceSolid): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        when(entity){
-            is Ifc2x3tc1_IfcBoxedHalfSpace ->{
+        when (entity) {
+            is Ifc2x3tc1_IfcBoxedHalfSpace -> {
                 // TODO implement
             }
-            is Ifc2x3tc1_IfcPolygonalBoundedHalfSpace ->{
+            is Ifc2x3tc1_IfcPolygonalBoundedHalfSpace -> {
                 // TODO Implement
             }
         }
@@ -860,22 +969,22 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcCsgPrimitive3D(entity: Ifc2x3tc1_IfcCsgPrimitive3D): List<Vector3D>{
+    private fun resolveIfcCsgPrimitive3D(entity: Ifc2x3tc1_IfcCsgPrimitive3D): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        when(entity){
-            is Ifc2x3tc1_IfcBlock ->{
+        when (entity) {
+            is Ifc2x3tc1_IfcBlock -> {
                 // TODO implement
             }
-            is Ifc2x3tc1_IfcRectangularPyramid ->{
+            is Ifc2x3tc1_IfcRectangularPyramid -> {
                 // TODO Implement
             }
-            is Ifc2x3tc1_IfcRightCircularCylinder ->{
+            is Ifc2x3tc1_IfcRightCircularCylinder -> {
                 // TODO implement
             }
-            is Ifc2x3tc1_IfcRightCircularCone ->{
+            is Ifc2x3tc1_IfcRightCircularCone -> {
                 // TODO implement
             }
-            is Ifc2x3tc1_IfcSphere ->{
+            is Ifc2x3tc1_IfcSphere -> {
                 // TODO implement
             }
         }
@@ -888,19 +997,21 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @return List holding resolved local coordinates
      */
     private fun resolveIfcBooleanResult(entity: Ifc2x3tc1_IfcBooleanResult): List<Vector3D> {
+        // TODO handle IfcBooleanClippingResult
+
         val geometryFirstOperand = resolveIfcBooleanOperand(entity.firstOperand)
         val geometrySecondOperand = resolveIfcBooleanOperand(entity.secondOperand)
         when (entity.operator.value) {
             Ifc2x3tc1_IfcBooleanOperator.DIFFERENCE.value -> {
-                val geometryFirstOperandCopy = ArrayList(geometryFirstOperand)
-                geometryFirstOperand.forEach { point1 ->
-                    geometrySecondOperand.forEach { point2 ->
-                        if(point1.equalsVector(point2)){
-                            geometryFirstOperandCopy.remove(point1)
-                        }
+                // points which are in the first operand, but not in the second operand
+                val pointsInFirstOperandOnly = ArrayList<Vector3D>()
+                // TODO Jordan test if point of second operator in first operator
+                geometryFirstOperand.forEach { point ->
+                    if(!Geometry.isInsidePolygon(point, geometrySecondOperand)){
+                        pointsInFirstOperandOnly.add(point)
                     }
                 }
-                return geometryFirstOperandCopy
+                return pointsInFirstOperandOnly
             }
             Ifc2x3tc1_IfcBooleanOperator.INTERSECTION.value -> {
                 // TODO implement
@@ -917,18 +1028,18 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcBooleanOperand(entity: Ifc2x3tc1_IfcBooleanOperand): List<Vector3D>{
-        when(entity){
+    private fun resolveIfcBooleanOperand(entity: Ifc2x3tc1_IfcBooleanOperand): List<Vector3D> {
+        when (entity) {
             is Ifc2x3tc1_IfcSolidModel -> {
                 return resolveIfcSolidModel(entity)
             }
-            is Ifc2x3tc1_IfcHalfSpaceSolid ->{
+            is Ifc2x3tc1_IfcHalfSpaceSolid -> {
                 return resolveIfcHalfSpaceSolid(entity)
             }
             is Ifc2x3tc1_IfcBooleanResult -> {
                 return resolveIfcBooleanResult(entity)
             }
-            is Ifc2x3tc1_IfcCsgPrimitive3D ->{
+            is Ifc2x3tc1_IfcCsgPrimitive3D -> {
                 return resolveIfcCsgPrimitive3D(entity)
             }
         }
