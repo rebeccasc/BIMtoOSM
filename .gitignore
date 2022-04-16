@@ -11,3 +11,4 @@ docs/templates
 tmp
 src/test/output
 /src/test/resources/geometry_engine/secret_files
+src/test/tmp_test
