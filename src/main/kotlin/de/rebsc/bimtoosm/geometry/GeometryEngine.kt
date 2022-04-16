@@ -61,6 +61,7 @@ class GeometryEngine(private val solution: GeometrySolution) {
      */
     fun transformToOSM(model: IfcModelInterface, units: IfcUnitPrefix): OSMDataSet {
         val schema = model.modelMetaData.ifcHeader.ifcSchemaVersion
+        this.units = units
 
         // resolve placement and geometry of object separately
         val placementResolverIfc4 = Ifc4PlacementResolver()
