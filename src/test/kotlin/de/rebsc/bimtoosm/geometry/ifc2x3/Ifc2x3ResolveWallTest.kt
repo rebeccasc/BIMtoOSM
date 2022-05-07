@@ -31,7 +31,6 @@ import de.rebsc.bimtoosm.utils.UnitConverter
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import jdk.jfr.Description
-import org.bimserver.models.ifc2x3tc1.IfcSIPrefix
 import org.bimserver.models.ifc2x3tc1.IfcWall
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test

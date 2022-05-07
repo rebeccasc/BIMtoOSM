@@ -157,7 +157,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     // Utils
 
     /**
-     * TODO add description
+     * Resolve geometry of representation
      */
     private fun resolveGeometry(
         productRepresentation: IfcProductDefinitionShape,
@@ -469,7 +469,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
                 return resolveIfcHalfSpaceSolid(entity)
             }
             is IfcBoundingBox -> {
-                return resolveIfcBoundingBox(entity as org.bimserver.models.ifc2x3tc1.IfcBoundingBox)
+                return resolveIfcBoundingBox(entity)
             }
             is IfcCartesianTransformationOperator -> {
                 // TODO implement
@@ -568,7 +568,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
         when (entity) {
             is IfcCircle -> {
                 // get center
-                val center = (entity.position as org.bimserver.models.ifc2x3tc1.IfcAxis2Placement2D).location.coordinates
+                val center = (entity.position as IfcAxis2Placement2D).location.coordinates
                 // TODO handle axis and refDirection
 
                 // add 37 points to representing the circle
@@ -595,7 +595,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveIfcPolyline(entity: IfcPolyline): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         entity.points.forEach { point ->
-            // TODo handle axis and refDirection
+            // TODO handle axis and refDirection
             geometry.add(Vector3D(point.coordinates[0], point.coordinates[1], 0.0))
         }
         return geometry
@@ -922,7 +922,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             IfcBooleanOperator.DIFFERENCE.value -> {
                 // points which are in the first operand, but not in the second operand
                 val pointsInFirstOperandOnly = ArrayList<Vector3D>()
-                // TODO check Jordan test if point of second operator in first operator
+                // TODO FIX: check if point of second operator in first operator
                 geometryFirstOperand.forEach { point ->
                     if(!Geometry.isInsidePolygon(point, geometrySecondOperand)){
                         pointsInFirstOperandOnly.add(point)
