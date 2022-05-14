@@ -37,6 +37,16 @@ import org.bimserver.models.ifc2x3tc1.IfcSlabTypeEnum as Ifc2x3tc1_IfcSlabTypeEn
 import de.rebsc.bimtoosm.geometry.ifc4.Ifc4GeometryResolver
 import de.rebsc.bimtoosm.geometry.ifc4.Ifc4PlacementResolver
 import de.rebsc.bimtoosm.utils.UnitConverter
+import org.bimserver.models.ifc4.IfcBuilding as Ifc4_IfcBuilding
+import org.bimserver.models.ifc4.IfcBuildingStorey as Ifc4_IfcBuildingStorey
+import org.bimserver.models.ifc4.IfcSite as Ifc4_IfcSite
+import org.bimserver.models.ifc4.IfcSpace as Ifc4_IfcSpace
+import org.bimserver.models.ifc4.IfcRelContainedInSpatialStructure as Ifc4_IfcRelContainedInSpatialStructure
+import org.bimserver.models.ifc2x3tc1.IfcBuilding as Ifc2x3tc1_IfcBuilding
+import org.bimserver.models.ifc2x3tc1.IfcBuildingStorey as Ifc2x3tc1_IfcBuildingStorey
+import org.bimserver.models.ifc2x3tc1.IfcSite as Ifc2x3tc1_IfcSite
+import org.bimserver.models.ifc2x3tc1.IfcSpace as Ifc2x3tc1_IfcSpace
+import org.bimserver.models.ifc2x3tc1.IfcRelContainedInSpatialStructure as Ifc2x3tc1_IfcRelContainedInSpatialStructure
 import org.bimserver.models.ifc4.IfcColumn as Ifc4_IfcColumn
 import org.bimserver.models.ifc4.IfcDoor as Ifc4_IfcDoor
 import org.bimserver.models.ifc4.IfcSlab as Ifc4_IfcSlab
@@ -70,7 +80,6 @@ class GeometryEngine(private val solution: GeometrySolution) {
         val placementResolverIfc2x3tc1 = Ifc2x3PlacementResolver()
         val geometryResolverIfc2x3tc1 = Ifc2x3GeometryResolver(solution)
 
-
         // connect placement object with geometry object
         val connector: MutableMap<Long, Long> = HashMap()
         // osm data set
@@ -80,17 +89,14 @@ class GeometryEngine(private val solution: GeometrySolution) {
             // extract geometry ifc4 data into geometry cache
             extractIfc4GeometryToCache(model, connector, placementResolverIfc4, geometryResolverIfc4)
             // transform geometry cache ifc4 to osm
-            transformIfc4GeometryToOSM(connector, placementResolverIfc4, geometryResolverIfc4, osmDataSet)
+            transformIfc4GeometryToOSM(model, connector, placementResolverIfc4, geometryResolverIfc4, osmDataSet)
         }
         if (schema == Schema.IFC2X3TC1.headerName) {
             // extract geometry ifc2x3tc1 data into geometry cache
             extractIfc2x3tc1GeometryToCache(model, connector, placementResolverIfc2x3tc1, geometryResolverIfc2x3tc1)
             // transform geometry ifc2x3tc1 cache to osm
             transformIfc2x3tc1GeometryToOSM(
-                connector,
-                placementResolverIfc2x3tc1,
-                geometryResolverIfc2x3tc1,
-                osmDataSet
+                model, connector, placementResolverIfc2x3tc1, geometryResolverIfc2x3tc1, osmDataSet
             )
         }
 
@@ -159,32 +165,38 @@ class GeometryEngine(private val solution: GeometrySolution) {
         geometryResolver: Ifc2x3GeometryResolver
     ) {
         model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
+            if (wall.representation == null) return
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
             placementResolver.resolvePlacement(wall.objectPlacement)
             geometryResolver.resolveWall(wall.representation)
         }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcSlab::class.java).forEach { slab ->
+            if (slab.representation == null) return
             if (slab.predefinedType == Ifc2x3tc1_IfcSlabTypeEnum.ROOF) return@forEach      // skip roofs
             connector[slab.objectPlacement.expressId] = slab.representation.expressId
             placementResolver.resolvePlacement(slab.objectPlacement)
             geometryResolver.resolveSlab(slab.representation)
         }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcColumn::class.java).forEach { column ->
+            if (column.representation == null) return
             connector[column.objectPlacement.expressId] = column.representation.expressId
             placementResolver.resolvePlacement(column.objectPlacement)
             geometryResolver.resolveColumn(column.representation)
         }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcDoor::class.java).forEach { door ->
+            if (door.representation == null) return
             connector[door.objectPlacement.expressId] = door.representation.expressId
             placementResolver.resolvePlacement(door.objectPlacement)
             geometryResolver.resolveDoor(door.representation)
         }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcWindow::class.java).forEach { window ->
+            if (window.representation == null) return
             connector[window.objectPlacement.expressId] = window.representation.expressId
             placementResolver.resolvePlacement(window.objectPlacement)
             geometryResolver.resolveWindow(window.representation)
         }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcStair::class.java).forEach { stair ->
+            if (stair.representation == null) return
             connector[stair.objectPlacement.expressId] = stair.representation.expressId
             placementResolver.resolvePlacement(stair.objectPlacement)
             geometryResolver.resolveStair(stair.representation)
@@ -195,12 +207,14 @@ class GeometryEngine(private val solution: GeometrySolution) {
      * Transform extracted Ifc4 data into osm data.
      * Connect data from placement cache Ifc4 at [placementResolver] to geometry cache Ifc4
      * at [Ifc4GeometryResolver] to transform into node list. Tag nodes and add to [OSMDataSet]
+     * @param model ifc model
      * @param connector connects placement object with geometry object
      * @param placementResolver resolves and keeps objects placement
      * @param geometryResolver resolves and keeps objects geometry
      * @param osmDataSet to add the data to
      */
     private fun transformIfc4GeometryToOSM(
+        model: IfcModelInterface,
         connector: MutableMap<Long, Long>,
         placementResolver: Ifc4PlacementResolver,
         geometryResolver: Ifc4GeometryResolver,
@@ -214,13 +228,17 @@ class GeometryEngine(private val solution: GeometrySolution) {
             val placements = placementResolver.placementCacheIfc4.filterKeys { it.expressId == connectorPlacementKey }
             val placement = placements.entries.first()
 
+            // get level identifier
+            val levelIdentifier = identifyLevelsIfc2x3tc1(model)
+
             // transform representation using placement
             val osmNodeList = ArrayList<OSMNode>()
             representation.value.forEach { point ->
                 val absolutePoint =
                     placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
                 // TODO check points for unit (transform into meter)
-
+                // TODO check if nodes need to be tagged
+                // TODO add level tag
                 val id = IdGenerator.createUUID(allowNegative = true)
                 osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y)))
             }
@@ -233,8 +251,6 @@ class GeometryEngine(private val solution: GeometrySolution) {
             // tag and add to osm dataset
             osmDataSet.addNodes(osmNodeList)
             if (osmNodeList.size <= 1) {
-                // TODO check if nodes need to be tagged
-                // TODO add level tag
                 return@forEach
             }
             val id = IdGenerator.createUUID(allowNegative = true)
@@ -250,12 +266,14 @@ class GeometryEngine(private val solution: GeometrySolution) {
      * Transform extracted Ifc2x3tc1 data into osm data.
      * Connect data from placement cache Ifc2x3tc1 at [placementResolver] to geometry cache Ifc2x3tc1
      * at [Ifc2x3GeometryResolver] to transform into node list. Tag nodes and add to [OSMDataSet]
+     * @param model ifc model
      * @param connector connects placement object with geometry object
      * @param placementResolver resolves and keeps objects placement
      * @param geometryResolver resolves and keeps objects geometry
      * @param osmDataSet to add the data to
      */
     private fun transformIfc2x3tc1GeometryToOSM(
+        model: IfcModelInterface,
         connector: MutableMap<Long, Long>,
         placementResolver: Ifc2x3PlacementResolver,
         geometryResolver: Ifc2x3GeometryResolver,
@@ -270,14 +288,38 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 placementResolver.placementCacheIfc2x3tc1.filterKeys { it.expressId == connectorPlacementKey }
             val placement = placements.entries.first()
 
-            // transform representation using placement
+            // get level identifier
+            val levelIdentifier = identifyLevelsIfc2x3tc1(model)
+
+            // transform representation to osm
+            var objectLevelTag = -999
             val osmNodeList = ArrayList<OSMNode>()
             representation.value.forEach { point ->
+                // transform representation to proper placement
                 var absolutePoint =
                     placementResolver.getAbsolutePoint(placement.value, Point3D(point.x, point.y, point.z))
                 absolutePoint = UnitConverter.toMeter(absolutePoint, units.lengthUnitPrefix)
+
+                // add tags
+                val tagList = ArrayList<OSMTag>()
+                levelIdentifier.forEach { identifier ->
+                    identifier.first.relatedElements.forEach { relatedObject ->
+                        if (relatedObject.representation == null) {
+                            return@forEach
+                        }
+                        if (relatedObject.representation.expressId == representation.key.productRepresentation.expressId) {
+                            objectLevelTag = levelIdentifier.indexOf(identifier)
+                            // TODO break if found
+                        }
+                    }
+                }
+                if (objectLevelTag != -999) {
+                    tagList.add(OSMTag("level", "$objectLevelTag"))
+                }
+                // TODO add other tags
+
                 val id = IdGenerator.createUUID(allowNegative = true)
-                osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y)))
+                osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y), tagList))
             }
 
             if (osmNodeList.isEmpty()) {
@@ -285,19 +327,78 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 return@forEach
             }
 
-            // tag and add to osm dataset
+            // add nodes and way represented by nodes to osm data set
             osmDataSet.addNodes(osmNodeList)
             if (osmNodeList.size <= 1) {
-                // TODO check if nodes need to be tagged
-                // TODO add level tag
                 return@forEach
             }
             val id = IdGenerator.createUUID(allowNegative = true)
+            // tag way
             val osmTagList = OSMTagCatalog.osmTagsFor(representation.key.type)
-            // TODO add level tag
-            val osmWay = OSMWay(id, osmNodeList, osmTagList)
-            osmDataSet.addWay(osmWay)
+            if (objectLevelTag != -999) {
+                osmTagList.add(OSMTag("level", "$objectLevelTag"))
+            }
+            osmDataSet.addWay(OSMWay(id, osmNodeList, osmTagList))
         }
+    }
+
+    /**
+     * TODO add description
+     */
+    private fun identifyLevelsIfc2x3tc1(model: IfcModelInterface): List<Pair<Ifc2x3tc1_IfcRelContainedInSpatialStructure, Double>> {
+        var levelList = ArrayList<Pair<Ifc2x3tc1_IfcRelContainedInSpatialStructure, Double>>()
+
+        // collect all existing level
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcRelContainedInSpatialStructure::class.java).forEach { relConStructure ->
+            when (val relatingStructure = relConStructure.relatingStructure) {
+                is Ifc2x3tc1_IfcBuilding -> {
+                    // TODO implement
+                }
+                is Ifc2x3tc1_IfcBuildingStorey -> {
+                    // sort level by elevation
+                    val elevation = relatingStructure.elevation
+                    levelList.add(Pair(relConStructure, elevation))
+                    levelList = ArrayList(levelList.sortedWith(compareBy { it.second }))
+                }
+                is Ifc2x3tc1_IfcSpace -> {
+                    // TODO implement
+                }
+                is Ifc2x3tc1_IfcSite -> {
+                    // TODO implement
+                }
+            }
+        }
+        return levelList
+    }
+
+    /**
+     * TODO add description
+     */
+    private fun identifyLevelsIfc4(model: IfcModelInterface): List<Pair<Ifc4_IfcRelContainedInSpatialStructure, Double>> {
+        var levelList = ArrayList<Pair<Ifc4_IfcRelContainedInSpatialStructure, Double>>()
+
+        // collect all existing level
+        model.getAllWithSubTypes(Ifc4_IfcRelContainedInSpatialStructure::class.java).forEach { relConStructure ->
+            when (val relatingStructure = relConStructure.relatingStructure) {
+                is Ifc4_IfcBuilding -> {
+                    // TODO implement
+                }
+                is Ifc4_IfcBuildingStorey -> {
+                    // sort level by elevation
+                    val elevation = relatingStructure.elevation
+                    levelList.add(Pair(relConStructure, elevation))
+                    levelList = ArrayList(levelList.sortedWith(compareBy { it.second }))
+                }
+                is Ifc4_IfcSpace -> {
+                    // TODO implement
+                }
+                is Ifc4_IfcSite -> {
+                    // TODO implement
+                }
+            }
+        }
+
+        return levelList
     }
 
 }
