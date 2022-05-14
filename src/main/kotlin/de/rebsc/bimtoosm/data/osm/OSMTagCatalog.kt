@@ -30,6 +30,7 @@ class OSMTagCatalog {
             val tags = ArrayList<OSMTag>()
             if (type == SupportedObjectType.IFC_WALL) {
                 tags.add(OSMTag("indoor", "wall"))
+                tags.add(OSMTag("material", "concrete"))
             }
             if (type == SupportedObjectType.IFC_SLAB) {
                 tags.add(OSMTag("indoor", "area"))
@@ -38,7 +39,8 @@ class OSMTagCatalog {
                 tags.add(OSMTag("indoor", "area"))
             }
             if (type == SupportedObjectType.IFC_WINDOW) {
-                // TODO implement
+                tags.add(OSMTag("indoor", "wall"))
+                tags.add(OSMTag("material", "glass"))
             }
             if (type == SupportedObjectType.IFC_DOOR) {
                 tags.add(OSMTag("door", "yes"))
