@@ -326,22 +326,12 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
         val geometry = ArrayList<Vector3D>()
         // resolve list of CfsFaces
         entity.cfsFaces.forEach { face ->
-            // different faces may use the same coordinates so there are probably duplicates in list
             geometry.addAll(resolveIfcFace(face))
         }
 
         // remove duplicates
-        // TODO check if its possible to simply delete duplicates or if the polygon gets messed up
-        val geometryFiltered = ArrayList<Vector3D>()
-        geometry.forEach { point ->
-            if (!geometryFiltered.any { it.equalsVector(point)}) {
-                geometryFiltered.add(point)
-            }
-        }
-        // add the first point as last point to close the loop
-        geometryFiltered.add(geometryFiltered.first())
-
-        return geometryFiltered
+        // TODO remove duplicates from 3D to 2D transform
+        return geometry
     }
 
     /**
@@ -426,8 +416,6 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             val y = cartesian.coordinates[1]
             geometry.add(Vector3D(x, y, 0.0))
         }
-        // add first coordinate again to close the loop
-        geometry.add(Vector3D(geometry[0].x, geometry[0].y, geometry[0].z))
         return geometry
     }
 
@@ -595,7 +583,6 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveIfcPolyline(entity: IfcPolyline): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
         entity.points.forEach { point ->
-            // TODO handle axis and refDirection
             geometry.add(Vector3D(point.coordinates[0], point.coordinates[1], 0.0))
         }
         return geometry
@@ -915,6 +902,9 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcBooleanResult(entity: IfcBooleanResult): List<Vector3D> {
         // TODO handle IfcBooleanClippingResult
+
+        // TODO fix
+        return ArrayList()
 
         val geometryFirstOperand = resolveIfcBooleanOperand(entity.firstOperand)
         val geometrySecondOperand = resolveIfcBooleanOperand(entity.secondOperand)
