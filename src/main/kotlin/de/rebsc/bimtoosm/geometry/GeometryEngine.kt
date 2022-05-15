@@ -171,6 +171,12 @@ class GeometryEngine(private val solution: GeometrySolution) {
             placementResolver.resolvePlacement(wall.objectPlacement)
             geometryResolver.resolveWall(wall.representation)
         }
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcSpace::class.java).forEach { space ->
+            if (space.representation == null) return@forEach
+            connector[space.objectPlacement.expressId] = space.representation.expressId
+            placementResolver.resolvePlacement(space.objectPlacement)
+            geometryResolver.resolveSpace(space.representation)
+        }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcSlab::class.java).forEach { slab ->
             if (slab.representation == null) return@forEach
             if (slab.predefinedType == Ifc2x3tc1_IfcSlabTypeEnum.ROOF) return@forEach      // skip roofs

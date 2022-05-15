@@ -61,6 +61,25 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
 
     /**
      * Resolves object geometry and adds it to [geometryCacheIfc2x3tc1]
+     * @param productRepresentation of space object
+     */
+    fun resolveSpace(productRepresentation: IfcProductRepresentation) {
+        // shape representation
+        if (productRepresentation is IfcProductDefinitionShape) {
+            val itemProcessed = resolveGeometry(productRepresentation, SupportedObjectType.IFC_SPACE)
+            if (!itemProcessed) {
+                throw BIMtoOSMException("No valid IfcShapeRepresentation found for ${productRepresentation.expressId}")
+            }
+        }
+        // material representation
+        if (productRepresentation is IfcMaterialDefinitionRepresentation) {
+            logger.info("${IfcMaterialDefinitionRepresentation::class.java.name} not supported right now")
+            // TODO implement
+        }
+    }
+
+    /**
+     * Resolves object geometry and adds it to [geometryCacheIfc2x3tc1]
      * @param productRepresentation of slab object
      */
     fun resolveSlab(productRepresentation: IfcProductRepresentation) {

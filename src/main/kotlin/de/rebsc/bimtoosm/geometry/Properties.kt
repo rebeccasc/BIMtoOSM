@@ -30,5 +30,5 @@ enum class GeometrySolution {
  */
 enum class SupportedObjectType {
 
-    IFC_WALL, IFC_SLAB, IFC_COLUMN, IFC_DOOR, IFC_WINDOW, IFC_STAIR
+    IFC_WALL, IFC_SLAB, IFC_SPACE, IFC_COLUMN, IFC_DOOR, IFC_WINDOW, IFC_STAIR
 }
