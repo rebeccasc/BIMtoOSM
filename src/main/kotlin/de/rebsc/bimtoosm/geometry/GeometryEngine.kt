@@ -18,42 +18,37 @@ package de.rebsc.bimtoosm.geometry
  *****************************************************************************/
 
 import de.rebsc.bimtoosm.data.osm.*
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3GeometryResolver
+import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver
+import de.rebsc.bimtoosm.geometry.ifc4.Ifc4GeometryResolver
+import de.rebsc.bimtoosm.geometry.ifc4.Ifc4PlacementResolver
 import de.rebsc.bimtoosm.logger.Logger
 import de.rebsc.bimtoosm.parser.IfcUnitPrefix
 import de.rebsc.bimtoosm.utils.IdGenerator
+import de.rebsc.bimtoosm.utils.UnitConverter
 import de.rebsc.bimtoosm.utils.math.Point2D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import org.bimserver.emf.IfcModelInterface
 import org.bimserver.emf.Schema
-import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3GeometryResolver
-import de.rebsc.bimtoosm.geometry.ifc2x3tc1.Ifc2x3PlacementResolver
+import org.bimserver.models.ifc2x3tc1.IfcBuildingStorey as Ifc2x3tc1_IfcBuildingStorey
+import org.bimserver.models.ifc2x3tc1.IfcProduct
+import org.bimserver.models.ifc2x3tc1.IfcProductRepresentation
+import org.bimserver.models.ifc2x3tc1.IfcStair as Ifc2x3tc1_IfcStair
+import org.bimserver.models.ifc2x3tc1.IfcWindow as Ifc2x3tc1_IfcWindow
+import org.bimserver.models.ifc2x3tc1.IfcSpatialStructureElement as Ifc2x3tc1_IfcSpatialStructureElement
 import org.bimserver.models.ifc2x3tc1.IfcColumn as Ifc2x3tc1_IfcColumn
 import org.bimserver.models.ifc2x3tc1.IfcDoor as Ifc2x3tc1_IfcDoor
 import org.bimserver.models.ifc2x3tc1.IfcSlab as Ifc2x3tc1_IfcSlab
-import org.bimserver.models.ifc2x3tc1.IfcStair as Ifc2x3tc1_IfcStair
-import org.bimserver.models.ifc2x3tc1.IfcWall as Ifc2x3tc1_IfcWall
-import org.bimserver.models.ifc2x3tc1.IfcWindow as Ifc2x3tc1_IfcWindow
 import org.bimserver.models.ifc2x3tc1.IfcSlabTypeEnum as Ifc2x3tc1_IfcSlabTypeEnum
-import de.rebsc.bimtoosm.geometry.ifc4.Ifc4GeometryResolver
-import de.rebsc.bimtoosm.geometry.ifc4.Ifc4PlacementResolver
-import de.rebsc.bimtoosm.utils.UnitConverter
-import org.bimserver.models.ifc4.IfcBuilding as Ifc4_IfcBuilding
-import org.bimserver.models.ifc4.IfcBuildingStorey as Ifc4_IfcBuildingStorey
-import org.bimserver.models.ifc4.IfcSite as Ifc4_IfcSite
-import org.bimserver.models.ifc4.IfcSpace as Ifc4_IfcSpace
-import org.bimserver.models.ifc4.IfcRelContainedInSpatialStructure as Ifc4_IfcRelContainedInSpatialStructure
-import org.bimserver.models.ifc2x3tc1.IfcBuilding as Ifc2x3tc1_IfcBuilding
-import org.bimserver.models.ifc2x3tc1.IfcBuildingStorey as Ifc2x3tc1_IfcBuildingStorey
-import org.bimserver.models.ifc2x3tc1.IfcSite as Ifc2x3tc1_IfcSite
 import org.bimserver.models.ifc2x3tc1.IfcSpace as Ifc2x3tc1_IfcSpace
-import org.bimserver.models.ifc2x3tc1.IfcRelContainedInSpatialStructure as Ifc2x3tc1_IfcRelContainedInSpatialStructure
+import org.bimserver.models.ifc2x3tc1.IfcWall as Ifc2x3tc1_IfcWall
 import org.bimserver.models.ifc4.IfcColumn as Ifc4_IfcColumn
 import org.bimserver.models.ifc4.IfcDoor as Ifc4_IfcDoor
 import org.bimserver.models.ifc4.IfcSlab as Ifc4_IfcSlab
+import org.bimserver.models.ifc4.IfcSlabTypeEnum as Ifc4_IfcSlabTypeEnum
 import org.bimserver.models.ifc4.IfcStair as Ifc4_IfcStair
 import org.bimserver.models.ifc4.IfcWall as Ifc4_IfcWall
 import org.bimserver.models.ifc4.IfcWindow as Ifc4_IfcWindow
-import org.bimserver.models.ifc4.IfcSlabTypeEnum as Ifc4_IfcSlabTypeEnum
 
 /**
  * Engine to extract the object geometry
@@ -118,32 +113,38 @@ class GeometryEngine(private val solution: GeometrySolution) {
         geometryResolver: Ifc4GeometryResolver
     ) {
         model.getAllWithSubTypes(Ifc4_IfcWall::class.java).forEach { wall ->
+            if (wall.representation == null) return@forEach
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
             placementResolver.resolvePlacement(wall.objectPlacement)
             geometryResolver.resolveWall(wall.representation)
         }
         model.getAllWithSubTypes(Ifc4_IfcSlab::class.java).forEach { slab ->
+            if (slab.representation == null) return@forEach
             if (slab.predefinedType == Ifc4_IfcSlabTypeEnum.ROOF) return@forEach           // skip roofs
             connector[slab.objectPlacement.expressId] = slab.representation.expressId
             placementResolver.resolvePlacement(slab.objectPlacement)
             geometryResolver.resolveSlab(slab.representation)
         }
         model.getAllWithSubTypes(Ifc4_IfcColumn::class.java).forEach { column ->
+            if (column.representation == null) return@forEach
             connector[column.objectPlacement.expressId] = column.representation.expressId
             placementResolver.resolvePlacement(column.objectPlacement)
             geometryResolver.resolveColumn(column.representation)
         }
         model.getAllWithSubTypes(Ifc4_IfcDoor::class.java).forEach { door ->
+            if (door.representation == null) return@forEach
             connector[door.objectPlacement.expressId] = door.representation.expressId
             placementResolver.resolvePlacement(door.objectPlacement)
             geometryResolver.resolveDoor(door.representation)
         }
         model.getAllWithSubTypes(Ifc4_IfcWindow::class.java).forEach { window ->
+            if (window.representation == null) return@forEach
             connector[window.objectPlacement.expressId] = window.representation.expressId
             placementResolver.resolvePlacement(window.objectPlacement)
             geometryResolver.resolveWindow(window.representation)
         }
         model.getAllWithSubTypes(Ifc4_IfcStair::class.java).forEach { stair ->
+            if (stair.representation == null) return@forEach
             connector[stair.objectPlacement.expressId] = stair.representation.expressId
             placementResolver.resolvePlacement(stair.objectPlacement)
             geometryResolver.resolveStair(stair.representation)
@@ -165,38 +166,38 @@ class GeometryEngine(private val solution: GeometrySolution) {
         geometryResolver: Ifc2x3GeometryResolver
     ) {
         model.getAllWithSubTypes(Ifc2x3tc1_IfcWall::class.java).forEach { wall ->
-            if (wall.representation == null) return
+            if (wall.representation == null) return@forEach
             connector[wall.objectPlacement.expressId] = wall.representation.expressId
             placementResolver.resolvePlacement(wall.objectPlacement)
             geometryResolver.resolveWall(wall.representation)
         }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcSlab::class.java).forEach { slab ->
-            if (slab.representation == null) return
+            if (slab.representation == null) return@forEach
             if (slab.predefinedType == Ifc2x3tc1_IfcSlabTypeEnum.ROOF) return@forEach      // skip roofs
             connector[slab.objectPlacement.expressId] = slab.representation.expressId
             placementResolver.resolvePlacement(slab.objectPlacement)
             geometryResolver.resolveSlab(slab.representation)
         }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcColumn::class.java).forEach { column ->
-            if (column.representation == null) return
+            if (column.representation == null) return@forEach
             connector[column.objectPlacement.expressId] = column.representation.expressId
             placementResolver.resolvePlacement(column.objectPlacement)
             geometryResolver.resolveColumn(column.representation)
         }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcDoor::class.java).forEach { door ->
-            if (door.representation == null) return
+            if (door.representation == null) return@forEach
             connector[door.objectPlacement.expressId] = door.representation.expressId
             placementResolver.resolvePlacement(door.objectPlacement)
             geometryResolver.resolveDoor(door.representation)
         }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcWindow::class.java).forEach { window ->
-            if (window.representation == null) return
+            if (window.representation == null) return@forEach
             connector[window.objectPlacement.expressId] = window.representation.expressId
             placementResolver.resolvePlacement(window.objectPlacement)
             geometryResolver.resolveWindow(window.representation)
         }
         model.getAllWithSubTypes(Ifc2x3tc1_IfcStair::class.java).forEach { stair ->
-            if (stair.representation == null) return
+            if (stair.representation == null) return@forEach
             connector[stair.objectPlacement.expressId] = stair.representation.expressId
             placementResolver.resolvePlacement(stair.objectPlacement)
             geometryResolver.resolveStair(stair.representation)
@@ -227,9 +228,6 @@ class GeometryEngine(private val solution: GeometrySolution) {
             val connectorPlacementKey = connectorPlacements.entries.first().key
             val placements = placementResolver.placementCacheIfc4.filterKeys { it.expressId == connectorPlacementKey }
             val placement = placements.entries.first()
-
-            // get level identifier
-            val levelIdentifier = identifyLevelsIfc2x3tc1(model)
 
             // transform representation using placement
             val osmNodeList = ArrayList<OSMNode>()
@@ -279,6 +277,10 @@ class GeometryEngine(private val solution: GeometrySolution) {
         geometryResolver: Ifc2x3GeometryResolver,
         osmDataSet: OSMDataSet
     ) {
+        // get objects of each level
+        val levelList = getLevelListIfc2x3tc1(model)
+
+        // handle each object in cache
         geometryResolver.geometryCacheIfc2x3tc1.forEach { representation ->
             // find placement connected to representation
             val connectorPlacements =
@@ -288,11 +290,10 @@ class GeometryEngine(private val solution: GeometrySolution) {
                 placementResolver.placementCacheIfc2x3tc1.filterKeys { it.expressId == connectorPlacementKey }
             val placement = placements.entries.first()
 
-            // get level identifier
-            val levelIdentifier = identifyLevelsIfc2x3tc1(model)
+            // find level tag of object
+            val objectLevelTag = identifyLevelIfc2x3tc1(representation.key.productRepresentation, levelList)
 
             // transform representation to osm
-            var objectLevelTag = -999
             val osmNodeList = ArrayList<OSMNode>()
             representation.value.forEach { point ->
                 // transform representation to proper placement
@@ -302,22 +303,10 @@ class GeometryEngine(private val solution: GeometrySolution) {
 
                 // add tags
                 val tagList = ArrayList<OSMTag>()
-                levelIdentifier.forEach { identifier ->
-                    identifier.first.relatedElements.forEach { relatedObject ->
-                        if (relatedObject.representation == null) {
-                            return@forEach
-                        }
-                        if (relatedObject.representation.expressId == representation.key.productRepresentation.expressId) {
-                            objectLevelTag = levelIdentifier.indexOf(identifier)
-                            // TODO break if found
-                        }
-                    }
-                }
-                if (objectLevelTag != -999) {
+                if (objectLevelTag != null) {
                     tagList.add(OSMTag("level", "$objectLevelTag"))
                 }
                 // TODO add other tags
-
                 val id = IdGenerator.createUUID(allowNegative = true)
                 osmNodeList.add(OSMNode(id, Point2D(absolutePoint.x, absolutePoint.y), tagList))
             }
@@ -335,7 +324,7 @@ class GeometryEngine(private val solution: GeometrySolution) {
             val id = IdGenerator.createUUID(allowNegative = true)
             // tag way
             val osmTagList = OSMTagCatalog.osmTagsFor(representation.key.type)
-            if (objectLevelTag != -999) {
+            if (objectLevelTag != null) {
                 osmTagList.add(OSMTag("level", "$objectLevelTag"))
             }
             osmDataSet.addWay(OSMWay(id, osmNodeList, osmTagList))
@@ -345,60 +334,55 @@ class GeometryEngine(private val solution: GeometrySolution) {
     /**
      * TODO add description
      */
-    private fun identifyLevelsIfc2x3tc1(model: IfcModelInterface): List<Pair<Ifc2x3tc1_IfcRelContainedInSpatialStructure, Double>> {
-        var levelList = ArrayList<Pair<Ifc2x3tc1_IfcRelContainedInSpatialStructure, Double>>()
-
-        // collect all existing level
-        model.getAllWithSubTypes(Ifc2x3tc1_IfcRelContainedInSpatialStructure::class.java).forEach { relConStructure ->
-            when (val relatingStructure = relConStructure.relatingStructure) {
-                is Ifc2x3tc1_IfcBuilding -> {
-                    // TODO implement
-                }
-                is Ifc2x3tc1_IfcBuildingStorey -> {
-                    // sort level by elevation
-                    val elevation = relatingStructure.elevation
-                    levelList.add(Pair(relConStructure, elevation))
-                    levelList = ArrayList(levelList.sortedWith(compareBy { it.second }))
-                }
-                is Ifc2x3tc1_IfcSpace -> {
-                    // TODO implement
-                }
-                is Ifc2x3tc1_IfcSite -> {
-                    // TODO implement
-                }
-            }
+    private fun getLevelListIfc2x3tc1(model: IfcModelInterface): ArrayList<Pair<Double, ArrayList<IfcProduct>>>{
+        var levelList =  ArrayList<Pair<Double, ArrayList<IfcProduct>>>()
+        model.getAllWithSubTypes(Ifc2x3tc1_IfcBuildingStorey::class.java).forEach { bs ->
+            val level = ArrayList<IfcProduct>()
+            traverseSpatialStructureIfc2x3tc1(bs, level)
+            levelList.add(Pair(bs.elevation, level))
         }
+        levelList = ArrayList(levelList.sortedWith(compareBy { it.first }))
         return levelList
     }
 
     /**
      * TODO add description
      */
-    private fun identifyLevelsIfc4(model: IfcModelInterface): List<Pair<Ifc4_IfcRelContainedInSpatialStructure, Double>> {
-        var levelList = ArrayList<Pair<Ifc4_IfcRelContainedInSpatialStructure, Double>>()
-
-        // collect all existing level
-        model.getAllWithSubTypes(Ifc4_IfcRelContainedInSpatialStructure::class.java).forEach { relConStructure ->
-            when (val relatingStructure = relConStructure.relatingStructure) {
-                is Ifc4_IfcBuilding -> {
-                    // TODO implement
+    private fun identifyLevelIfc2x3tc1(representation: IfcProductRepresentation, levelList: ArrayList<Pair<Double, ArrayList<IfcProduct>>>): Int? {
+        levelList.forEach { levelPair ->
+            levelPair.second.forEach { levelObj ->
+                if(levelObj.representation == null){
+                    return@forEach
                 }
-                is Ifc4_IfcBuildingStorey -> {
-                    // sort level by elevation
-                    val elevation = relatingStructure.elevation
-                    levelList.add(Pair(relConStructure, elevation))
-                    levelList = ArrayList(levelList.sortedWith(compareBy { it.second }))
-                }
-                is Ifc4_IfcSpace -> {
-                    // TODO implement
-                }
-                is Ifc4_IfcSite -> {
-                    // TODO implement
+                if (levelObj.representation.expressId == representation.expressId) {
+                    return levelList.indexOf(levelPair)
                 }
             }
         }
+        return null
+    }
 
-        return levelList
+    /**
+     * TODO add description
+     */
+    private fun traverseSpatialStructureIfc2x3tc1(parent: Ifc2x3tc1_IfcSpatialStructureElement, objectList: ArrayList<IfcProduct>){
+        // TODO fix this
+        parent.containsElements.forEach{ containment ->
+            containment.relatedElements.forEach { product ->
+                objectList.add(product)
+            }
+        }
+        // get spaces
+        parent.isDecomposedBy.forEach { aggregation ->
+            aggregation.relatedObjects.forEach { child ->
+                (child as Ifc2x3tc1_IfcSpace).containsElements.forEach { containment ->
+                    containment.relatedElements.forEach { product ->
+                        objectList.add(product)
+                    }
+                }
+                traverseSpatialStructureIfc2x3tc1(child as Ifc2x3tc1_IfcSpatialStructureElement, objectList);
+            }
+        }
     }
 
 }
