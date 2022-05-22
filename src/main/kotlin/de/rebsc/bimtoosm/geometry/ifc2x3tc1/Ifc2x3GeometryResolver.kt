@@ -343,13 +343,21 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcClosedShell(entity: IfcClosedShell): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
-        // resolve list of CfsFaces
+        // for each CfsFace resolve all points
+        val allFaces = ArrayList<ArrayList<Vector3D>>()
         entity.cfsFaces.forEach { face ->
-            geometry.addAll(resolveIfcFace(face))
+            allFaces.add(resolveIfcFace(face) as ArrayList<Vector3D>)
         }
-
-        // remove duplicates
-        // TODO remove duplicates from 3D to 2D transform
+        // sort faces
+        geometry.addAll(allFaces[0])
+        allFaces.forEach { face ->
+            if (allFaces.indexOf(face) == 0) return@forEach
+            if(face[0].equalsVector(geometry.last())){
+                // TODO remove duplicates? Or remove them later during optimizing?
+                geometry.addAll(face)
+                return@forEach
+            }
+        }
         return geometry
     }
 
