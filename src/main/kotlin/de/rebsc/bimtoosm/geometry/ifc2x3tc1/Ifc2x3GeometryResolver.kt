@@ -21,7 +21,7 @@ import de.rebsc.bimtoosm.exception.BIMtoOSMException
 import de.rebsc.bimtoosm.geometry.GeometrySolution
 import de.rebsc.bimtoosm.geometry.SupportedObjectType
 import de.rebsc.bimtoosm.logger.Logger
-import de.rebsc.bimtoosm.utils.geometry.Geometry
+import de.rebsc.bimtoosm.utils.math.BooleanOP
 import de.rebsc.bimtoosm.utils.math.Vector3D
 import org.bimserver.models.ifc2x3tc1.*
 import kotlin.math.cos
@@ -661,14 +661,11 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcTrimmedCurve(entity: IfcTrimmedCurve): List<Vector3D> {
 
-        // TODO test/fix
-
         val basisCurveGeometry = resolveIfcCurve(entity.basisCurve)
         val trimmingPoint1 = entity.trim1[1] as IfcCartesianPoint
         val trimmingPoint2 = entity.trim2[1] as IfcCartesianPoint
 
         // TODO handle axis and refDirection
-
 
         // find trimming points in basic curve
         var deltaTrimmingPoint1 = 10000.0
@@ -930,28 +927,17 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
     private fun resolveIfcBooleanResult(entity: IfcBooleanResult): List<Vector3D> {
         // TODO handle IfcBooleanClippingResult
 
-        // TODO fix
-        return ArrayList()
-
         val geometryFirstOperand = resolveIfcBooleanOperand(entity.firstOperand)
         val geometrySecondOperand = resolveIfcBooleanOperand(entity.secondOperand)
         when (entity.operator.value) {
             IfcBooleanOperator.DIFFERENCE.value -> {
-                // points which are in the first operand, but not in the second operand
-                val pointsInFirstOperandOnly = ArrayList<Vector3D>()
-                // TODO FIX: check if point of second operator in first operator
-                geometryFirstOperand.forEach { point ->
-                    if(!Geometry.isInsidePolygon(point, geometrySecondOperand)){
-                        pointsInFirstOperandOnly.add(point)
-                    }
-                }
-                return pointsInFirstOperandOnly
+                return BooleanOP.difference(geometryFirstOperand, geometrySecondOperand)
             }
             IfcBooleanOperator.INTERSECTION.value -> {
-                // TODO implement
+                return BooleanOP.intersect(geometryFirstOperand, geometrySecondOperand)
             }
             IfcBooleanOperator.UNION.value -> {
-                // TODO implement
+                return BooleanOP.union(geometryFirstOperand, geometrySecondOperand)
             }
         }
         return ArrayList()
