@@ -340,8 +340,8 @@ class GeometryEngine(private val solution: GeometrySolution) {
     /**
      * TODO add description
      */
-    private fun getLevelListIfc2x3tc1(model: IfcModelInterface): ArrayList<Pair<Double, ArrayList<IfcProduct>>>{
-        var levelList =  ArrayList<Pair<Double, ArrayList<IfcProduct>>>()
+    private fun getLevelListIfc2x3tc1(model: IfcModelInterface): ArrayList<Pair<Double, ArrayList<IfcProduct>>> {
+        var levelList = ArrayList<Pair<Double, ArrayList<IfcProduct>>>()
         model.getAllWithSubTypes(Ifc2x3tc1_IfcBuildingStorey::class.java).forEach { bs ->
             val level = ArrayList<IfcProduct>()
             traverseSpatialStructureIfc2x3tc1(bs, level)
@@ -354,10 +354,13 @@ class GeometryEngine(private val solution: GeometrySolution) {
     /**
      * TODO add description
      */
-    private fun identifyLevelIfc2x3tc1(representation: IfcProductRepresentation, levelList: ArrayList<Pair<Double, ArrayList<IfcProduct>>>): Int? {
+    private fun identifyLevelIfc2x3tc1(
+        representation: IfcProductRepresentation,
+        levelList: ArrayList<Pair<Double, ArrayList<IfcProduct>>>
+    ): Int? {
         levelList.forEach { levelPair ->
             levelPair.second.forEach { levelObj ->
-                if(levelObj.representation == null){
+                if (levelObj.representation == null) {
                     return@forEach
                 }
                 if (levelObj.representation.expressId == representation.expressId) {
@@ -371,9 +374,12 @@ class GeometryEngine(private val solution: GeometrySolution) {
     /**
      * TODO add description
      */
-    private fun traverseSpatialStructureIfc2x3tc1(parent: Ifc2x3tc1_IfcSpatialStructureElement, objectList: ArrayList<IfcProduct>){
+    private fun traverseSpatialStructureIfc2x3tc1(
+        parent: Ifc2x3tc1_IfcSpatialStructureElement,
+        objectList: ArrayList<IfcProduct>
+    ) {
         // TODO fix this
-        parent.containsElements.forEach{ containment ->
+        parent.containsElements.forEach { containment ->
             containment.relatedElements.forEach { product ->
                 objectList.add(product)
             }

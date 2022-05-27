@@ -16,18 +16,18 @@ package de.rebsc.bimtoosm.geometry.ifc2x3tc1
 import de.rebsc.bimtoosm.utils.math.Matrix3D
 import de.rebsc.bimtoosm.utils.math.Point3D
 import de.rebsc.bimtoosm.utils.math.Vector3D
-import org.bimserver.models.ifc2x3tc1.IfcLocalPlacement as Ifc2x3tc1_IfcLocalPlacement
-import org.bimserver.models.ifc2x3tc1.IfcObjectPlacement as Ifc2x3tc1_IfcObjectPlacement
-import org.bimserver.models.ifc2x3tc1.IfcAxis2Placement2D as Ifc2x3tc1_IfcAxis2Placement2D
-import org.bimserver.models.ifc2x3tc1.IfcAxis2Placement3D as Ifc2x3tc1_IfcAxis2Placement3D
-import org.bimserver.models.ifc2x3tc1.IfcCartesianPoint as Ifc2x3tc1_IfcCartesianPoint
+import org.bimserver.models.ifc2x3tc1.IfcLocalPlacement
+import org.bimserver.models.ifc2x3tc1.IfcObjectPlacement
+import org.bimserver.models.ifc2x3tc1.IfcAxis2Placement2D
+import org.bimserver.models.ifc2x3tc1.IfcAxis2Placement3D
+import org.bimserver.models.ifc2x3tc1.IfcCartesianPoint
 
 class Ifc2x3PlacementResolver {
 
     /**
      * Placement cache for ifc2x3tc1 objects
      */
-    var placementCacheIfc2x3tc1: MutableMap<Ifc2x3tc1_IfcObjectPlacement, Transformation> = HashMap()
+    var placementCacheIfc2x3tc1: MutableMap<IfcObjectPlacement, Transformation> = HashMap()
 
 
     /**
@@ -35,21 +35,19 @@ class Ifc2x3PlacementResolver {
      * @param placement entity of object
      * @return [Transformation] or null
      */
-    fun resolvePlacement(placement: Ifc2x3tc1_IfcObjectPlacement): Transformation? {
+    fun resolvePlacement(placement: IfcObjectPlacement): Transformation? {
         if (placementCacheIfc2x3tc1.containsKey(placement)) return placementCacheIfc2x3tc1[placement]
-        if (placement is Ifc2x3tc1_IfcLocalPlacement) { // TODO: other case IfcGridPlacement, use method overloading
-            val localPlacement: Ifc2x3tc1_IfcLocalPlacement = placement
-            if (localPlacement.relativePlacement is Ifc2x3tc1_IfcAxis2Placement3D) { // TODO other case IfcAxisPlacement2D
-                val axis2placement3d: Ifc2x3tc1_IfcAxis2Placement3D =
-                    localPlacement.relativePlacement as Ifc2x3tc1_IfcAxis2Placement3D
+        if (placement is IfcLocalPlacement) { // TODO: other case IfcGridPlacement, use method overloading
+            val localPlacement: IfcLocalPlacement = placement
+            if (localPlacement.relativePlacement is IfcAxis2Placement3D) { // TODO other case IfcAxisPlacement2D
+                val axis2placement3d: IfcAxis2Placement3D = localPlacement.relativePlacement as IfcAxis2Placement3D
                 val placementTransformation: Transformation = getTransform(axis2placement3d)
                 if (localPlacement.placementRelTo != null) {
                     val relatedTransformation = resolvePlacement(localPlacement.placementRelTo)
                     placementTransformation.rotation.multiply(relatedTransformation!!.rotation)
                     placementTransformation.translation.set(
                         getAbsolutePoint(
-                            relatedTransformation,
-                            Point3D(placementTransformation.translation)
+                            relatedTransformation, Point3D(placementTransformation.translation)
                         )
                     )
                 }
@@ -65,7 +63,7 @@ class Ifc2x3PlacementResolver {
         )
     }
 
-    fun getTransform(placement: Ifc2x3tc1_IfcAxis2Placement2D): Transformation {
+    fun getTransform(placement: IfcAxis2Placement2D): Transformation {
         val location = vectorFor(placement.location.coordinates)
         val zAxis = Vector3D(0.0, 0.0, 1.0)
         val xAxis = if (placement.refDirection != null) vectorFor(
@@ -74,24 +72,17 @@ class Ifc2x3PlacementResolver {
         return getTransformation(location, xAxis, zAxis)
     }
 
-    fun getTransform(placement: Ifc2x3tc1_IfcAxis2Placement3D?): Transformation {
+    fun getTransform(placement: IfcAxis2Placement3D?): Transformation {
         if (placement == null) return getIdentityTransform()
-        val location =
-            if (placement.location != null) vectorFor(placement.location.coordinates) else Vector3D(
-                0.0,
-                0.0,
-                0.0
-            ) // should never be null
+        val location = if (placement.location != null) vectorFor(placement.location.coordinates) else Vector3D(
+            0.0, 0.0, 0.0
+        ) // should never be null
         val refDirection =
             if (placement.refDirection != null) vectorFor(placement.refDirection.directionRatios) else Vector3D(
-                1.0,
-                0.0,
-                0.0
+                1.0, 0.0, 0.0
             )
         val zAxis = if (placement.axis != null) vectorFor(placement.axis.directionRatios) else Vector3D(
-            0.0,
-            0.0,
-            1.0
+            0.0, 0.0, 1.0
         )
         val xAxis = retrieveXAxis(zAxis, refDirection)
         return getTransformation(location, xAxis, zAxis)
@@ -113,22 +104,13 @@ class Ifc2x3PlacementResolver {
         val zNorm = Vector3D()
         zNorm.normalize(zAxis)
         return Transformation(
-            location,
-            Matrix3D(
-                xNorm.x,
-                xNorm.y,
-                xNorm.z,
-                yNorm.x,
-                yNorm.y,
-                yNorm.z,
-                zNorm.x,
-                zNorm.y,
-                zNorm.z
+            location, Matrix3D(
+                xNorm.x, xNorm.y, xNorm.z, yNorm.x, yNorm.y, yNorm.z, zNorm.x, zNorm.y, zNorm.z
             )
         )
     }
 
-    fun getAbsolutePoint(placement: Transformation, point: Ifc2x3tc1_IfcCartesianPoint): Point3D {
+    fun getAbsolutePoint(placement: Transformation, point: IfcCartesianPoint): Point3D {
         // point.getDim() is a derived property, not working in BimServer
         return getAbsolutePoint(
             placement,

@@ -596,7 +596,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @param entity to resolve geometry
      * @return List holding resolved local coordinates
      */
-    private fun resolveIfcCircle(entity: IfcCircle): List<Vector3D>{
+    private fun resolveIfcCircle(entity: IfcCircle): List<Vector3D> {
         val geometry = ArrayList<Vector3D>()
 
         // get center
