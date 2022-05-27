@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+    import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.4.31"
@@ -39,6 +39,7 @@ dependencies {
     api(group = "org.slf4j", name = "slf4j-simple", version = "1.7.25")
     implementation(group = "org.opensourcebim", name = "ifcplugins", version = "0.0.99")
     implementation(group="org.locationtech.jts", name="jts-core", version="1.18.1")
+    implementation("com.menecats:polybool-java:1.0.1")
 
     // tests
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.2.0")
