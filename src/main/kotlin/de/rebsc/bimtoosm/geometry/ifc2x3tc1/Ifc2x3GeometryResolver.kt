@@ -352,7 +352,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
         geometry.addAll(allFaces[0])
         allFaces.forEach { face ->
             if (allFaces.indexOf(face) == 0) return@forEach
-            if(face[0].equalsVector(geometry.last())){
+            if (face[0].equalsVector(geometry.last())) {
                 // TODO remove duplicates? Or remove them later during optimizing?
                 geometry.addAll(face)
                 return@forEach
@@ -582,18 +582,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
         val geometry = ArrayList<Vector3D>()
         when (entity) {
             is IfcCircle -> {
-                // get center
-                val center = (entity.position as IfcAxis2Placement2D).location.coordinates
-                // TODO handle axis and refDirection
-
-                // add 37 points to representing the circle
-                for (i in 0..360 step 10) {
-                    val x = center[0] + entity.radius * cos(Math.toRadians(i.toDouble()))
-                    val y = center[0] + entity.radius * sin(Math.toRadians(i.toDouble()))
-                    geometry.add(Vector3D(x, y, 0.0))
-                }
-                geometry.add(geometry[0])
-                return geometry
+                return resolveIfcCircle(entity)
             }
             is IfcEllipse -> {
                 // TODO implement
@@ -601,6 +590,36 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
         }
         return geometry
     }
+
+    /**
+     * Resolves geometry of [IfcCircle] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcCircle(entity: IfcCircle): List<Vector3D>{
+        val geometry = ArrayList<Vector3D>()
+
+        // get center
+        val center = (entity.position as IfcAxis2Placement2D).location.coordinates
+        if (entity.dim == 3.toLong()) {
+            val axis = (entity.position as IfcAxis2Placement3D).axis
+            val refDir = (entity.position as IfcAxis2Placement3D).refDirection
+            // TODO handle axis and refDirection
+        } else {
+            val refDir = (entity.position as IfcAxis2Placement2D).refDirection
+            // TODO handle refDirection
+        }
+
+        // add 37 points to representing the circle
+        for (i in 0..360 step 10) {
+            val x = center[0] + entity.radius * cos(Math.toRadians(i.toDouble()))
+            val y = center[1] + entity.radius * sin(Math.toRadians(i.toDouble()))
+            geometry.add(Vector3D(x, y, 0.0))
+        }
+        geometry.add(geometry[0])
+        return geometry
+    }
+
 
     /**
      * Resolves geometry of [IfcPolyline] entity
@@ -661,11 +680,11 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      */
     private fun resolveIfcTrimmedCurve(entity: IfcTrimmedCurve): List<Vector3D> {
 
+        // TODO test this
+
         val basisCurveGeometry = resolveIfcCurve(entity.basisCurve)
         val trimmingPoint1 = entity.trim1[1] as IfcCartesianPoint
         val trimmingPoint2 = entity.trim2[1] as IfcCartesianPoint
-
-        // TODO handle axis and refDirection
 
         // find trimming points in basic curve
         var deltaTrimmingPoint1 = 10000.0
@@ -699,7 +718,7 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             // trim clockwise
             val trimmed = ArrayList<Vector3D>()
             trimmed.addAll(basisCurveGeometry.slice(indexClosestToTrimmingPoint1 until basisCurveGeometry.size))
-            trimmed.addAll(basisCurveGeometry.slice(0 .. indexClosestToTrimmingPoint2))
+            trimmed.addAll(basisCurveGeometry.slice(0..indexClosestToTrimmingPoint2))
             return trimmed
         }
     }

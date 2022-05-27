@@ -65,7 +65,7 @@ class Ifc2x3PlacementResolver {
         )
     }
 
-    private fun getTransform(placement: Ifc2x3tc1_IfcAxis2Placement2D): Transformation {
+    fun getTransform(placement: Ifc2x3tc1_IfcAxis2Placement2D): Transformation {
         val location = vectorFor(placement.location.coordinates)
         val zAxis = Vector3D(0.0, 0.0, 1.0)
         val xAxis = if (placement.refDirection != null) vectorFor(
