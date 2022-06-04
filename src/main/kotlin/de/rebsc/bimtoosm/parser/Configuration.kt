@@ -28,7 +28,7 @@ class Configuration() {
     /**
      * Solution engine
      */
-    var solution: GeometrySolution = GeometrySolution.BOUNDING_BOX
+    var solution: GeometrySolution = GeometrySolution.BODY
 
     /**
      * Remove block comments from ifc input file
