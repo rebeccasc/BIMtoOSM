@@ -10,5 +10,5 @@ docs/templates
 !/.idea/codeStyles/Project.xml
 tmp
 src/test/output
-/src/test/resources/geometry_engine/secret_files
+/src/test/resources/secret_files
 src/test/tmp_test
