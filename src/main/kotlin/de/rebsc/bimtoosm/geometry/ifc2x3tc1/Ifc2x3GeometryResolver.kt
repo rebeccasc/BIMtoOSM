@@ -616,7 +616,6 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             val y = center[1] + entity.radius * sin(Math.toRadians(i.toDouble()))
             geometry.add(Vector3D(x, y, 0.0))
         }
-        geometry.add(geometry[0])
         return geometry
     }
 
@@ -772,12 +771,11 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
      * @return List holding resolved local coordinates
      */
     private fun resolveIfcExtrudedAreaSolid(entity: IfcExtrudedAreaSolid): List<Vector3D> {
-        val geometry = ArrayList<Vector3D>()
+        var geometry = ArrayList<Vector3D>()
         var locationX = entity.position.location.coordinates[0]
         var locationY = entity.position.location.coordinates[1]
 
         when (entity.sweptArea) {
-            // TODO pack subclasses in methods
 
             // handle IfcParameterizedProfileDef
             is IfcIShapeProfileDef -> {/*TODO implement */
@@ -801,32 +799,8 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             is IfcEllipseProfileDef -> {/*TODO implement */
             }
             is IfcRectangleProfileDef -> {
-                locationX = (entity.sweptArea as IfcRectangleProfileDef).position.location.coordinates[0]
-                locationY = (entity.sweptArea as IfcRectangleProfileDef).position.location.coordinates[1]
-
-                // TODO handle axis and refDirection
-
-                // extract dimensions
-                val halfXDim = (entity.sweptArea as IfcRectangleProfileDef).xDim / 2.0
-                val halfYDim = (entity.sweptArea as IfcRectangleProfileDef).yDim / 2.0
-
-                // get points of rectangle shape
-                geometry.add(Vector3D(locationX - halfXDim, locationY - halfYDim, 0.0))
-                geometry.add(Vector3D(locationX + halfXDim, locationY - halfYDim, 0.0))
-                geometry.add(Vector3D(locationX + halfXDim, locationY + halfYDim, 0.0))
-                geometry.add(Vector3D(locationX - halfXDim, locationY + halfYDim, 0.0))
-                geometry.add(Vector3D(locationX - halfXDim, locationY - halfYDim, 0.0))
-
-                // get points at depth
-                if (entity.extrudedDirection.directionRatios[0] == 0.0 && entity.extrudedDirection.directionRatios[1] == 0.0) {
-                    // depth vector equals z-axis, so we can ignore points at depth because in 2D the points will
-                    // simply be duplicated
-                    return geometry
-                } else {
-                    // TODO add points at depth
-                }
-
-                return geometry
+                geometry = resolveIfcRectangleProfileDef(entity.sweptArea as IfcRectangleProfileDef) as ArrayList<Vector3D>
+                // TODO do we also need to add locationX, locationY ?
             }
             is IfcTrapeziumProfileDef -> {/*TODO implement */
             }
@@ -835,26 +809,11 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             }
             // handle IfcArbitraryClosedProfileDef
             is IfcArbitraryClosedProfileDef -> {
-                // TODO handle Ifc2x3tc1_IfcArbitraryProfileDefWithVoids
-
-                val outerCurve = (entity.sweptArea as IfcArbitraryClosedProfileDef).outerCurve
-                val curveShape = resolveIfcCurve(outerCurve)
-                curveShape.forEach { point ->
+                geometry = resolveIfcArbitraryClosedProfileDef(entity.sweptArea as IfcArbitraryClosedProfileDef) as ArrayList<Vector3D>
+                geometry.forEach { point ->
                     point.x += locationX
                     point.y += locationY
                 }
-                geometry.addAll(curveShape)
-
-                // get points at depth
-                if (entity.extrudedDirection.directionRatios[0] == 0.0 && entity.extrudedDirection.directionRatios[1] == 0.0) {
-                    // depth vector equals z-axis, so we can ignore points at depth because in 2D the points will
-                    // simply be duplicated
-                    return geometry
-                } else {
-                    // TODO add points at depth
-                }
-
-                return geometry
             }
             // handle IfcCompositeProfileDef
             is IfcCompositeProfileDef -> {/*TODO implement */
@@ -863,7 +822,56 @@ class Ifc2x3GeometryResolver(private val solution: GeometrySolution) {
             is IfcDerivedProfileDef -> {/*TODO implement */
             }
         }
+
+        // get points at depth
+        if (entity.extrudedDirection.directionRatios[0] == 0.0 && entity.extrudedDirection.directionRatios[1] == 0.0) {
+            // depth vector equals z-axis, so we can ignore points at depth because in 2D the points will
+            // simply be duplicated
+            return geometry
+        } else {
+            // TODO add points at depth
+        }
+
         return geometry
+    }
+
+    /**
+     * Resolves geometry of [IfcRectangleProfileDef] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcRectangleProfileDef(entity: IfcRectangleProfileDef): List<Vector3D>{
+        val locationX = entity.position.location.coordinates[0]
+        val locationY = entity.position.location.coordinates[1]
+
+        // TODO handle axis and refDirection
+
+        // extract dimensions
+        val halfXDim = entity.xDim / 2.0
+        val halfYDim = entity.yDim / 2.0
+
+        // get points of rectangle shape
+        val geometry = ArrayList<Vector3D>()
+        geometry.add(Vector3D(locationX - halfXDim, locationY - halfYDim, 0.0))
+        geometry.add(Vector3D(locationX + halfXDim, locationY - halfYDim, 0.0))
+        geometry.add(Vector3D(locationX + halfXDim, locationY + halfYDim, 0.0))
+        geometry.add(Vector3D(locationX - halfXDim, locationY + halfYDim, 0.0))
+        geometry.add(Vector3D(locationX - halfXDim, locationY - halfYDim, 0.0))
+
+        return geometry
+    }
+
+    /**
+     * Resolves geometry of [IfcArbitraryClosedProfileDef] entity
+     * @param entity to resolve geometry
+     * @return List holding resolved local coordinates
+     */
+    private fun resolveIfcArbitraryClosedProfileDef(entity: IfcArbitraryClosedProfileDef): List<Vector3D>{
+        // TODO handle Ifc2x3tc1_IfcArbitraryProfileDefWithVoids
+        // TODO do we need to handle entity.sweptArea.profileType?
+
+        val outerCurve = entity.outerCurve
+        return resolveIfcCurve(outerCurve)
     }
 
     /**
