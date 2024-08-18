@@ -46,6 +46,3 @@ Want to contribute? Check the [contribution guidelines](https://github.com/rebec
 ## Wiki
 
 Find a detailed user guide at https://rebeccasc.github.io/BIMtoOSM/
-
-## Authors
-Rebecca Schmidt (rebeccasmdt@gmail.com)
